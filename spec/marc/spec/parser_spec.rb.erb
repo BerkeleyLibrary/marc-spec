@@ -1,0 +1,19 @@
+require 'spec_helper'
+require 'parslet/rig/rspec'
+
+# noinspection RubyResolve
+module MARC
+  module Spec
+    describe Parser do
+      let(:parser) { Parser.new }
+
+      describe <%= rule %> do <% specs.each do |spec| %>
+        describe <%= spec.description %> do <% spec.tests.each do |test| %>
+          it <%= test.description %> do
+            expect(<%= "parser.#{spec.parse_method}" %>).<%= test.valid ? 'to' : 'not_to' %> parse(<%= test.data %>, trace: true)
+          end
+        <% end %>end
+      <% end %>end
+    end
+  end
+end
