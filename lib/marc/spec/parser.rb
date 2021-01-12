@@ -60,9 +60,12 @@ module MARC
       # subfieldCode      = "$" subfieldChar
       rule(:subfield_code) { str('$') >> subfield_char }
 
+      # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json
+      rule(:subfield_range) { (alpha_lower >> str('-') >> alpha_lower) | (digit >> str('-') >> digit) }
+
       # subfieldCodeRange = "$" ( (alphalower "-" alphalower) / (DIGIT "-" DIGIT) )
       #                     ; [a-z]-[a-z] / [0-9]-[0-9]
-      rule(:subfield_code_range) { str('$') >> ((alpha_lower >> str('-') >> alpha_lower) | (digit >> str('-') >> digit)) }
+      rule(:subfield_code_range) { str('$') >> subfield_range }
 
       # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
       rule(:abr_subfield_spec) { (subfield_code | subfield_code_range) >> index.maybe >> character_spec.maybe }
@@ -70,8 +73,11 @@ module MARC
       # subfieldSpec      = fieldTag [index] abrSubfieldSpec
       rule(:subfield_spec) { field_tag >> index.maybe >> abr_subfield_spec }
 
+      # UNDOCUMENTED -- see spec/suite/valid/validIndicators.json
+      rule(:indicators) { str('1') | str('2') }
+
       # abrIndicatorSpec  = [index] "^" ("1" / "2")
-      rule(:abr_indicator_spec) { index.maybe >> str('^') >> (str('1') | str('2')) }
+      rule(:abr_indicator_spec) { index.maybe >> str('^') >> indicators }
 
       # indicatorSpec     = fieldTag abrIndicatorSpec
       rule(:indicator_spec) { field_tag >> abr_indicator_spec }

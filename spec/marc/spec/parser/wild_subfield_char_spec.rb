@@ -4,7 +4,7 @@ require 'parslet/rig/rspec'
 # noinspection RubyResolve, RubyParenthesesAfterMethodCallInspection
 module MARC
   module Spec
-    describe :wild_subfield_tag do
+    describe :wild_subfield_char do
       let(:parser) { Parser.new }
 
       describe 'wild combination of valid field tag and invalid subfield tag' do

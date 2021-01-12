@@ -23,6 +23,7 @@ namespace :spec do
 
         spec = JSON.parse(File.read(json_file), object_class: OpenStruct)
         rule = md[:rule].gsub(/(?<!^)[A-Z]/) { "_#{$&}" }.downcase # camel to snake case
+        rule = 'subfield_char' if rule == 'subfield_tag' # suite doesn't match spec
 
         spec.description = quote.call(spec.description)
 
