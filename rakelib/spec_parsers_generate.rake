@@ -24,13 +24,12 @@ namespace :spec do
         spec = JSON.parse(File.read(json_file), object_class: OpenStruct)
         rule = md[:rule].gsub(/(?<!^)[A-Z]/) { "_#{$&}" }.downcase # camel to snake case
 
-        spec.rule = quote.call(rule)
         spec.description = quote.call(spec.description)
 
         if md[:wild]
-          spec.parse_method = :marc_spec
+          spec.parse_method = 'marc_spec'
           spec.tests.each { |t| t.description = t.description.sub(/^(?:in)?valid wild combination: /, '') }
-          specs = (wild_specs_by_rule[rule] ||= [])
+          specs = (wild_specs_by_rule["wild_#{rule}"] ||= [])
         else
           spec.parse_method = rule
           specs = (specs_by_rule[rule] ||= [])
@@ -44,8 +43,7 @@ namespace :spec do
         specs << spec
       end
 
-      (specs_by_rule.keys | wild_specs_by_rule.keys).sort.each do |rule|
-        # noinspection RubyUnusedLocalVariable
+      (specs_by_rule.keys | wild_specs_by_rule.keys).each do |rule|
         specs = (specs_by_rule[rule] || []) + (wild_specs_by_rule[rule] || [])
         spec_path = File.join(parser_specs_path, "#{rule}_spec.rb")
         puts "Writing #{specs.size} specs to #{spec_path}"
@@ -53,7 +51,6 @@ namespace :spec do
         File.write(spec_path, spec_source)
         RuboCop::CLI.new.run([spec_path])
       end
-
     end
   end
 end
