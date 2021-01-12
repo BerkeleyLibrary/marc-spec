@@ -6,23 +6,23 @@ module MARC
     class Parser < Parslet::Parser
       # alphaupper        = %x41-5A
       #                     ; A-Z
-      rule(:alpha_upper) { match('A-Z') }
+      rule(:alpha_upper) { match['A-Z'] }
 
       # alphalower        = %x61-7A
       #                     ; a-z
-      rule(:alpha_lower) { match('a-z') }
+      rule(:alpha_lower) { match['a-z'] }
 
       # DIGIT             =  %x30-39
       #                     ; 0-9
-      rule(:digit) { match('0-9') }
+      rule(:digit) { match['0-9'] }
 
       # VCHAR             =  %x21-7E
       #                     ; visible (printing) characters
-      rule(:vchar) { match('\u0021-\u007e') }
+      rule(:vchar) { match['\u0021-\u007e'] }
 
       # positiveDigit     = %x31-39
       #                     ;  "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
-      rule(:positive_digit) { match('1-9') }
+      rule(:positive_digit) { match['1-9'] }
 
       # positiveInteger   = "0" / positiveDigit [1*DIGIT]
       rule(:positive_integer) { str('0') | (positive_digit >> digit.repeat) }
@@ -55,7 +55,7 @@ module MARC
 
       # subfieldChar      = %x21-3F / %x5B-7B / %x7D-7E
       #                     ; ! " # $ % & ' ( ) * + , - . / 0-9 : ; < = > ? [ \ ] ^ _ \` a-z { } ~
-      rule(:subfield_char) { match('\u0021-\u003f') | match('\u005b-\u007b') | match('\u007d-\u007e') }
+      rule(:subfield_char) { match['\u0021-\u003f'] | match['\u005b-\u007b'] | match['\u007d-\u007e'] }
 
       # subfieldCode      = "$" subfieldChar
       rule(:subfield_code) { str('$') >> subfield_char }
@@ -83,7 +83,7 @@ module MARC
       rule(:indicator_spec) { field_tag >> abr_indicator_spec }
 
       # comparisonString  = "\" *VCHAR
-      rule(:comparison_string) { str('\\') >> vchar.repeat }
+      rule(:comparison_string) { str('\\') >> vchar.repeat } # TODO: why is the test so different?
 
       # operator          = "=" / "!=" / "~" / "!~" / "!" / "?"
       #                     ; equal / unequal / includes / not includes / not exists / exists
