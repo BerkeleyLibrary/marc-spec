@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe comparison_string do
+      describe :comparison_string do
         describe 'comparison strings are strings and match pattern' do
           it 'whitespaces are not allowed' do
             expect(parser.comparison_string).not_to parse('te st\\?', trace: true)

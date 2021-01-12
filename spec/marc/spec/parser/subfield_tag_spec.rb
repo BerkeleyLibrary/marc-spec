@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe subfield_tag do
+      describe :subfield_tag do
         describe 'subfield tags are strings and match pattern' do
           it 'whitespace is not allowed' do
             expect(parser.subfield_tag).not_to parse(' a', trace: true)

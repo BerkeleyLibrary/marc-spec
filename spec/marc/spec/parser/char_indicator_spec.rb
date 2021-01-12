@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe char_indicator do
+      describe :char_indicator do
         describe 'wild combination of valid field tag and charspec' do
           it 'last position && indicator 1' do
             expect(parser.marc_spec).not_to parse('.../#^1', trace: true)

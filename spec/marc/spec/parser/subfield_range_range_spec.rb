@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe subfield_range_range do
+      describe :subfield_range_range do
         describe 'wild combination of valid field tag and subfield ranges' do
           it 'subfield range with lowercase subfieldtags && subfield range with lowercase subfieldtags' do
             expect(parser.marc_spec).to parse('...$a-z$a-z', trace: true)

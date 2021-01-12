@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe char do
+      describe :char do
         describe 'wild combination of valid field tag and invalid charspec' do
           it 'empty string' do
             expect(parser.marc_spec).not_to parse('.../', trace: true)

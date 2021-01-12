@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe sub_spec do
+      describe :sub_spec do
         describe 'subspecs are strings' do
           it 'all wildcards' do
             expect(parser.sub_spec).to parse('{245$a}', trace: true)

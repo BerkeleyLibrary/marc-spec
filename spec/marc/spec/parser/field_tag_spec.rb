@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe field_tag do
+      describe :field_tag do
         describe 'field tags are strings and match pattern' do
           it 'too many wildcards' do
             expect(parser.field_tag).not_to parse('....', trace: true)

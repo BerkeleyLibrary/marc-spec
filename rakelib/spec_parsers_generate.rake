@@ -9,7 +9,7 @@ namespace :spec do
       quote = ->(s) { s.include?("'") ? s.inspect : s.inspect.sub(/^"(.*)"$/, "'\\1'") }
 
       parser_specs_path = 'spec/marc/spec/parser'
-      template_path = 'spec/marc/spec/parser_spec.rb.erb'
+      template_path = 'spec/marc/spec/parser_specs.rb.erb'
       template = ERB.new(File.read(template_path), trim_mode: '-')
       template.filename = template_path
 

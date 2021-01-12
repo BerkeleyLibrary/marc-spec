@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe position_or_range do
+      describe :position_or_range do
         describe 'positions or ranges are strings and match pattern' do
           it 'empty string' do
             expect(parser.position_or_range).not_to parse('', trace: true)

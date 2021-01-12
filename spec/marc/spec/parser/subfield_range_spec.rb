@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe subfield_range do
+      describe :subfield_range do
         describe 'subfield ranges are strings and match pattern' do
           it 'mix of alpha and digit' do
             expect(parser.subfield_range).not_to parse('a-9', trace: true)

@@ -47,7 +47,7 @@
     <orderEntry type="library" scope="PROVIDED" name="unicode-display_width (v1.7.0, RVM: ruby-2.7.2) [gem]" level="application" />
   </component>
   <component name="RModuleSettingsStorage">
-    <LOAD_PATH number="2" string0="$MODULE_DIR$/spec" string1="$MODULE_DIR$/lib" />
+    <LOAD_PATH number="2" string0="$MODULE_DIR$/lib" string1="$MODULE_DIR$/spec" />
     <I18N_FOLDERS number="0" />
   </component>
   <component name="RakeTasksCache">

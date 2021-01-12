@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe indicators do
+      describe :indicators do
         describe 'indicators are strings and match pattern' do
           it 'only one character allowed' do
             expect(parser.indicators).not_to parse('12', trace: true)

@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe sub_spec_sub_spec do
+      describe :sub_spec_sub_spec do
         describe 'wild combination of valid field tag and subspecs' do
           it 'all wildcards && all wildcards' do
             expect(parser.marc_spec).to parse('...{245$a}{245$a}', trace: true)

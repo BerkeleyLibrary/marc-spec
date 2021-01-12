@@ -7,7 +7,7 @@ module MARC
     describe Parser do
       let(:parser) { Parser.new }
 
-      describe index_sub_spec do
+      describe :index_sub_spec do
         describe 'wild combination of valid field tag, index and subspec' do
           it 'last position && all wildcards' do
             expect(parser.marc_spec).to parse('...[#]{245$a}', trace: true)
