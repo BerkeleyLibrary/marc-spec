@@ -1,9 +1,12 @@
 require 'parslet'
+require 'marc/spec/parse_utils'
 
 module MARC
   module Spec
     # rubocop:disable Style/BlockDelimiters
     class Parser < Parslet::Parser
+      include ParseUtils
+
       # alphaupper        = %x41-5A
       #                     ; A-Z
       rule(:alpha_upper) { match['A-Z'] }
@@ -36,7 +39,10 @@ module MARC
       rule(:position) { positive_integer | str('#') }
 
       # range             = position "-" position
-      rule(:range) { position >> str('-') >> position }
+      #
+      # NOTE: n-# means from position n to end of string;
+      #       #-n means from (last index - n) to end of string
+      rule(:range) { (position.as(:start) >> str('-#')) | str('#-') >> position.as(:end) | IntRange.new }
 
       # positionOrRange   = range / position
       rule(:position_or_range) { range | position }

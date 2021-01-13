@@ -52,7 +52,7 @@ module MARC
           expect(parser.position_or_range).to parse('100', trace: true)
         end
         it 'range from first position to second' do
-          expect(parser.position_or_range).to parse('0-1', trace: true)
+          expect(parser.position_or_range).to parse('0-1', trace: true, reporter: Parslet::ErrorReporter::Deepest.new)
         end
         it 'range from first position to last' do
           expect(parser.position_or_range).to parse('0-#', trace: true)
