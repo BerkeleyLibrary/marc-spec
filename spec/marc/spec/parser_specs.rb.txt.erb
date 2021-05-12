@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'parslet/rig/rspec'
 
-# noinspection RubyResolve, RubyParenthesesAfterMethodCallInspection
 module MARC
   module Spec
     describe <%= ":#{rule}" %> do
       let(:parser) { Parser.new }
+      let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe <%= spec.description %> do <% spec.tests.each do |test| %>
         it <%= test.description %> do
