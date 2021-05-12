@@ -7,68 +7,68 @@ module MARC
     describe :wild_sub_spec do
       let(:parser) { Parser.new }
 
-      describe 'wild combination of valid field tag and subspec' do
-        it 'all wildcards' do
+      describe 'wild combination of valid field tag and subspec (valid)' do
+        it 'all wildcards (valid)' do
           expect(parser.marc_spec).to parse('...{245$a}', trace: true)
         end
-        it 'two wildcards left with digit' do
+        it 'two wildcards left with digit (valid)' do
           expect(parser.marc_spec).to parse('...{$a}', trace: true)
         end
-        it 'one wildcard left with two digits' do
+        it 'one wildcard left with two digits (valid)' do
           expect(parser.marc_spec).to parse('...{?$a}', trace: true)
         end
-        it 'wildcard between digits' do
+        it 'wildcard between digits (valid)' do
           expect(parser.marc_spec).to parse('...{!$a}', trace: true)
         end
-        it 'two digits wildcard right' do
+        it 'two digits wildcard right (valid)' do
           expect(parser.marc_spec).to parse('...{$a=$b}', trace: true)
         end
-        it 'one digit two wildcards right' do
+        it 'one digit two wildcards right (valid)' do
           expect(parser.marc_spec).to parse('...{$a!=$b}', trace: true)
         end
-        it 'all digits' do
+        it 'all digits (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\Poe}', trace: true)
         end
-        it 'all uppercase chars special leader' do
+        it 'all uppercase chars special leader (valid)' do
           expect(parser.marc_spec).to parse('...{$a!~\\Poe}', trace: true)
         end
-        it 'two wildcards left one uppercase char' do
+        it 'two wildcards left one uppercase char (valid)' do
           expect(parser.marc_spec).to parse('...{/#=\\/}', trace: true)
         end
-        it 'one wildcard left two uppercase chars' do
+        it 'one wildcard left two uppercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a|$b}{$c}', trace: true)
         end
-        it 'one wildcard between uppercase chars' do
+        it 'one wildcard between uppercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a}{$b|$c}', trace: true)
         end
-        it 'one uppercase char two wildcards right' do
+        it 'one uppercase char two wildcards right (valid)' do
           expect(parser.marc_spec).to parse('...{$a|$b}{$c|$d}', trace: true)
         end
-        it 'mix one lowercase char and two digits' do
+        it 'mix one lowercase char and two digits (valid)' do
           expect(parser.marc_spec).to parse('...{$a|$b|$c}', trace: true)
         end
-        it 'mix two lowercase chars and one digit' do
+        it 'mix two lowercase chars and one digit (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\$}', trace: true)
         end
-        it 'all lowercase chars' do
+        it 'all lowercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\{}', trace: true)
         end
-        it 'two wildcards and one lowercase char right' do
+        it 'two wildcards and one lowercase char right (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\}}', trace: true)
         end
-        it 'one wildcard left and two lowercase chars' do
+        it 'one wildcard left and two lowercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\!}', trace: true)
         end
-        it 'one lowercase and two wildcards right' do
+        it 'one lowercase and two wildcards right (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\=}', trace: true)
         end
-        it 'all lowercase chars' do
+        it 'all lowercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\~}', trace: true)
         end
-        it 'all lowercase chars' do
+        it 'all lowercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\?}', trace: true)
         end
-        it 'all lowercase chars' do
+        it 'all lowercase chars (valid)' do
           expect(parser.marc_spec).to parse('...{$a~\\test\\|}', trace: true)
         end
       end

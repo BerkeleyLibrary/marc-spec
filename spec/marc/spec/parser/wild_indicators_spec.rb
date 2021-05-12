@@ -7,25 +7,38 @@ module MARC
     describe :wild_indicators do
       let(:parser) { Parser.new }
 
-      describe 'wild combination of valid field tag and invalid indicator' do
-        it 'only one character allowed' do
+      describe 'wild combination of valid field tag and invalid indicator (valid)' do
+        it 'only one character allowed (invalid)' do
           expect(parser.marc_spec).not_to parse('...^12', trace: true)
         end
-        it 'not allowed character' do
+        it 'not allowed character (invalid)' do
           expect(parser.marc_spec).not_to parse('...^3', trace: true)
         end
-        it 'empty' do
+        it 'empty (invalid)' do
           expect(parser.marc_spec).not_to parse('...^', trace: true)
         end
       end
       let(:parser) { Parser.new }
 
-      describe 'wild combination of valid field tag and indicator' do
-        it 'indicator 1' do
+      describe 'wild combination of valid field tag and indicator (valid)' do
+        it 'indicator 1 (valid)' do
           expect(parser.marc_spec).to parse('...^1', trace: true)
         end
-        it 'indicator 2' do
+        it 'indicator 2 (valid)' do
           expect(parser.marc_spec).to parse('...^2', trace: true)
+        end
+      end
+      let(:parser) { Parser.new }
+
+      describe 'wild combination of valid field tag and invalid indicator (invalid)' do
+        it 'only one character allowed (invalid)' do
+          expect(parser.marc_spec).not_to parse('...^12', trace: true)
+        end
+        it 'not allowed character (invalid)' do
+          expect(parser.marc_spec).not_to parse('...^3', trace: true)
+        end
+        it 'empty (invalid)' do
+          expect(parser.marc_spec).not_to parse('...^', trace: true)
         end
       end
     end
