@@ -1,13 +1,14 @@
 require 'spec_helper'
 require 'parslet/rig/rspec'
-<% include ParserSpecs::Formatter %>
+
 module MARC
   module Spec
-    describe <%= ":#{rule.name}" %> do
+    describe <%= ":#{name}" %> do
       let(:parser) { Parser.new }
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
-      <% rule.suites.sort.each do |suite| %>
-      describe <%= quote(suite.description) %> do<% (suite.tests_by_group[nil] || []).sort.each do |test| %>
+      <% suites.sort.each do |suite| %>
+      describe <%= quote(suite.description) %> do
+        # <%= suite.json_path %><% (suite.tests_by_group[nil] || []).sort.each do |test| %>
         it <%= quote("#{test.description} -> #{validity(test.valid)}") %> do
           # <%= test.json_path %><% test.rspec_assertions.each do |asrt| %>
           <%= asrt %><% end %>

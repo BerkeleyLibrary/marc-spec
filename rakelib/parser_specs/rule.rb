@@ -9,6 +9,8 @@ module ParserSpecs
 
     RULE_RE = %r{/(?<wild>wildCombination_)?(?<valid>valid|invalid)(?<rule>[A-Z][[:alpha:]]+)\.json$}.freeze
 
+    TEMPLATE_PATH = File.expand_path('parser_specs.rb.txt.erb', __dir__)
+
     attr_reader :name
 
     def initialize(name, suites = [])
@@ -30,6 +32,20 @@ module ParserSpecs
       existing.merge(s)
     end
 
+    def write_rspec_to(dir)
+      basename = "#{name}_spec.rb"
+      spec_path = File.join(dir, basename)
+
+      # ideally we could just run the ERB as-is, but it's hard to write
+      # a legible template that doesn't introduce some unwanted whitespace
+      spec_src = Rule.template.result(binding)
+        .gsub(/ +$/, '')
+        .gsub(/\n\n+/, "\n\n")
+
+      puts "writing #{basename}"
+      File.write(spec_path, spec_src)
+    end
+
     class << self
       include Formatter
 
@@ -41,6 +57,13 @@ module ParserSpecs
           suite = Suite.from_ostruct(suite_data, rule_name, wild, json_path.sub(json_root, ''))
 
           add_suite(rules, rule_name, suite)
+        end
+      end
+
+      def template
+        @template ||= begin
+          template_src = File.read(TEMPLATE_PATH)
+          ERB.new(template_src, trim_mode: '-')
         end
       end
 

@@ -1,18 +1,26 @@
 require 'rspec/core/rake_task'
+require 'pathname'
 
 namespace :spec do
-  test_groups = %i[standalone rails]
+  specs_dir = File.expand_path('../spec', __dir__)
+  generated_specs_dir = 'marc/spec/parser'
 
-  test_groups.each do |group|
-    desc "Run #{group} tests"
-    RSpec::Core::RakeTask.new(group) do |task|
-      task.rspec_opts = %w[--color --format documentation --order default]
-      task.pattern = "spec/#{group}/**/*_spec.rb"
+  desc "regenerates #{generated_specs_dir} from MARCSpec-Test-Suite"
+  task :generate do
+    require_relative 'parser_specs'
+
+    in_dir = File.join(specs_dir, 'suite')
+    out_dir = File.join(specs_dir, generated_specs_dir)
+
+    ParserSpecs::Rule.all_from_json(in_dir).each do |rule|
+      rule.write_rspec_to(out_dir)
     end
-  end
 
-  task all: test_groups
+    RuboCop::CLI.new.run([out_dir])
+  end
 end
 
-desc 'Run all tests'
-task spec: ['spec:all']
+RSpec::Core::RakeTask.new do |task|
+  task.rspec_opts = %w[--color --format documentation --order default]
+  task.pattern = 'spec/**/*_spec.rb'
+end
