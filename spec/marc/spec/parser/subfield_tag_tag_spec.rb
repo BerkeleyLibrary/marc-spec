@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'valid field tag and subfield tags' do
+        # /valid/wildCombination_validSubfieldTagTag.json
         it 'subfieldtag & && digit subfieldtag 0 -> valid' do
           # /valid/wildCombination_validSubfieldTagTag.json
           expect(parser.marc_spec).to parse('...$&$0', trace: true, reporter: reporter)

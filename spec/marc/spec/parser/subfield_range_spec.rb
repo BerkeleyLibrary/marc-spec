@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'subfield ranges are strings and match pattern' do
+        # /invalid/invalidSubfieldRange.json
         it 'matches the pattern but not a valid subfield tag range -> invalid' do
           # /invalid/invalidSubfieldRange.json
           expect(parser.subfield_range).not_to parse('1-0', trace: true, reporter: reporter)
@@ -41,6 +42,7 @@ module MARC
 
       end
       describe 'valid field tag and invalid subfield range' do
+        # /invalid/wildCombination_invalidSubfieldRange.json
         it 'matches the pattern but not a valid subfield tag range -> invalid' do
           # /invalid/wildCombination_invalidSubfieldRange.json
           expect(parser.marc_spec).not_to parse('...$1-0', trace: true, reporter: reporter)
@@ -64,6 +66,7 @@ module MARC
 
       end
       describe 'valid field tag and subfield range' do
+        # /valid/wildCombination_validSubfieldRange.json
         it 'subfield range with digits -> valid' do
           # /valid/wildCombination_validSubfieldRange.json
           expect(parser.marc_spec).to parse('...$0-9', trace: true, reporter: reporter)

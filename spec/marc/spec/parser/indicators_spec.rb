@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'indicators are strings and match pattern' do
+        # /invalid/invalidIndicators.json
         it 'empty -> invalid' do
           # /invalid/invalidIndicators.json
           expect(parser.indicators).not_to parse('', trace: true, reporter: reporter)
@@ -35,6 +36,7 @@ module MARC
 
       end
       describe 'valid field tag and indicator' do
+        # /valid/wildCombination_validIndicators.json
         it 'indicator 1 -> valid' do
           # /valid/wildCombination_validIndicators.json
           expect(parser.marc_spec).to parse('...^1', trace: true, reporter: reporter)
@@ -47,6 +49,7 @@ module MARC
 
       end
       describe 'valid field tag and invalid indicator' do
+        # /invalid/wildCombination_invalidIndicators.json
         it 'empty -> invalid' do
           # /invalid/wildCombination_invalidIndicators.json
           expect(parser.marc_spec).not_to parse('...^', trace: true, reporter: reporter)

@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'subfield tags are strings and match pattern' do
+        # /invalid/invalidSubfieldTag.json
         it "char '|' is not allowed -> invalid" do
           # /invalid/invalidSubfieldTag.json
           expect(parser.subfield_char).not_to parse('|', trace: true, reporter: reporter)
@@ -200,6 +201,7 @@ module MARC
 
       end
       describe 'valid field tag and invalid subfield tag' do
+        # /invalid/wildCombination_invalidSubfieldTag.json
         it "char '|' is not allowed -> invalid" do
           # /invalid/wildCombination_invalidSubfieldTag.json
           expect(parser.marc_spec).not_to parse('...$|', trace: true, reporter: reporter)
@@ -227,6 +229,7 @@ module MARC
 
       end
       describe 'valid field tag and subfield tag' do
+        # /valid/wildCombination_validSubfieldTag.json
         it 'digit subfieldtag 0 -> valid' do
           # /valid/wildCombination_validSubfieldTag.json
           expect(parser.marc_spec).to parse('...$0', trace: true, reporter: reporter)

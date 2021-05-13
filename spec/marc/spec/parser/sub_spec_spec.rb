@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'subspecs are strings' do
+        # /valid/validSubSpec.json
         it 'all digits -> valid' do
           # /valid/validSubSpec.json
           expect(parser.sub_spec).to parse('{$a~\\Poe}', trace: true, reporter: reporter)
@@ -103,6 +104,7 @@ module MARC
 
       end
       describe 'valid field tag and subspec' do
+        # /valid/wildCombination_validSubSpec.json
         it 'all digits -> valid' do
           # /valid/wildCombination_validSubSpec.json
           expect(parser.marc_spec).to parse('...{$a~\\Poe}', trace: true, reporter: reporter)

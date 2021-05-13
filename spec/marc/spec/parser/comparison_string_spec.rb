@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'comparison strings are strings and match pattern' do
+        # /invalid/invalidComparisonString.json
         it 'subfield with single digit subfieldtag -> valid' do
           # /valid/validComparisonString.json
           expect(parser.comparison_string).to parse('te\\}st', trace: true, reporter: reporter)

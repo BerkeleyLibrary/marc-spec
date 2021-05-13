@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'field tags are strings and match pattern' do
+        # /invalid/invalidFieldTag.json
         it 'all digits -> valid' do
           # /valid/validFieldTag.json
           expect(parser.field_tag).to parse('300', trace: true, reporter: reporter)

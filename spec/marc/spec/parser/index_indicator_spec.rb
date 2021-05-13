@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'valid field tag, index and indicators' do
+        # /valid/wildCombination_validIndexIndicator.json
 
         describe 'last position' do
 

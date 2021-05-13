@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'positions or ranges are strings and match pattern' do
+        # /invalid/invalidPositionOrRange.json
         it 'empty string -> invalid' do
           # /invalid/invalidPositionOrRange.json
           expect(parser.position_or_range).not_to parse('', trace: true, reporter: reporter)

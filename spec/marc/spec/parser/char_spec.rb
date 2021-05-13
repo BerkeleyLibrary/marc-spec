@@ -8,6 +8,7 @@ module MARC
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'valid field tag and charspec' do
+        # /valid/wildCombination_validChar.json
         it 'first position -> valid' do
           # /valid/wildCombination_validChar.json
           expect(parser.marc_spec).to parse('.../0', trace: true, reporter: reporter)
@@ -65,6 +66,7 @@ module MARC
 
       end
       describe 'valid field tag and invalid charspec' do
+        # /invalid/wildCombination_invalidChar.json
         it 'empty string -> invalid' do
           # /invalid/wildCombination_invalidChar.json
           expect(parser.marc_spec).not_to parse('.../', trace: true, reporter: reporter)
