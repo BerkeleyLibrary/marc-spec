@@ -1,32 +1,67 @@
 require 'spec_helper'
 require 'parslet/rig/rspec'
 
-# noinspection RubyResolve, RubyParenthesesAfterMethodCallInspection
 module MARC
   module Spec
     describe :indicators do
       let(:parser) { Parser.new }
+      let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
       describe 'indicators are strings and match pattern' do
-        it 'only one character allowed' do
-          expect(parser.indicators).not_to parse('12', trace: true)
+        it 'empty -> invalid' do
+          # /invalid/invalidIndicators.json
+          expect(parser.indicators).not_to parse('', trace: true, reporter: reporter)
         end
-        it 'not allowed character' do
-          expect(parser.indicators).not_to parse('3', trace: true)
+
+        it 'indicator 1 -> valid' do
+          # /valid/validIndicators.json
+          expect(parser.indicators).to parse('1', trace: true, reporter: reporter)
         end
-        it 'empty' do
-          expect(parser.indicators).not_to parse('', trace: true)
+
+        it 'indicator 2 -> valid' do
+          # /valid/validIndicators.json
+          expect(parser.indicators).to parse('2', trace: true, reporter: reporter)
         end
+
+        it 'not allowed character -> invalid' do
+          # /invalid/invalidIndicators.json
+          expect(parser.indicators).not_to parse('3', trace: true, reporter: reporter)
+        end
+
+        it 'only one character allowed -> invalid' do
+          # /invalid/invalidIndicators.json
+          expect(parser.indicators).not_to parse('12', trace: true, reporter: reporter)
+        end
+
       end
-      let(:parser) { Parser.new }
+      describe 'valid field tag and indicator' do
+        it 'indicator 1 -> valid' do
+          # /valid/wildCombination_validIndicators.json
+          expect(parser.marc_spec).to parse('...^1', trace: true, reporter: reporter)
+        end
 
-      describe 'indicators are strings and match pattern' do
-        it 'indicator 1' do
-          expect(parser.indicators).to parse('1', trace: true)
+        it 'indicator 2 -> valid' do
+          # /valid/wildCombination_validIndicators.json
+          expect(parser.marc_spec).to parse('...^2', trace: true, reporter: reporter)
         end
-        it 'indicator 2' do
-          expect(parser.indicators).to parse('2', trace: true)
+
+      end
+      describe 'valid field tag and invalid indicator' do
+        it 'empty -> invalid' do
+          # /invalid/wildCombination_invalidIndicators.json
+          expect(parser.marc_spec).not_to parse('...^', trace: true, reporter: reporter)
         end
+
+        it 'not allowed character -> invalid' do
+          # /invalid/wildCombination_invalidIndicators.json
+          expect(parser.marc_spec).not_to parse('...^3', trace: true, reporter: reporter)
+        end
+
+        it 'only one character allowed -> invalid' do
+          # /invalid/wildCombination_invalidIndicators.json
+          expect(parser.marc_spec).not_to parse('...^12', trace: true, reporter: reporter)
+        end
+
       end
     end
   end
