@@ -3,9 +3,9 @@ require 'pathname'
 
 namespace :spec do
   specs_dir = File.expand_path('../spec', __dir__)
-  generated_specs_dir = 'marc/spec/parser'
+  generated_specs_dir = 'generated'
 
-  desc "regenerates #{generated_specs_dir} from MARCSpec-Test-Suite"
+  desc "regenerates spec/#{generated_specs_dir} from MARCSpec-Test-Suite"
   task :generate do
     require_relative 'parser_specs'
 
