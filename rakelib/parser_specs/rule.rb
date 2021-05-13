@@ -1,5 +1,3 @@
-require_relative 'formatter'
-
 require 'json'
 require 'ostruct'
 require_relative 'formatter'
@@ -9,7 +7,7 @@ module ParserSpecs
   class Rule
     include Formatter
 
-    RULE_RE = %r{/(?<wild>wildCombination_)?(?<valid>valid|invalid)(?<rule>[A-Z][[:alpha:]]+)\.json$}
+    RULE_RE = %r{/(?<wild>wildCombination_)?(?<valid>valid|invalid)(?<rule>[A-Z][[:alpha:]]+)\.json$}.freeze
 
     attr_reader :name
 
@@ -29,29 +27,7 @@ module ParserSpecs
     def add_suite(s)
       return (suites << s) unless (existing = suites.find { |s1| s1.merge?(s) })
 
-      s.each_test { |t| existing.add_test(t) }
-    end
-
-    def to_rspec
-      @rspec ||= begin
-        suite_blocks = indent(suites.map(&:to_rspec).join("\n\n"), '    ')
-
-        <<~RSPEC
-          require 'spec_helper'
-          require 'parslet/rig/rspec'
-
-          module MARC
-            module Spec
-              describe #{quote(name)} do
-                let(:parser) { Parser.new }
-                let(:reporter) { Parslet::ErrorReporter::Deepest.new }
-
-                #{suite_blocks}
-              end # rule
-            end
-          end
-        RSPEC
-      end
+      existing.merge(s)
     end
 
     class << self
@@ -59,24 +35,30 @@ module ParserSpecs
 
       def all_from_json(json_root)
         Dir.glob(File.join(json_root, '*valid/*.json')).sort.each_with_object([]) do |json_path, rules|
-          raise ArgumentError, "#{json_path} does not match #{RULE_RE.source}" unless (match_data = RULE_RE.match(json_path))
-
-          rule_name = normalize_rule_name(match_data[:rule])
-          wild = !(match_data[:wild].nil?)
-          # puts "#{wild}\t#{json_path}"
+          rule_name, wild = extract_rule_metadata(json_path)
 
           suite_data = JSON.parse(File.read(json_path), object_class: OpenStruct, symbolize_names: true)
-          suite = Suite.from_ostruct(suite_data, rule_name, wild)
+          suite = Suite.from_ostruct(suite_data, rule_name, wild, json_path.sub(json_root, ''))
 
-          if (existing = rules.find { |r| r.name == rule_name })
-            existing.add_suite(suite)
-          else
-            rules << Rule.new(rule_name, [suite])
-          end
+          add_suite(rules, rule_name, suite)
         end
       end
 
       private
+
+      def extract_rule_metadata(json_path)
+        raise ArgumentError, "#{json_path} does not match #{RULE_RE.source}" unless (match_data = RULE_RE.match(json_path))
+
+        [normalize_rule_name(match_data[:rule]), !match_data[:wild].nil?]
+      end
+
+      def add_suite(rules, rule_name, suite)
+        if (existing = rules.find { |r| r.name == rule_name })
+          existing.add_suite(suite)
+        else
+          rules << Rule.new(rule_name, [suite])
+        end
+      end
 
       def normalize_rule_name(name)
         return unless name
