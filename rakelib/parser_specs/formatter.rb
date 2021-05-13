@@ -23,5 +23,9 @@ module ParserSpecs
 
       str.gsub(/(\n)/, "\\1#{indent}")
     end
+
+    class << self
+      include Formatter
+    end
   end
 end

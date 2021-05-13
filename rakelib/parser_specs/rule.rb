@@ -29,7 +29,7 @@ module ParserSpecs
     def add_suite(s)
       return (suites << s) unless (existing = suites.find { |s1| s1.merge?(s) })
 
-      s.tests.each { |t| existing.add_test(t) }
+      s.each_test { |t| existing.add_test(t) }
     end
 
     def to_rspec
@@ -63,9 +63,10 @@ module ParserSpecs
 
           rule_name = normalize_rule_name(match_data[:rule])
           wild = !(match_data[:wild].nil?)
+          # puts "#{wild}\t#{json_path}"
 
           suite_data = JSON.parse(File.read(json_path), object_class: OpenStruct, symbolize_names: true)
-          suite = Suite.from_ostruct(suite_data, wild ? rule_name : 'marc_spec')
+          suite = Suite.from_ostruct(suite_data, rule_name, wild)
 
           if (existing = rules.find { |r| r.name == rule_name })
             existing.add_suite(suite)

@@ -9,8 +9,15 @@ namespace :spec do
     desc 'regenerates the parser spec suite from MARCSpec-Test-Suite'
     task :generate do
 
+      template_path = File.expand_path('parser_specs/parser_specs.rb.txt.erb', __dir__)
+      template = ERB.new(File.read(template_path), trim_mode: '-')
+      template.filename = template_path
+
+      #noinspection RubyUnusedLocalVariable
       ParserSpecs::Rule.all_from_json('spec/suite').each do |rule|
-        puts rule.to_rspec
+        puts template
+               .result(binding)
+               .gsub(/ +$/, '')
       end
       exit(0) if true
 
