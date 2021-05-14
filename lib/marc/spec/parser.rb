@@ -45,7 +45,7 @@ module MARC
       rule(:range) { (position.as(:start) >> str('-#')) | str('#-') >> position.as(:end) | IntRange.new }
 
       # positionOrRange   = range / position
-      rule(:position_or_range) { range | position }
+      rule(:position_or_range) { range.as(:range) | position.as(:position) }
 
       # characterSpec     = "/" positionOrRange
       rule(:character_spec) { str('/') >> position_or_range }
@@ -54,11 +54,12 @@ module MARC
       rule(:index) { str('[') >> position_or_range >> str(']') }
 
       # fieldSpec         = fieldTag [index] [characterSpec]
-      rule(:field_spec) { field_tag >> index.maybe >> character_spec.maybe }
+      rule(:field_spec) { field_tag.as(:tag) >> index.maybe.as(:index) >> character_spec.maybe.as(:char) }
 
       # abrFieldSpec      = index [characterSpec] / characterSpec
       rule(:abr_field_spec) { (index >> character_spec.maybe) | character_spec }
 
+      # TODO: is this right? See https://github.com/MARCspec/MARCspec/issues/31
       # subfieldChar      = %x21-3F / %x5B-7B / %x7D-7E
       #                     ; ! " # $ % & ' ( ) * + , - . / 0-9 : ; < = > ? [ \ ] ^ _ \` a-z { } ~
       rule(:subfield_char) { match['\u0021-\u003f'] | match['\u005b-\u007b'] | match['\u007d-\u007e'] }
@@ -66,7 +67,7 @@ module MARC
       # subfieldCode      = "$" subfieldChar
       rule(:subfield_code) { str('$') >> subfield_char }
 
-      # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json
+      # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
       rule(:subfield_range) { (alpha_lower >> str('-') >> alpha_lower) | (digit >> str('-') >> digit) }
 
       # subfieldCodeRange = "$" ( (alphalower "-" alphalower) / (DIGIT "-" DIGIT) )
@@ -79,7 +80,7 @@ module MARC
       # subfieldSpec      = fieldTag [index] abrSubfieldSpec
       rule(:subfield_spec) { field_tag >> index.maybe >> abr_subfield_spec }
 
-      # UNDOCUMENTED -- see spec/suite/valid/validIndicators.json
+      # UNDOCUMENTED -- see spec/suite/valid/validIndicators.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
       rule(:indicators) { str('1') | str('2') }
 
       # abrIndicatorSpec  = [index] "^" ("1" / "2")
@@ -89,11 +90,11 @@ module MARC
       rule(:indicator_spec) { field_tag >> abr_indicator_spec }
 
       # comparisonString  = "\" *VCHAR
-      rule(:comparison_string) { str('\\') >> vchar.repeat } # TODO: why is the test so different?
+      rule(:comparison_string) { str('\\') >> vchar.repeat.as(:value) }
 
       # operator          = "=" / "!=" / "~" / "!~" / "!" / "?"
       #                     ; equal / unequal / includes / not includes / not exists / exists
-      rule(:operator) { str('=') | str('!=') | str('~') | str('!~') | str('!') | str('?') }
+      rule(:operator) { (str('=') | str('!=') | str('~') | str('!~') | str('!') | str('?')).as(:operator) }
 
       # abbreviation      = abrFieldSpec / abrSubfieldSpec / abrIndicatorSpec
       rule(:abbreviation) { abr_field_spec | abr_subfield_spec | abr_indicator_spec }
@@ -105,7 +106,7 @@ module MARC
       rule(:sub_term_set) { (sub_term.maybe >> operator).maybe >> sub_term }
 
       # subSpec           = "{" subTermSet *( "|" subTermSet ) "}"
-      rule(:sub_spec) { sub_term_set >> (str('|') >> sub_term_set).repeat }
+      rule(:sub_spec) { str('{') >> (sub_term_set >> (str('|') >> sub_term_set).repeat) >> str('}') }
 
       # MARCspec          = fieldSpec *subSpec / (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec)) / indicatorSpec *subSpec
       rule(:marc_spec) {
