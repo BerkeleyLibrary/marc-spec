@@ -4,7 +4,7 @@ require 'marc/spec/parse_utils'
 module MARC
   module Spec
     # rubocop:disable Style/BlockDelimiters
-    #noinspection RubyResolve
+    # noinspection RubyResolve
     class Parser < Parslet::Parser
       include ParseUtils
 
@@ -91,10 +91,10 @@ module MARC
       rule(:indicators) { str('1') | str('2') }
 
       # abrIndicatorSpec  = [index] "^" ("1" / "2")
-      rule(:abr_indicator_spec) { index.maybe >> str('^') >> indicators }
+      rule(:abr_indicator_spec) { index.maybe >> str('^') >> indicators.as(:ind) }
 
       # indicatorSpec     = fieldTag abrIndicatorSpec
-      rule(:indicator_spec) { field_tag >> abr_indicator_spec }
+      rule(:indicator_spec) { field_tag.as(:tag) >> abr_indicator_spec }
 
       # comparisonString  = "\" *VCHAR
       rule(:comparison_string) { str('\\') >> vchar.repeat.as(:value) }
