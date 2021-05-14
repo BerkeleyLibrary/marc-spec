@@ -100,10 +100,10 @@ module MARC
       rule(:operator) { (str('=') | str('!=') | str('~') | str('!~') | str('!') | str('?')).as(:operator) }
 
       # abbreviation      = abrFieldSpec / abrSubfieldSpec / abrIndicatorSpec
-      rule(:abbreviation) { abr_field_spec | abr_subfield_spec | abr_indicator_spec }
+      rule(:abbreviation) { abr_subfield_spec | abr_indicator_spec | abr_field_spec }
 
       # subTerm           = fieldSpec / subfieldSpec / indicatorSpec / comparisonString / abbreviation
-      rule(:sub_term) { field_spec | subfield_spec | indicator_spec | comparison_string | abbreviation }
+      rule(:sub_term) { subfield_spec | indicator_spec | field_spec | comparison_string | abbreviation }
 
       # subTermSet        = [ [subTerm] operator ] subTerm
       rule(:sub_term_set) { (sub_term.maybe >> operator).maybe >> sub_term }
@@ -113,9 +113,9 @@ module MARC
 
       # MARCspec          = fieldSpec *subSpec / (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec)) / indicatorSpec *subSpec
       rule(:marc_spec) {
-        (field_spec >> sub_spec.repeat) |
-          (subfield_spec >> sub_spec.repeat >> (abr_subfield_spec >> sub_spec.repeat).repeat) |
-          (indicator_spec >> sub_spec.repeat)
+        (subfield_spec >> sub_spec.repeat >> (abr_subfield_spec >> sub_spec.repeat).repeat) |
+          (indicator_spec >> sub_spec.repeat) |
+          (field_spec >> sub_spec.repeat)
       }
 
       root(:marc_spec)
