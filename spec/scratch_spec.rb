@@ -33,7 +33,7 @@ module MARC
           puts result.inspect
         end
 
-        # TODO: find a fix for this (see https://github.com/kschiess/parslet/issues/212)
+        # TODO: allow } in comparison string (see https://github.com/kschiess/parslet/issues/212)
         it 'parses as a sub_spec body' do
           data = '{\\A}'
           result = try_parse(data, :sub_spec)

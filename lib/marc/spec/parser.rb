@@ -21,7 +21,10 @@ module MARC
 
       # VCHAR             =  %x21-7E
       #                     ; visible (printing) characters
-      rule(:vchar) { match['\u0021-\u007e'] }
+      # rule(:vchar) { match['\u0021-\u007e'] }
+
+      # TODO: document these limitations
+      rule(:vchar) { str('~') | match['\u0021-\u007c&&[^}]'] }
 
       # positiveDigit     = %x31-39
       #                     ;  "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
