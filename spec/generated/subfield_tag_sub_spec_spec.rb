@@ -7,7 +7,7 @@ module MARC
       let(:parser) { Parser.new }
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
-      describe 'valid field tag, subfield tag and subspec' do
+      describe 'marc_spec: valid field tag, subfield tag and subspec' do
         # /valid/wildCombination_validSubfieldTagSubSpec.json
         it 'subfieldtag & && all digits -> valid' do
           # /valid/wildCombination_validSubfieldTagSubSpec.json

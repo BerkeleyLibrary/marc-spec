@@ -35,7 +35,7 @@ module MARC
         end
 
       end
-      describe 'valid field tag and indicator' do
+      describe 'marc_spec: valid field tag and indicator' do
         # /valid/wildCombination_validIndicators.json
         it 'indicator 1 -> valid' do
           # /valid/wildCombination_validIndicators.json
@@ -48,7 +48,7 @@ module MARC
         end
 
       end
-      describe 'valid field tag and invalid indicator' do
+      describe 'marc_spec: valid field tag and invalid indicator' do
         # /invalid/wildCombination_invalidIndicators.json
         it 'empty -> invalid' do
           # /invalid/wildCombination_invalidIndicators.json

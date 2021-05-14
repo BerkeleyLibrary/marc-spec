@@ -7,7 +7,7 @@ module MARC
       let(:parser) { Parser.new }
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
-      describe 'valid field tag and charspec' do
+      describe 'marc_spec: valid field tag and charspec' do
         # /valid/wildCombination_validChar.json
         it 'first position -> valid' do
           # /valid/wildCombination_validChar.json
@@ -65,7 +65,7 @@ module MARC
         end
 
       end
-      describe 'valid field tag and invalid charspec' do
+      describe 'marc_spec: valid field tag and invalid charspec' do
         # /invalid/wildCombination_invalidChar.json
         it 'empty string -> invalid' do
           # /invalid/wildCombination_invalidChar.json

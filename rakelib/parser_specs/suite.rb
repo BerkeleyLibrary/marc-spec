@@ -85,7 +85,7 @@ module ParserSpecs
     private
 
     def normalize_description(desc)
-      desc.sub(/^wild combination of /, '')
+      desc.sub(/^wild combination of /, 'marc_spec: ')
     end
   end
 end
