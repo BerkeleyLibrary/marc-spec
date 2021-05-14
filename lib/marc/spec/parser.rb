@@ -109,7 +109,7 @@ module MARC
       rule(:sub_term_set) { (sub_term.maybe >> operator).maybe >> sub_term }
 
       # subSpec           = "{" subTermSet *( "|" subTermSet ) "}"
-      rule(:sub_spec) { str('{') >> (sub_term_set >> (str('|') >> sub_term_set).repeat) >> str('}') }
+      rule(:sub_spec) { str('{') >> (sub_term_set >> str('|')).repeat >> sub_term_set >> str('}')}
 
       # MARCspec          = fieldSpec *subSpec / (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec)) / indicatorSpec *subSpec
       rule(:marc_spec) {
