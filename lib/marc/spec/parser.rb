@@ -4,6 +4,7 @@ require 'marc/spec/parse_utils'
 module MARC
   module Spec
     # rubocop:disable Style/BlockDelimiters
+    #noinspection RubyResolve
     class Parser < Parslet::Parser
       include ParseUtils
 
@@ -31,6 +32,8 @@ module MARC
       rule(:positive_digit) { match['1-9'] }
 
       # positiveInteger   = "0" / positiveDigit [1*DIGIT]
+      #
+      # NOTE: yes, this is a misnomer
       rule(:positive_integer) { str('0') | (positive_digit >> digit.repeat) }
 
       # fieldTag          = 3(alphalower / DIGIT / ".") / 3(alphaupper / DIGIT / ".")
@@ -45,19 +48,20 @@ module MARC
       #
       # NOTE: n-# means from position n to end of string;
       #       #-n means from (last index - n) to end of string
-      rule(:range) { (position.as(:start) >> str('-#')) | str('#-') >> position.as(:end) | IntRange.new }
+      # rule(:range) { position.as(:from) >> str('-') >> position.as(:to) }
+      rule(:range) { (positive_integer.as(:from) | str('#')) >> str('-') >> (positive_integer.as(:to) | str('#')) }
 
       # positionOrRange   = range / position
-      rule(:position_or_range) { range.as(:range) | position.as(:position) }
+      rule(:position_or_range) { range | position.as(:pos) }
 
       # characterSpec     = "/" positionOrRange
       rule(:character_spec) { str('/') >> position_or_range }
 
       # index             = "[" positionOrRange "]"
-      rule(:index) { str('[') >> position_or_range >> str(']') }
+      rule(:index) { (str('[') >> position_or_range >> str(']')).as(:index) }
 
       # fieldSpec         = fieldTag [index] [characterSpec]
-      rule(:field_spec) { field_tag.as(:tag) >> index.maybe.as(:index) >> character_spec.maybe.as(:char) }
+      rule(:field_spec) { field_tag.as(:tag) >> index.maybe >> character_spec.maybe }
 
       # abrFieldSpec      = index [characterSpec] / characterSpec
       rule(:abr_field_spec) { (index >> character_spec.maybe) | character_spec }
@@ -68,20 +72,20 @@ module MARC
       rule(:subfield_char) { match['\u0021-\u003f'] | match['\u005b-\u007b'] | match['\u007d-\u007e'] }
 
       # subfieldCode      = "$" subfieldChar
-      rule(:subfield_code) { str('$') >> subfield_char }
+      rule(:subfield_code) { str('$').ignore >> subfield_char }
 
       # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
-      rule(:subfield_range) { (alpha_lower >> str('-') >> alpha_lower) | (digit >> str('-') >> digit) }
+      rule(:subfield_range) { (alpha_lower.as(:from) >> str('-') >> alpha_lower.as(:to)) | (digit.as(:from) >> str('-') >> digit.as(:to)) }
 
       # subfieldCodeRange = "$" ( (alphalower "-" alphalower) / (DIGIT "-" DIGIT) )
       #                     ; [a-z]-[a-z] / [0-9]-[0-9]
       rule(:subfield_code_range) { str('$') >> subfield_range }
 
       # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
-      rule(:abr_subfield_spec) { (subfield_code | subfield_code_range) >> index.maybe >> character_spec.maybe }
+      rule(:abr_subfield_spec) { (subfield_code_range.as(:code_range) | subfield_code.as(:code)) >> index.maybe >> character_spec.maybe }
 
       # subfieldSpec      = fieldTag [index] abrSubfieldSpec
-      rule(:subfield_spec) { field_tag >> index.maybe >> abr_subfield_spec }
+      rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec }
 
       # UNDOCUMENTED -- see spec/suite/valid/validIndicators.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
       rule(:indicators) { str('1') | str('2') }
@@ -109,7 +113,7 @@ module MARC
       rule(:sub_term_set) { (sub_term.maybe >> operator).maybe >> sub_term }
 
       # subSpec           = "{" subTermSet *( "|" subTermSet ) "}"
-      rule(:sub_spec) { str('{') >> (sub_term_set >> str('|')).repeat >> sub_term_set >> str('}')}
+      rule(:sub_spec) { str('{') >> (sub_term_set >> str('|')).repeat >> sub_term_set >> str('}') }
 
       # MARCspec          = fieldSpec *subSpec / (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec)) / indicatorSpec *subSpec
       rule(:marc_spec) {
