@@ -82,7 +82,7 @@ module BerkeleyLibrary
       rule(:subfield_code) { str('$').ignore >> subfield_char }
 
       # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
-      rule(:subfield_range) { closed_lc_alpha_range }
+      rule(:subfield_range) { (closed_lc_alpha_range | closed_int_range) }
 
       # subfieldCodeRange = "$" ( (alphalower "-" alphalower) / (DIGIT "-" DIGIT) )
       #                     ; [a-z]-[a-z] / [0-9]-[0-9]
@@ -143,8 +143,14 @@ module BerkeleyLibrary
       # subTermSet        = [ [subTerm] operator ] subTerm
       rule(:sub_term_set) { (sub_term.maybe >> operator).maybe >> sub_term }
 
+      # NOTE: generated tests are properly for subSpec*, so we give the
+      #       single one a separate name
+      #
       # subSpec           = "{" subTermSet *( "|" subTermSet ) "}"
-      rule(:sub_spec) { str('{') >> (sub_term_set >> str('|')).repeat >> sub_term_set >> str('}') }
+      rule(:_sub_spec) { str('{') >> (sub_term_set >> str('|')).repeat >> sub_term_set >> str('}') }
+
+      # Repeated to satisfy generated tests
+      rule(:sub_spec) { _sub_spec.repeat(1).as(:sub_spec) }
 
       # MARCspec          = fieldSpec *subSpec / (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec)) / indicatorSpec *subSpec
       rule(:marc_spec) {

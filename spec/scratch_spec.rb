@@ -100,6 +100,12 @@ module BerkeleyLibrary
           result = try_parse(data, :sub_spec)
           puts "#{data}\t#{result.inspect}"
         end
+
+        it 'parses a subfield code range' do
+          data = '245$1-3'
+          result = try_parse(data, :subfield_spec)
+          puts "#{data}\t#{result.inspect}"
+        end
       end
     end
   end
