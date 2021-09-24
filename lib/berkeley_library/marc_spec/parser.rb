@@ -56,7 +56,7 @@ module BerkeleyLibrary
       # NOTE: n-# means from position n to end of string;
       #       #-n means from (last index - n) to end of string
       # rule(:range) { position.as(:from) >> str('-') >> position.as(:to) }
-      rule(:range) { left_open_range | right_open_range | closed_range }
+      rule(:range) { left_open_range | right_open_range | closed_int_range }
 
       # positionOrRange   = range / position
       rule(:position_or_range) { range | position.as(:pos) }
@@ -82,10 +82,12 @@ module BerkeleyLibrary
       rule(:subfield_code) { str('$').ignore >> subfield_char }
 
       # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
-      rule(:subfield_range) { (alpha_lower.as(:from) >> str('-') >> alpha_lower.as(:to)) | (digit.as(:from) >> str('-') >> digit.as(:to)) }
+      rule(:subfield_range) { closed_lc_alpha_range }
 
       # subfieldCodeRange = "$" ( (alphalower "-" alphalower) / (DIGIT "-" DIGIT) )
       #                     ; [a-z]-[a-z] / [0-9]-[0-9]
+      #
+      # NOTE: docs don't insist the range be valid (start <= end), but tests enforce it
       rule(:subfield_code_range) { str('$') >> subfield_range }
 
       # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]

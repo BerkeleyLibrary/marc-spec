@@ -3,17 +3,17 @@ require 'parslet'
 module BerkeleyLibrary
   module MarcSpec
     module ParseUtils
-      class ClosedRange < Parslet::Atoms::Base
-        SIMPLE_CLASS_NAME = ClosedRange.name.split('::').last
+      class ClosedLcAlphaRange < Parslet::Atoms::Base
+        SIMPLE_CLASS_NAME = ClosedLcAlphaRange.name.split('::').last
 
-        INT_RANGE_RE = /^(0|[1-9][0-9]*)-(0|[1-9][0-9]*)/.freeze
+        LCALPHA_RANGE_RE = /^([a-z])-([a-z])/.freeze
 
         def try(source, context, _consume_all)
           source_str = source.instance_variable_get(:@str) # TODO: something less hacky
-          return context.err(self, source, 'Not a non-negative integer range') unless (range_str = source_str.check(INT_RANGE_RE))
+          return context.err(self, source, 'Not a lower-case alphabetic range') unless (range_str = source_str.check(LCALPHA_RANGE_RE))
 
-          s, e = range_str.match(INT_RANGE_RE)[1, 2]
-          return context.err(self, source, "#{s} !<= #{e}") unless s.to_i <= e.to_i
+          s, e = range_str.match(LCALPHA_RANGE_RE)[1, 2]
+          return context.err(self, source, "#{s} !<= #{e}") unless s < e
 
           sv, _, ev = [s.size, 1, e.size].map { |l| source.consume(l) } # discard hyphen
           succ(from: sv, to: ev)
