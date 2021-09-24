@@ -20,4 +20,4 @@ end
 # ------------------------------------------------------------
 # Code under test
 
-require 'marc/spec'
+require 'berkeley_library/marc_spec'

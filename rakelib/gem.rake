@@ -1,8 +1,8 @@
 require 'rubygems/gem_runner'
-require 'marc/spec/module_info'
+require 'berkeley_library/marc_spec/module_info'
 
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     class << self
       def project_root
         @project_root ||= File.expand_path('..', __dir__)
@@ -31,7 +31,7 @@ module MARC
       def output_file
         @output_file ||= begin
           gem_name = File.basename(gemspec_file, '.*')
-          version = MARC::Spec::ModuleInfo::VERSION
+          version = BerkeleyLibrary::MarcSpec::ModuleInfo::VERSION
           basename = "#{gem_name}-#{version}.gem"
           File.join(artifacts_dir, basename)
         end
@@ -49,8 +49,8 @@ module MARC
   end
 end
 
-desc "Build #{MARC::Spec.gemspec_basename} as #{MARC::Spec.output_file_relative}"
+desc "Build #{BerkeleyLibrary::MarcSpec.gemspec_basename} as #{BerkeleyLibrary::MarcSpec.output_file_relative}"
 task :gem do
-  args = ['build', MARC::Spec.gemspec_file, "--output=#{MARC::Spec.output_file}"]
+  args = ['build', BerkeleyLibrary::MarcSpec.gemspec_file, "--output=#{BerkeleyLibrary::MarcSpec.output_file}"]
   Gem::GemRunner.new.run(args)
 end

@@ -1,5 +1,5 @@
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     class ModuleInfo
       NAME = 'marc-spec'.freeze
       AUTHOR = 'David Moles'.freeze

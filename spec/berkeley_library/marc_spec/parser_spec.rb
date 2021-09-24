@@ -2,8 +2,8 @@ require 'spec_helper'
 require 'parslet/rig/rspec'
 
 # noinspection RubyResolve
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     describe Parser do
       parser = Parser.new
       tags = %w[245 2.. 24. .45 ..5 ... LDR]

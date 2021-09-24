@@ -1,7 +1,7 @@
-require 'marc/spec/parse_utils/closed_range'
+require 'berkeley_library/marc_spec/parse_utils/closed_range'
 
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     module ParseUtils
       MARC_MAX_OCTETS = 99_999
 

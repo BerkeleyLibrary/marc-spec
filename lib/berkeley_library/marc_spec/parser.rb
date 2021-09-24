@@ -1,8 +1,8 @@
 require 'parslet'
-require 'marc/spec/parse_utils'
+require 'berkeley_library/marc_spec/parse_utils'
 
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     # rubocop:disable Style/BlockDelimiters
     # noinspection RubyResolve
     class Parser < Parslet::Parser

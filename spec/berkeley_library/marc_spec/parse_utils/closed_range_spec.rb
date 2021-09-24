@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'parslet/rig/rspec'
 
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     module ParseUtils
       describe ClosedRange do
         attr_reader :closed_range

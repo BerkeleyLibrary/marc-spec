@@ -7,17 +7,17 @@ ruby_version = begin
   File.read(ruby_version_file).strip
 end
 
-require 'marc/spec/module_info'
+require 'berkeley_library/marc_spec/module_info'
 
 Gem::Specification.new do |spec|
-  spec.name = MARC::Spec::ModuleInfo::NAME
-  spec.author = MARC::Spec::ModuleInfo::AUTHOR
-  spec.email = MARC::Spec::ModuleInfo::AUTHOR_EMAIL
-  spec.summary = MARC::Spec::ModuleInfo::SUMMARY
-  spec.description = MARC::Spec::ModuleInfo::DESCRIPTION
-  spec.license = MARC::Spec::ModuleInfo::LICENSE
-  spec.version = MARC::Spec::ModuleInfo::VERSION
-  spec.homepage = MARC::Spec::ModuleInfo::HOMEPAGE
+  spec.name = BerkeleyLibrary::MarcSpec::ModuleInfo::NAME
+  spec.author = BerkeleyLibrary::MarcSpec::ModuleInfo::AUTHOR
+  spec.email = BerkeleyLibrary::MarcSpec::ModuleInfo::AUTHOR_EMAIL
+  spec.summary = BerkeleyLibrary::MarcSpec::ModuleInfo::SUMMARY
+  spec.description = BerkeleyLibrary::MarcSpec::ModuleInfo::DESCRIPTION
+  spec.license = BerkeleyLibrary::MarcSpec::ModuleInfo::LICENSE
+  spec.version = BerkeleyLibrary::MarcSpec::ModuleInfo::VERSION
+  spec.homepage = BerkeleyLibrary::MarcSpec::ModuleInfo::HOMEPAGE
 
   spec.files = `git ls-files -z`.split("\x0")
   spec.require_paths = ['lib']

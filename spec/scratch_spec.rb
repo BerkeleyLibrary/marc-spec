@@ -2,8 +2,8 @@ require 'spec_helper'
 require 'parslet/rig/rspec'
 
 # Scratch spec for particular use cases
-module MARC
-  module Spec
+module BerkeleyLibrary
+  module MarcSpec
     describe Parser do
       let(:parser) { Parser.new }
       let(:reporter) { Parslet::ErrorReporter::Deepest.new }
