@@ -16,7 +16,7 @@ module BerkeleyLibrary
           return context.err(self, source, "#{s} !<= #{e}") unless s.to_i <= e.to_i
 
           sv, _, ev = [s.size, 1, e.size].map { |l| source.consume(l) } # discard hyphen
-          succ(start: sv, end: ev)
+          succ(from: sv, to: ev)
         end
 
         def to_s_inner(_prec)

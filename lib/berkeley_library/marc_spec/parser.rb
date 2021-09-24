@@ -47,12 +47,12 @@ module BerkeleyLibrary
       # Extracted from range, below
       #
       # NOTE: #-n means from (last index - n) to end of string
-      rule(:left_open_range) { (str('#').as(:start) >> str('-') >> (positive_integer | str('#')).as(:end)) }
+      rule(:left_open_range) { str('#').ignore.as(:from) >> str('-') >> (positive_integer | str('#').ignore).as(:to) }
 
       # Extracted from range, below
       #
       # NOTE: n-# means from position n to end of string
-      rule(:right_open_range) { (positive_integer.as(:start) >> str('-') >> str('#').as(:end)) }
+      rule(:right_open_range) { positive_integer.as(:from) >> str('-') >> str('#').ignore.as(:to) }
 
       # range             = position "-" position
       #
