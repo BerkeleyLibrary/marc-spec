@@ -8,7 +8,7 @@ module MARC
       parser = Parser.new
       tags = %w[245 2.. 24. .45 ..5 ... LDR]
       positions = %w[0 7 17 317]
-      pos_ranges = [%w[1 12], %w[1 #], %w[# 1], %w[24 56]]
+      pos_ranges = [%w[1 12], %w[1 #], %w[# 1], %w[24 56], %w[# #]]
       codes = %w[a b c 1 2 3]
       code_ranges = [%w[a c], %w[1 3]]
       inds = %w[1 2]

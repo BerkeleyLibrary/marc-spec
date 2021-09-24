@@ -44,12 +44,22 @@ module MARC
       # position          = positiveInteger / "#"
       rule(:position) { positive_integer | str('#') }
 
+      # Extracted from range, below
+      #
+      # NOTE: #-n means from (last index - n) to end of string
+      rule(:left_open_range) { (str('#').as(:start) >> str('-') >> (positive_integer | str('#')).as(:end)) }
+
+      # Extracted from range, below
+      #
+      # NOTE: n-# means from position n to end of string
+      rule(:right_open_range) { (positive_integer.as(:start) >> str('-') >> str('#').as(:end)) }
+
       # range             = position "-" position
       #
       # NOTE: n-# means from position n to end of string;
       #       #-n means from (last index - n) to end of string
       # rule(:range) { position.as(:from) >> str('-') >> position.as(:to) }
-      rule(:range) { (positive_integer.as(:from) | str('#')) >> str('-') >> (positive_integer.as(:to) | str('#')) }
+      rule(:range) { left_open_range | right_open_range | closed_range }
 
       # positionOrRange   = range / position
       rule(:position_or_range) { range | position.as(:pos) }
