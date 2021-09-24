@@ -14,30 +14,59 @@ module BerkeleyLibrary
         sub_parser.parse(data)
       end
 
-      describe :comparison_string do
+      describe :_comparison_string do
         it 'parses' do
           data = '\\A'
-          result = try_parse(data, :comparison_string)
-          puts result.inspect
+          result = try_parse(data, :_comparison_string)
+          puts "#{data}\t#{result.inspect}"
         end
 
-        it 'parses as a sub_term' do
-          data = '\\A'
-          result = try_parse(data, :sub_term)
-          puts result.inspect
+        it 'handles curly braces' do
+          data = '\\}'
+          result = try_parse(data, :_comparison_string)
+          puts "#{data}\t#{result.inspect}"
         end
 
-        it 'parses as a sub_term_set' do
-          data = '\\A'
-          result = try_parse(data, :sub_term_set)
-          puts result.inspect
+        it 'handles literal backslashes' do
+          data = '\\\\'
+          result = try_parse(data, :_comparison_string)
+          puts "#{data}\t#{result.inspect}"
         end
 
-        # TODO: allow } in comparison string (see https://github.com/kschiess/parslet/issues/212)
-        it 'parses as a sub_spec body' do
-          data = '{\\A}'
-          result = try_parse(data, :sub_spec)
-          puts result.inspect
+        it 'handles other escapes' do
+          data = '\\bang\\!'
+          result = try_parse(data, :_comparison_string)
+          puts "#{data}\t#{result.inspect}"
+        end
+
+        context 'as a sub_term' do
+          it 'parses as a sub_term' do
+            data = '\\A'
+            result = try_parse(data, :sub_term)
+            puts "#{data}\t#{result.inspect}"
+          end
+        end
+
+        context 'as a sub_term_set' do
+          it 'parses as a sub_term_set' do
+            data = '\\A'
+            result = try_parse(data, :sub_term_set)
+            puts "#{data}\t#{result.inspect}"
+          end
+        end
+
+        context 'as a sub_spec body' do
+          it 'parses as a sub_spec body' do
+            data = '{\\A}'
+            result = try_parse(data, :sub_spec)
+            puts "#{data}\t#{result.inspect}"
+          end
+
+          it 'handles internal curly braces' do
+            data = '{\\}}'
+            result = try_parse(data, :sub_spec)
+            puts "#{data}\t#{result.inspect}"
+          end
         end
       end
 
@@ -45,31 +74,31 @@ module BerkeleyLibrary
         it 'parses' do
           data = '245$a'
           result = try_parse(data, :subfield_spec)
-          puts result.inspect
+          puts "#{data}\t#{result.inspect}"
         end
 
         it 'parses as a sub_term' do
           data = '245$a'
           result = try_parse(data, :sub_term)
-          puts result.inspect
+          puts "#{data}\t#{result.inspect}"
         end
 
         it 'parses as a sub_term_set' do
           data = '245$a'
           result = try_parse(data, :sub_term_set)
-          puts result.inspect
+          puts "#{data}\t#{result.inspect}"
         end
 
         it 'parses as a sub_term_set with an operator' do
           data = '245$a=246$b'
           result = try_parse(data, :sub_term_set)
-          puts result.inspect
+          puts "#{data}\t#{result.inspect}"
         end
 
         it 'parses as a sub_spec body' do
           data = '{245$a}'
           result = try_parse(data, :sub_spec)
-          puts result.inspect
+          puts "#{data}\t#{result.inspect}"
         end
       end
     end

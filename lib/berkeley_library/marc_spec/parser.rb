@@ -22,10 +22,7 @@ module BerkeleyLibrary
 
       # VCHAR             =  %x21-7E
       #                     ; visible (printing) characters
-      # rule(:vchar) { match['\u0021-\u007e'] }
-
-      # TODO: document these limitations
-      rule(:vchar) { str('~') | match['\u0021-\u007c&&[^}]'] }
+      rule(:vchar) { match['\u0021-\u007e'] }
 
       # positiveDigit     = %x31-39
       #                     ;  "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9"
@@ -106,8 +103,30 @@ module BerkeleyLibrary
       # indicatorSpec     = fieldTag abrIndicatorSpec
       rule(:indicator_spec) { field_tag.as(:tag) >> abr_indicator_spec }
 
+      # Extracted from comparisonString (some VCHARs need to be escaped,
+      # and literal \ needs special handling)
+      rule(:vchar_cs_plain) { match['\u0021-\u007e&&[^!$=?{|}~]'] }
+
+      # Extracted from comparisonString (some VCHARs need to be escaped)
+      rule(:vchar_cs_special) { match['!$=?{|}~'] }
+
+      # Extracted from comparisonString (escaped)
+      rule(:vchar_cs_esc) { str('\\').ignore >> vchar_cs_special }
+
+      # Extracted from comparisonString to simplify generated tests,
+      # which don't take leading \ into account
+      rule(:comparison_string) do
+        # escape is optional in position 1, apparently
+        head = (vchar_cs_special | vchar_cs_esc) | vchar_cs_plain
+        tail = (vchar_cs_esc | vchar_cs_plain).repeat
+        head >> tail
+      end
+
       # comparisonString  = "\" *VCHAR
-      rule(:comparison_string) { str('\\') >> vchar.repeat.as(:value) }
+      #
+      # NOTE: generated tests only handle the body of the string, not the
+      #       leading \, so we give the full rule a separate name
+      rule(:_comparison_string) { str('\\').ignore >> comparison_string.as(:value) }
 
       # operator          = "=" / "!=" / "~" / "!~" / "!" / "?"
       #                     ; equal / unequal / includes / not includes / not exists / exists
@@ -117,7 +136,7 @@ module BerkeleyLibrary
       rule(:abbreviation) { abr_subfield_spec | abr_indicator_spec | abr_field_spec }
 
       # subTerm           = fieldSpec / subfieldSpec / indicatorSpec / comparisonString / abbreviation
-      rule(:sub_term) { subfield_spec | indicator_spec | field_spec | comparison_string | abbreviation }
+      rule(:sub_term) { subfield_spec | indicator_spec | field_spec | _comparison_string | abbreviation }
 
       # subTermSet        = [ [subTerm] operator ] subTerm
       rule(:sub_term_set) { (sub_term.maybe >> operator).maybe >> sub_term }
