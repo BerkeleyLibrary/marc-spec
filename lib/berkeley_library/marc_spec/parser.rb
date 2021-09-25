@@ -117,12 +117,12 @@ module BerkeleyLibrary
 
       # Extracted from comparisonString to simplify generated tests,
       # which don't take leading \ into account
-      rule(:comparison_string) do
+      rule(:comparison_string) {
         # escape is optional in position 1, apparently
         head = (vchar_cs_special | vchar_cs_esc) | vchar_cs_plain
         tail = (vchar_cs_esc | vchar_cs_plain).repeat
         head >> tail
-      end
+      }
 
       # comparisonString  = "\" *VCHAR
       #
