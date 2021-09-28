@@ -3,20 +3,20 @@ require 'parslet/rig/rspec'
 
 module BerkeleyLibrary
   module MarcSpec
-    module ParseUtils
-      describe ClosedIntRange do
+    module Parser
+      describe ClosedLcAlphaRange do
         attr_reader :range
 
         before(:each) do
-          @range = ClosedIntRange.new
+          @range = ClosedLcAlphaRange.new
         end
 
         it 'parses a valid range' do
           valid_ranges = %w[
-            0-1
-            1-2
-            12-345
-            67890-123456
+            a-b
+            c-d
+            e-f
+            g-z
           ]
           aggregate_failures 'valid ranges' do
             valid_ranges.each do |r|
@@ -27,10 +27,10 @@ module BerkeleyLibrary
 
         it 'does not parse an invalid range' do
           invalid_ranges = %w[
-            1-0
-            2-1
-            345-12
-            123456-67890
+            z-a
+            b-a
+            d-c
+            x-f
           ]
           aggregate_failures 'invalid ranges' do
             invalid_ranges.each do |r|
@@ -42,7 +42,7 @@ module BerkeleyLibrary
         describe :to_s do
           it 'accepts a precedece argument' do
             prec = Parslet::Atoms::Precedence::OUTER
-            expect(range.to_s(prec)).to eq('ClosedIntRange')
+            expect(range.to_s(prec)).to eq('ClosedLcAlphaRange')
           end
         end
       end

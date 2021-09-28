@@ -2,7 +2,7 @@ require 'parslet'
 
 module BerkeleyLibrary
   module MarcSpec
-    module ParseUtils
+    module Parser
       class ClosedLcAlphaRange < Parslet::Atoms::Base
         SIMPLE_CLASS_NAME = ClosedLcAlphaRange.name.split('::').last
 
