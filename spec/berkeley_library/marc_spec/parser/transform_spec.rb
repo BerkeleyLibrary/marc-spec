@@ -85,6 +85,23 @@ module BerkeleyLibrary
             expect(character_spec.to).to eq(12)
           end
         end
+
+        describe
+
+        describe :subfield_spec do
+          it 'returns a Subfieldspec for a tag with subfield code' do
+            parse_tree = parser.parse('856$u')
+            result = xform.apply(parse_tree)
+            expect(result).to be_a(Query::Subfieldspec)
+
+            field_tag = result.tag
+            expect(field_tag.tag_re).to eq(/856/)
+
+            subfield = result.subfield
+            expect(subfield).to be_a(Query::AbrSubfieldspec)
+            expect(subfield.code).to eq('u')
+          end
+        end
       end
     end
   end

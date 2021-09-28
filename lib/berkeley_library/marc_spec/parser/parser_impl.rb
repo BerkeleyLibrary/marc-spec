@@ -94,7 +94,7 @@ module BerkeleyLibrary
         rule(:subfield_char) { match['\u0021-\u003f'] | match['\u005b-\u007b'] | match['\u007d-\u007e'] }
 
         # subfieldCode      = "$" subfieldChar
-        rule(:subfield_code) { str('$').ignore >> subfield_char }
+        rule(:subfield_code) { str('$').ignore >> subfield_char.as(:code) }
 
         # UNDOCUMENTED -- see spec/suite/valid/validSubfieldRange.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
         rule(:subfield_range) { (closed_lc_alpha_range | closed_int_range) }
@@ -103,13 +103,13 @@ module BerkeleyLibrary
         #                     ; [a-z]-[a-z] / [0-9]-[0-9]
         #
         # NOTE: docs don't insist the range be valid (start <= end), but tests enforce it
-        rule(:subfield_code_range) { str('$') >> subfield_range }
+        rule(:subfield_code_range) { str('$') >> subfield_range.as(:code_range) }
 
         # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
-        rule(:abr_subfield_spec) { (subfield_code_range.as(:code_range) | subfield_code.as(:code)) >> index.maybe >> character_spec.maybe }
+        rule(:abr_subfield_spec) { (subfield_code_range | subfield_code) >> index.maybe >> character_spec.maybe }
 
         # subfieldSpec      = fieldTag [index] abrSubfieldSpec
-        rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec }
+        rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec.as(:subfield) }
 
         # UNDOCUMENTED -- see spec/suite/valid/validIndicators.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
         rule(:indicators) { str('1') | str('2') }
