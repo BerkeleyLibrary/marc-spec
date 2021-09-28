@@ -86,8 +86,6 @@ module BerkeleyLibrary
           end
         end
 
-        describe
-
         describe :subfield_spec do
           it 'returns a Subfieldspec for a tag with subfield code' do
             parse_tree = parser.parse('856$u')

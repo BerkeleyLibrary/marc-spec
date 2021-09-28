@@ -36,6 +36,8 @@ module BerkeleyLibrary
         # ----------------------------------------
         # AbrSubfieldspec
 
+        # TODO: merge FieldSpec and SubfieldSpec, rename AbrSubfieldspec
+
         rule(code: simple(:code)) do
           AbrSubfieldspec.new(code: code)
         end
