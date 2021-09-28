@@ -77,7 +77,7 @@ module BerkeleyLibrary
         rule(:position_or_range) { range | position.as(:pos) }
 
         # characterSpec     = "/" positionOrRange
-        rule(:character_spec) { str('/') >> position_or_range }
+        rule(:character_spec) { str('/') >> position_or_range.as(:character_spec) }
 
         # index             = "[" positionOrRange "]"
         rule(:index) { (str('[') >> position_or_range >> str(']')).as(:index) }

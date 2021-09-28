@@ -1,2 +1,1 @@
-require 'berkeley_library/marc_spec/module_info'
-require 'berkeley_library/marc_spec/parser'
+Dir.glob(File.expand_path('marc_spec/*.rb', __dir__)).sort.each(&method(:require))

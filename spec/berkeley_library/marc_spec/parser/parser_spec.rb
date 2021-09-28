@@ -60,7 +60,8 @@ module BerkeleyLibrary
             it "parses #{val}" do
               expect(subject).to parse(val, reporter: r)
               result = subject.parse(val)
-              expect(result[:pos]).to eq(pos)
+              character_spec = result[:character_spec]
+              expect(character_spec[:pos]).to eq(pos)
             end
           end
 
@@ -69,8 +70,9 @@ module BerkeleyLibrary
             it "parses #{val}" do
               expect(subject).to parse(val, reporter: r)
               result = subject.parse(val)
-              expect(result[:from]).to eq(from == '#' ? nil : from)
-              expect(result[:to]).to eq(to == '#' ? nil : to)
+              character_spec = result[:character_spec]
+              expect(character_spec[:from]).to eq(from == '#' ? nil : from)
+              expect(character_spec[:to]).to eq(to == '#' ? nil : to)
             end
           end
         end
@@ -91,8 +93,9 @@ module BerkeleyLibrary
                 it "parses #{val}" do
                   expect(subject).to parse(val, reporter: r)
                   result = subject.parse(val)
-                  expect(result[:pos]).to eq(pos)
                   expect(result[:tag]).to eq(tag)
+                  character_spec = result[:character_spec]
+                  expect(character_spec[:pos]).to eq(pos)
                 end
               end
 
@@ -101,9 +104,10 @@ module BerkeleyLibrary
                 it "parses #{val}" do
                   expect(subject).to parse(val, reporter: r)
                   result = subject.parse(val)
-                  expect(result[:from]).to eq(from == '#' ? nil : from)
-                  expect(result[:to]).to eq(to == '#' ? nil : to)
                   expect(result[:tag]).to eq(tag)
+                  character_spec = result[:character_spec]
+                  expect(character_spec[:from]).to eq(from == '#' ? nil : from)
+                  expect(character_spec[:to]).to eq(to == '#' ? nil : to)
                 end
               end
             end
