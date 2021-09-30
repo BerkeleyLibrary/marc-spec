@@ -1,39 +1,44 @@
-require 'berkeley_library/marc_spec/query/part'
+require 'stringio'
+require 'berkeley_library/marc_spec/query/predicate'
 
 module BerkeleyLibrary
   module MarcSpec
     module Query
-      class Range
-        include Part
+      class FixedField
+        include Predicate
 
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :from, :to
+        attr_reader :tag, :position_or_range
 
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(from, to)
-          @from = from ? from.to_i : nil
-          @to = to ? to.to_i : nil
+        def initialize(tag, position_or_range:)
+          @tag = tag
+          @position_or_range = position_or_range
         end
 
         # ------------------------------------------------------------
         # Object overrides
 
         def to_s
-          "#{from || '#'}-#{to || '#'}"
+          StringIO.new.tap do |out|
+            out << tag
+            out << "/#{position_or_range}" if position_or_range
+          end.string
         end
 
         # ------------------------------------------------------------
-        # Part
+        # Predicate
 
         protected
 
         def equality_attrs
-          %i[from to]
+          %i[tag position_or_range]
         end
+
       end
     end
   end

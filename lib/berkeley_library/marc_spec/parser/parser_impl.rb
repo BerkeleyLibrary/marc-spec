@@ -118,7 +118,7 @@ module BerkeleyLibrary
         rule(:abr_indicator_spec) { index.maybe >> str('^') >> indicators.as(:ind) }
 
         # indicatorSpec     = fieldTag abrIndicatorSpec
-        rule(:indicator_spec) { field_tag.as(:tag) >> abr_indicator_spec.as(:indicators) }
+        rule(:indicator_spec) { field_tag.as(:tag) >> abr_indicator_spec }
 
         # Extracted from comparisonString (some VCHARs need to be escaped,
         # and literal \ needs special handling)

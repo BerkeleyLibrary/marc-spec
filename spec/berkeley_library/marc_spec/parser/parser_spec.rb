@@ -146,7 +146,7 @@ module BerkeleyLibrary
               val = "$#{code}"
               it "parses #{val}" do
                 expect(subject).to parse(val, reporter: r)
-                expect(subject.parse(val)).to eq(code)
+                expect(subject.parse(val)).to eq({ code: code })
               end
             end
           end
@@ -160,7 +160,7 @@ module BerkeleyLibrary
                 expect(subject).to parse(val, reporter: r)
                 result = subject.parse(val)
                 expect(result[:tag]).to eq(tag)
-                expect(result[:code]).to eq(code)
+                expect(result[:subfield]).to eq({ code: code })
               end
             end
 
@@ -170,7 +170,11 @@ module BerkeleyLibrary
                 expect(subject).to parse(val, reporter: r)
                 result = subject.parse(val)
                 expect(result[:tag]).to eq(tag)
-                code_range = result[:code_range]
+
+                subfield = result[:subfield]
+                expect(subfield).not_to be_nil
+
+                code_range = subfield[:code_range]
                 expect(code_range[:from]).to eq(from)
                 expect(code_range[:to]).to eq(to)
               end
@@ -183,9 +187,13 @@ module BerkeleyLibrary
                   expect(subject).to parse(val, reporter: r)
                   result = subject.parse(val)
                   expect(result[:tag]).to eq(tag)
+
                   index = result[:index]
                   expect(index[:pos]).to eq(pos_index)
-                  expect(result[:code]).to eq(code)
+
+                  subfield = result[:subfield]
+                  expect(subfield).not_to be_nil
+                  expect(subfield[:code]).to eq(code)
                 end
               end
             end
@@ -197,10 +205,15 @@ module BerkeleyLibrary
                   expect(subject).to parse(val, reporter: r)
                   result = subject.parse(val)
                   expect(result[:tag]).to eq(tag)
+
                   index = result[:index]
                   expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
                   expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
-                  code_range = result[:code_range]
+
+                  subfield = result[:subfield]
+                  expect(subfield).not_to be_nil
+
+                  code_range = subfield[:code_range]
                   expect(code_range[:from]).to eq(from)
                   expect(code_range[:to]).to eq(to)
                 end

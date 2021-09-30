@@ -1,34 +1,38 @@
-require 'berkeley_library/marc_spec/query/part'
+require 'berkeley_library/marc_spec/query/predicate'
 
 module BerkeleyLibrary
   module MarcSpec
     module Query
-      class Position
-        include Part
+      class VarField
+        include Predicate
 
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :position
+        attr_reader :tag, :subfield
 
-        def initialize(position)
-          @position = position ? position.to_i : nil
+        # ------------------------------------------------------------
+        # Initializer
+
+        def initialize(tag, subfield:)
+          @tag = tag
+          @subfield = subfield
         end
 
         # ------------------------------------------------------------
         # Object overrides
 
         def to_s
-          (position || '#').to_s
+          [tag, subfield].join
         end
 
         # ------------------------------------------------------------
-        # Part
+        # Predicate
 
         protected
 
         def equality_attrs
-          [:position]
+          %i[tag subfield]
         end
       end
     end
