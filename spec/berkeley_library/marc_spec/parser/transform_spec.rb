@@ -21,6 +21,9 @@ module BerkeleyLibrary
             expecteds.each do |input_str, expected|
               parse_tree = parser.parse(input_str)
               actual = xform.apply(parse_tree)
+              if actual != expected
+                puts 'oops'
+              end
               expect(actual).to eq(expected), "Expected #{expected.inspect} for #{input_str.inspect}, got #{actual.inspect}"
             end
           end
@@ -86,7 +89,37 @@ module BerkeleyLibrary
                 '856$u' => VarField.new(
                   Tag.new('856'),
                   subfield: Subfield.new(code: 'u')
+                ),
+                '856[3]$u' => VarField.new(
+                  Tag.new('856', index: Position.new(3)),
+                  subfield: Subfield.new(code: 'u')
+                ),
+                '856$u[3]' => VarField.new(
+                  Tag.new('856'),
+                  subfield: Subfield.new(code: 'u', index: Position.new(3))
+                ),
+                '856$u[3]/1-2' => VarField.new(
+                  Tag.new('856'),
+                  subfield: Subfield.new(code: 'u', index: Position.new(3), character_spec: Range.new(1, 2))
+                ),
+                # TODO: parse code ranges to an object
+                '856$4-5' => VarField.new(
+                  Tag.new('856'),
+                  subfield: Subfield.new(code: '4-5')
+                ),
+                '856[3]$4-5' => VarField.new(
+                  Tag.new('856', index: Position.new(3)),
+                  subfield: Subfield.new(code: '4-5')
+                ),
+                '856$4-5[3]' => VarField.new(
+                  Tag.new('856'),
+                  subfield: Subfield.new(code_range: '4-5', index: Position.new(3))
+                ),
+                '856$4-5[3]/1-2' => VarField.new(
+                  Tag.new('856'),
+                  subfield: Subfield.new(code_range: '4-5', index: Position.new(3), character_spec: Range.new(1, 2))
                 )
+
               }
 
               check_all(expecteds)

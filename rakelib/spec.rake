@@ -1,6 +1,7 @@
 require 'rspec/core/rake_task'
 require 'pathname'
 
+# TODO: generate comprehensive transform specs if possible
 namespace :spec do
   specs_dir = File.expand_path('../spec', __dir__)
   generated_specs_dir = 'generated'

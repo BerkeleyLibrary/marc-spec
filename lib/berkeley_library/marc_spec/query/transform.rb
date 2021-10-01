@@ -35,7 +35,7 @@ module BerkeleyLibrary
         end
 
         # ----------------------------------------
-        # subfieldSpec / abrSubfieldSpec
+        # abrSubfieldSpec
 
         rule(code: simple(:code)) do
           Subfield.new(code: code)
@@ -53,6 +53,7 @@ module BerkeleyLibrary
           Subfield.new(code: code, index: index, character_spec: character_spec)
         end
 
+        # TODO: parse code ranges to an object
         rule(code_range: simple(:code_range)) do
           Subfield.new(code_range: code_range)
         end
@@ -68,6 +69,9 @@ module BerkeleyLibrary
         rule(code_range: simple(:code_range), index: simple(:index), character_spec: simple(:character_spec)) do
           Subfield.new(code_range: code_range, index: index, character_spec: character_spec)
         end
+
+        # ----------------------------------------
+        # subfieldSpec
 
         rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield)) do
           VarField.new(Tag.new(tag, index: index), subfield: subfield)
