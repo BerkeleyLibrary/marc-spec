@@ -12,7 +12,7 @@ module BerkeleyLibrary
         attr_reader :position
 
         def initialize(position)
-          @position = position ? position.to_i : nil
+          @position = int_or_nil(position)
         end
 
         # ------------------------------------------------------------

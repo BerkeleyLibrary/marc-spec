@@ -15,8 +15,8 @@ module BerkeleyLibrary
         # Initializer
 
         def initialize(from, to)
-          @from = from ? from.to_i : nil
-          @to = to ? to.to_i : nil
+          @from = int_or_nil(from)
+          @to = int_or_nil(to)
         end
 
         # ------------------------------------------------------------

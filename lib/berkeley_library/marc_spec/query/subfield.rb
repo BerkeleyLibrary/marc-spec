@@ -15,6 +15,7 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
+        # TODO: treat code/code range similarly to position_or_range
         def initialize(code_range: nil, code: nil, index: nil, character_spec: nil)
           raise ArgumentError, 'Code or code range must be specified' if [code, code_range].all?(&:nil?)
           raise ArgumentError, 'Code and code range cannot both be specified' if [code, code_range].none?(&:nil?)

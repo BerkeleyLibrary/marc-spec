@@ -15,8 +15,8 @@ module BerkeleyLibrary
         # Initializer
 
         def initialize(tag, subfield:)
-          @tag = tag
-          @subfield = subfield
+          @tag = ensure_type(tag, Tag)
+          @subfield = ensure_type(subfield, Subfield, allow_nil: true)
         end
 
         # ------------------------------------------------------------
