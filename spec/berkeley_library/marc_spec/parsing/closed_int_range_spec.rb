@@ -3,7 +3,7 @@ require 'parslet/rig/rspec'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       describe ClosedIntRange do
         attr_reader :range
 

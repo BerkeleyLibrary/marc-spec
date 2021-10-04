@@ -4,9 +4,9 @@ require 'parslet/rig/rspec'
 # Scratch spec for particular use cases
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
-      describe ParserImpl do
-        let(:parser) { ParserImpl.new }
+    module Parsing
+      describe Parser do
+        let(:parser) { Parser.new }
         let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
         def try_parse(data, method = :marc_spec)

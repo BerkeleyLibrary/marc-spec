@@ -3,10 +3,10 @@ require 'parslet/rig/rspec'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       context 'suite' do
         describe <%= ":#{name}" %> do
-          let(:parser) { ParserImpl.new }
+          let(:parser) { Parser.new }
           let(:reporter) { Parslet::ErrorReporter::Deepest.new }
           <% suites.sort.each do |suite| %>
           describe <%= quote(suite.description) %> do

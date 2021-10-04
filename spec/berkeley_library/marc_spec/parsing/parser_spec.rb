@@ -4,9 +4,9 @@ require 'parslet/rig/rspec'
 # noinspection RubyResolve
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
-      describe ParserImpl do
-        let(:parser) { ParserImpl.new }
+    module Parsing
+      describe Parser do
+        let(:parser) { Parser.new }
         let(:tags) { %w[245 2.. 24. .45 ..5 ... LDR] }
         let(:positions) { %w[0 7 17 317] }
         let(:pos_ranges) { [%w[1 12], %w[1 #], %w[# 1], %w[24 56], %w[# #]] }

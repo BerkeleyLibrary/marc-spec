@@ -1,13 +1,13 @@
 require 'parslet'
-require 'berkeley_library/marc_spec/parser/closed_int_range'
-require 'berkeley_library/marc_spec/parser/closed_lc_alpha_range'
+require 'berkeley_library/marc_spec/parsing/closed_int_range'
+require 'berkeley_library/marc_spec/parsing/closed_lc_alpha_range'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       # rubocop:disable Style/BlockDelimiters
       # noinspection RubyResolve
-      class ParserImpl < Parslet::Parser
+      class Parser < Parslet::Parser
 
         # ------------------------------------------------------------
         # DSL extensions

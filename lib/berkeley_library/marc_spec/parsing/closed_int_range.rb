@@ -2,7 +2,7 @@ require 'parslet'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       class ClosedIntRange < Parslet::Atoms::Base
         SIMPLE_CLASS_NAME = ClosedIntRange.name.split('::').last
 

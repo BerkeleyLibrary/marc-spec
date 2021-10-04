@@ -3,10 +3,10 @@ require 'parslet/rig/rspec'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       context 'suite' do
         describe :field_tag do
-          let(:parser) { ParserImpl.new }
+          let(:parser) { Parser.new }
           let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
           describe 'field tags are strings and match pattern' do

@@ -3,10 +3,10 @@ require 'parslet/rig/rspec'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       context 'suite' do
         describe :index_indicator do
-          let(:parser) { ParserImpl.new }
+          let(:parser) { Parser.new }
           let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
           describe 'marc_spec: valid field tag, index and indicators' do

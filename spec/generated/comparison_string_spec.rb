@@ -3,10 +3,10 @@ require 'parslet/rig/rspec'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Parser
+    module Parsing
       context 'suite' do
         describe :comparison_string do
-          let(:parser) { ParserImpl.new }
+          let(:parser) { Parser.new }
           let(:reporter) { Parslet::ErrorReporter::Deepest.new }
 
           describe 'comparison strings are strings and match pattern' do
