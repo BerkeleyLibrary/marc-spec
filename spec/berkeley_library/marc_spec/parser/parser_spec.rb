@@ -185,7 +185,7 @@ module BerkeleyLibrary
               codes.each do |code|
                 val = "$#{code}"
                 expect(rule).to parse(val, reporter: r)
-                expect(rule.parse(val)).to eq({ code: code })
+                expect(rule.parse(val)).to eq(code)
               end
             end
           end
@@ -220,7 +220,7 @@ module BerkeleyLibrary
                   subfield = result[:subfield]
                   expect(subfield).not_to be_nil
 
-                  code_range = subfield[:code_range]
+                  code_range = subfield[:code]
                   expect(code_range[:from]).to eq(from)
                   expect(code_range[:to]).to eq(to)
                 end
@@ -267,7 +267,7 @@ module BerkeleyLibrary
                     subfield = result[:subfield]
                     expect(subfield).not_to be_nil
 
-                    code_range = subfield[:code_range]
+                    code_range = subfield[:code]
                     expect(code_range[:from]).to eq(from)
                     expect(code_range[:to]).to eq(to)
                   end
