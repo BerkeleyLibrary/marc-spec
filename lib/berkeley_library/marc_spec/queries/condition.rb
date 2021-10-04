@@ -1,41 +1,41 @@
-require 'berkeley_library/marc_spec/queries/referent'
+require 'berkeley_library/marc_spec/queries/part'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class FieldValue
-        include Referent
+      class Condition
+        include Part
 
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :tag
+        attr_reader :left, :operator, :right
 
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag)
-          @tag = ensure_type(tag, Tag)
+        # rubocop:disable Style/KeywordParametersOrder
+        def initialize(operator = '?', left: nil, right:)
+          @left = left
+          @operator = operator
+          @right = right
         end
+        # rubocop:enable Style/KeywordParametersOrder
 
         # ------------------------------------------------------------
         # Object overrides
 
         def to_s
-          tag.to_s
+          [left, operator, right].join
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Protected methods
 
         protected
 
-        def to_s_inspect
-          tag.inspect
-        end
-
         def equality_attrs
-          %i[tag]
+          %i[left operator right]
         end
       end
     end

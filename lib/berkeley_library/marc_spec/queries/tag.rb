@@ -1,10 +1,10 @@
-require 'berkeley_library/marc_spec/queries/predicate'
+require 'berkeley_library/marc_spec/queries/referent'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class Tag
-        include Predicate
+        include Referent
 
         # ------------------------------------------------------------
         # Attributes

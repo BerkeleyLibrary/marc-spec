@@ -16,12 +16,23 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Helper methods
 
-        def check_all(expecteds)
+        def check_referents(expecteds)
+          aggregate_failures do
+            expecteds.each do |input_str, expected|
+              parse_tree = parser.parse(input_str)
+              ref_tree = parse_tree[:referent]
+              actual = xform.apply(ref_tree)
+              expect(actual).to eq(expected), "Expected #{expected.inspect} for #{input_str.inspect} (#{ref_tree}), got #{actual.inspect}"
+            end
+          end
+        end
+
+        def check_queries(expecteds)
           aggregate_failures do
             expecteds.each do |input_str, expected|
               parse_tree = parser.parse(input_str)
               actual = xform.apply(parse_tree)
-              expect(actual).to eq(expected), "Expected #{expected.inspect} for #{input_str.inspect}, got #{actual.inspect}"
+              expect(actual).to eq(expected), "Expected #{expected.inspect} for #{input_str.inspect} (#{parse_tree}), got #{actual.inspect}"
             end
           end
         end
@@ -49,7 +60,7 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Complete queries
+        # Referents
 
         describe 'fieldSpec' do
           describe 'fieldTag' do
@@ -59,7 +70,7 @@ module BerkeleyLibrary
                 '.56' => Tag.new('.56'),
                 '856[3]' => Tag.new('856', index: Position.new(3))
               }
-              check_all(expecteds)
+              check_referents(expecteds)
             end
           end
 
@@ -76,7 +87,7 @@ module BerkeleyLibrary
                 )
               }
 
-              check_all(expecteds)
+              check_referents(expecteds)
             end
           end
         end
@@ -88,27 +99,27 @@ module BerkeleyLibrary
                 expecteds = {
                   '856$u' => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: 'u')
+                    Subfield.new('u')
                   ),
                   '856[3]$u' => VarFieldValue.new(
                     Tag.new('856', index: Position.new(3)),
-                    Subfield.new(code: 'u')
+                    Subfield.new('u')
                   ),
                   '856$u[3]' => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: 'u', index: Position.new(3))
+                    Subfield.new('u', index: Position.new(3))
                   ),
                   '856$u[3]/1-2' => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: 'u', index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                    Subfield.new('u', index: Position.new(3), character_spec: AlNumRange.new(1, 2))
                   ),
                   '856$u/1-2' => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: 'u', character_spec: AlNumRange.new(1, 2))
+                    Subfield.new('u', character_spec: AlNumRange.new(1, 2))
                   )
                 }
 
-                check_all(expecteds)
+                check_referents(expecteds)
               end
             end
 
@@ -120,27 +131,27 @@ module BerkeleyLibrary
                 expecteds = {
                   "856$#{range_str}" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range)
+                    Subfield.new(code_range)
                   ),
                   "856[3]$#{range_str}" => VarFieldValue.new(
                     Tag.new('856', index: Position.new(3)),
-                    Subfield.new(code: code_range)
+                    Subfield.new(code_range)
                   ),
                   "856$#{range_str}[3]" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range, index: Position.new(3))
+                    Subfield.new(code_range, index: Position.new(3))
                   ),
                   "856$#{range_str}[3]/1-2" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                    Subfield.new(code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
                   ),
                   "856$#{range_str}/1-2" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range, character_spec: AlNumRange.new(1, 2))
+                    Subfield.new(code_range, character_spec: AlNumRange.new(1, 2))
                   )
                 }
 
-                check_all(expecteds)
+                check_referents(expecteds)
               end
             end
 
@@ -152,27 +163,27 @@ module BerkeleyLibrary
                 expecteds = {
                   "856$#{range_str}" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range)
+                    Subfield.new(code_range)
                   ),
                   "856[3]$#{range_str}" => VarFieldValue.new(
                     Tag.new('856', index: Position.new(3)),
-                    Subfield.new(code: code_range)
+                    Subfield.new(code_range)
                   ),
                   "856$#{range_str}[3]" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range, index: Position.new(3))
+                    Subfield.new(code_range, index: Position.new(3))
                   ),
                   "856$#{range_str}[3]/1-2" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                    Subfield.new(code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
                   ),
                   "856$#{range_str}/1-2" => VarFieldValue.new(
                     Tag.new('856'),
-                    Subfield.new(code: code_range, character_spec: AlNumRange.new(1, 2))
+                    Subfield.new(code_range, character_spec: AlNumRange.new(1, 2))
                   )
                 }
 
-                check_all(expecteds)
+                check_referents(expecteds)
               end
             end
           end
@@ -185,7 +196,23 @@ module BerkeleyLibrary
                 '856^1' => IndicatorValue.new(Tag.new('856'), 1),
                 '856[3-#]^2' => IndicatorValue.new(Tag.new('856', index: AlNumRange.new(3, nil)), 2)
               }
-              check_all(expecteds)
+              check_referents(expecteds)
+            end
+          end
+        end
+
+        describe 'subSpec' do
+          describe 'single subTerm' do
+            it 'returns a ???' do
+              vf956u = VarFieldValue.new(Tag.new('956'), Subfield.new('u'))
+
+              expecteds = {
+                '956{?956$u}' => Query.new(
+                  Tag.new('956'),
+                  Condition.new('?', right: vf956u)
+                )
+              }
+              check_queries(expecteds)
             end
           end
         end

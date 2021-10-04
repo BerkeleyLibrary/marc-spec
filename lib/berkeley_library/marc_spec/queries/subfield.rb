@@ -15,7 +15,7 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(code:, index: nil, character_spec: nil)
+        def initialize(code, index: nil, character_spec: nil)
           @code = code
           @index = index
           @character_spec = character_spec
