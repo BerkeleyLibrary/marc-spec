@@ -18,7 +18,7 @@ module BerkeleyLibrary
 
         def initialize(tag, position_or_range:)
           @tag = ensure_type(tag, Tag)
-          @position, @range = select_type(position_or_range, Position, Range)
+          @position, @range = select_type(position_or_range, Position, AlphanumericRange)
         end
 
         # ------------------------------------------------------------

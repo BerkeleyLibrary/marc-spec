@@ -10,7 +10,7 @@ module BerkeleyLibrary
 
         rule(pos: simple(:pos)) { Position.new(pos) }
 
-        rule(from: simple(:from), to: simple(:to)) { Range.new(from, to) }
+        rule(from: simple(:from), to: simple(:to)) { AlphanumericRange.new(from, to) }
 
         # ----------------------------------------
         # fieldSpec
@@ -54,20 +54,20 @@ module BerkeleyLibrary
         end
 
         # TODO: parse code ranges to an object
-        rule(code_range: simple(:code_range)) do
-          Subfield.new(code_range: code_range)
+        rule(code: simple(:code)) do
+          Subfield.new(code: code)
         end
 
-        rule(code_range: simple(:code_range), index: simple(:index)) do
-          Subfield.new(code_range: code_range, index: index)
+        rule(code: simple(:code), index: simple(:index)) do
+          Subfield.new(code: code, index: index)
         end
 
-        rule(code_range: simple(:code_range), character_spec: simple(:character_spec)) do
-          Subfield.new(code_range: code_range, character_spec: character_spec)
+        rule(code: simple(:code), character_spec: simple(:character_spec)) do
+          Subfield.new(code: code, character_spec: character_spec)
         end
 
-        rule(code_range: simple(:code_range), index: simple(:index), character_spec: simple(:character_spec)) do
-          Subfield.new(code_range: code_range, index: index, character_spec: character_spec)
+        rule(code: simple(:code), index: simple(:index), character_spec: simple(:character_spec)) do
+          Subfield.new(code: code, index: index, character_spec: character_spec)
         end
 
         # ----------------------------------------

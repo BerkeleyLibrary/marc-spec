@@ -31,6 +31,10 @@ module BerkeleyLibrary
 
         protected
 
+        def to_s_inspect
+          [tag, subfield].map(&:inspect).join
+        end
+
         def equality_attrs
           %i[tag subfield]
         end

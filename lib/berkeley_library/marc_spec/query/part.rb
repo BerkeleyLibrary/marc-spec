@@ -8,7 +8,7 @@ module BerkeleyLibrary
 
         def inspect
           class_name = self.class.name.sub(/^.*::/, '')
-          "#{class_name}@#{object_id}<#{self}>"
+          "#{class_name}@#{object_id}<#{to_s_inspect}>"
         end
 
         def eql?(other)
@@ -25,6 +25,10 @@ module BerkeleyLibrary
         # Protected methods
 
         protected
+
+        def to_s_inspect
+          to_s
+        end
 
         def ensure_type(v, type, allow_nil: false)
           return if allow_nil && v.nil?
