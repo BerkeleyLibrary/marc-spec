@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe Tag do
         it 'accepts a plain tag' do
           tag = Tag.new('856')

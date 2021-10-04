@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe FixedFieldValue do
         it 'accepts a position' do
           tag = Tag.new('001')

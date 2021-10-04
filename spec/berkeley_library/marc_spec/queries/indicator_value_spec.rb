@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe IndicatorValue do
         it 'accepts an int indicator' do
           tag = Tag.new('856')

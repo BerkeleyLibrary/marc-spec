@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe VarFieldValue do
         it 'accepts a tag and subfield' do
           tag = Tag.new('856')

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe Subfield do
         it 'accepts a plain code' do
           sf = Subfield.new(code: 'u')

@@ -1,1 +1,1 @@
-Dir.glob(File.expand_path('query/*.rb', __dir__)).sort.each(&method(:require))
+Dir.glob(File.expand_path('queries/*.rb', __dir__)).sort.each(&method(:require))

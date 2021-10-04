@@ -1,8 +1,8 @@
-require 'berkeley_library/marc_spec/query/predicate'
+require 'berkeley_library/marc_spec/queries/predicate'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       class FieldValue
         include Predicate
 

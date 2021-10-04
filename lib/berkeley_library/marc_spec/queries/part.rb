@@ -1,6 +1,6 @@
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       # Supermodule of either partial or complete query objects
       module Part
 

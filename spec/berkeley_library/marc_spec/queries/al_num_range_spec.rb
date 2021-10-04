@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe AlNumRange do
         describe 'closed, alphabetical' do
           it 'handles string arguments' do

@@ -2,7 +2,7 @@ require 'parslet'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       class Transform < Parslet::Transform
 
         # ----------------------------------------

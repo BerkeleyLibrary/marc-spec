@@ -1,9 +1,9 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/query/part'
+require 'berkeley_library/marc_spec/queries/part'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       class Subfield
         include Part
 

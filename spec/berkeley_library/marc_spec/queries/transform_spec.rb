@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       describe Transform do
 
         attr_reader :parser
@@ -79,7 +79,9 @@ module BerkeleyLibrary
               check_all(expecteds)
             end
           end
+        end
 
+        describe 'subfieldSpec' do
           describe 'fieldTag w/subfieldSpec' do
             context 'single subfield' do
               it 'returns a VarField' do
@@ -174,7 +176,9 @@ module BerkeleyLibrary
               end
             end
           end
+        end
 
+        describe 'indicatorSpec' do
           describe 'fieldTag w/indicator' do
             it 'returns an Indicator' do
               expecteds = {

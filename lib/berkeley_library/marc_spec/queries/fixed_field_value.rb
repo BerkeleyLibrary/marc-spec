@@ -1,9 +1,9 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/query/field_value'
+require 'berkeley_library/marc_spec/queries/field_value'
 
 module BerkeleyLibrary
   module MarcSpec
-    module Query
+    module Queries
       class FixedFieldValue < FieldValue
 
         # ------------------------------------------------------------
