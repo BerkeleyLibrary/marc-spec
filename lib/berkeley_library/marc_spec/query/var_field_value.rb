@@ -13,7 +13,7 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, subfield:)
+        def initialize(tag, subfield)
           super(tag)
           @subfield = ensure_type(subfield, Subfield, allow_nil: true)
         end

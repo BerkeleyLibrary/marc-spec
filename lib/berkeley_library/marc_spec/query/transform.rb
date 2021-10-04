@@ -10,7 +10,7 @@ module BerkeleyLibrary
 
         rule(pos: simple(:pos)) { Position.new(pos) }
 
-        rule(from: simple(:from), to: simple(:to)) { AlphanumericRange.new(from, to) }
+        rule(from: simple(:from), to: simple(:to)) { AlNumRange.new(from, to) }
 
         # ----------------------------------------
         # fieldSpec
@@ -27,11 +27,11 @@ module BerkeleyLibrary
         # fieldSpec (fixed fields)
 
         rule(tag: simple(:tag), character_spec: simple(:character_spec)) do
-          FixedField.new(Tag.new(tag), position_or_range: character_spec)
+          FixedFieldValue.new(Tag.new(tag), character_spec)
         end
 
         rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec)) do
-          FixedField.new(Tag.new(tag, index: index), position_or_range: character_spec)
+          FixedFieldValue.new(Tag.new(tag, index: index), character_spec)
         end
 
         # ----------------------------------------
@@ -53,43 +53,26 @@ module BerkeleyLibrary
           Subfield.new(code: code, index: index, character_spec: character_spec)
         end
 
-        # TODO: parse code ranges to an object
-        rule(code: simple(:code)) do
-          Subfield.new(code: code)
-        end
-
-        rule(code: simple(:code), index: simple(:index)) do
-          Subfield.new(code: code, index: index)
-        end
-
-        rule(code: simple(:code), character_spec: simple(:character_spec)) do
-          Subfield.new(code: code, character_spec: character_spec)
-        end
-
-        rule(code: simple(:code), index: simple(:index), character_spec: simple(:character_spec)) do
-          Subfield.new(code: code, index: index, character_spec: character_spec)
-        end
-
         # ----------------------------------------
         # subfieldSpec
 
         rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield)) do
-          VarFieldValue.new(Tag.new(tag, index: index), subfield: subfield)
+          VarFieldValue.new(Tag.new(tag, index: index), subfield)
         end
 
         rule(tag: simple(:tag), subfield: simple(:subfield)) do
-          VarFieldValue.new(Tag.new(tag), subfield: subfield)
+          VarFieldValue.new(Tag.new(tag), subfield)
         end
 
         # ----------------------------------------
         # indicatorSpec
 
         rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind)) do
-          IndicatorValue.new(Tag.new(tag, index: index), ind: ind)
+          IndicatorValue.new(Tag.new(tag, index: index), ind)
         end
 
         rule(tag: simple(:tag), ind: simple(:ind)) do
-          IndicatorValue.new(Tag.new(tag), ind: ind)
+          IndicatorValue.new(Tag.new(tag), ind)
         end
       end
     end

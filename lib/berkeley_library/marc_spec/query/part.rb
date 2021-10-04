@@ -1,6 +1,7 @@
 module BerkeleyLibrary
   module MarcSpec
     module Query
+      # Supermodule of either partial or complete query objects
       module Part
 
         # ------------------------------------------------------------
@@ -43,14 +44,6 @@ module BerkeleyLibrary
           return nil, v if v.is_a?(right_type)
 
           raise ArgumentError, "Not #{left_type} or #{right_type}: #{v.inspect}"
-        end
-
-        def of_any_type(v, *types, allow_nil: false)
-          raise ArgumentError, 'No types specified' if types.nil? || types.empty?
-          return nil if allow_nil && v.nil?
-
-          types.each { |t| return v if v.is_a?(t) }
-          raise ArgumentError, "Not any of #{types.join(', ')}: #{v.inspect}"
         end
 
         def int_or_nil(v)

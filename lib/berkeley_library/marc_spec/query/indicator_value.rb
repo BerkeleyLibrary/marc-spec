@@ -8,7 +8,7 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Constants
 
-        VALID_INDICATORS = [nil, 1, 2].freeze
+        VALID_INDICATORS = [1, 2].freeze
 
         # ------------------------------------------------------------
         # Attributes
@@ -18,9 +18,9 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, ind:)
+        def initialize(tag, ind)
           super(tag)
-          @ind = indicator_or_nil(ind)
+          @ind = valid_indicator(ind)
         end
 
         # ------------------------------------------------------------
@@ -45,10 +45,11 @@ module BerkeleyLibrary
 
         private
 
-        def indicator_or_nil(ind)
-          int_or_nil(ind).tap do |indicator|
-            raise ArgumentError, "Not a valid indicator: #{v.inspect}" unless VALID_INDICATORS.include?(indicator)
-          end
+        def valid_indicator(ind_val)
+          ind = int_or_nil(ind_val)
+          return ind if VALID_INDICATORS.include?(ind)
+
+          raise ArgumentError, "Not a valid indicator: #{ind_val.inspect}"
         end
       end
     end

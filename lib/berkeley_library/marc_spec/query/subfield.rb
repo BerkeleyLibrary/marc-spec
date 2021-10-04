@@ -1,11 +1,11 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/query/predicate'
+require 'berkeley_library/marc_spec/query/part'
 
 module BerkeleyLibrary
   module MarcSpec
     module Query
       class Subfield
-        include Predicate
+        include Part
 
         # ------------------------------------------------------------
         # Attributes

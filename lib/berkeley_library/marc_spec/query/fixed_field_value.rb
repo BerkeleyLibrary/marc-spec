@@ -4,7 +4,7 @@ require 'berkeley_library/marc_spec/query/field_value'
 module BerkeleyLibrary
   module MarcSpec
     module Query
-      class FixedField < FieldValue
+      class FixedFieldValue < FieldValue
 
         # ------------------------------------------------------------
         # Attributes
@@ -14,9 +14,9 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, position_or_range:)
+        def initialize(tag, character_spec)
           super(tag)
-          @position, @range = select_type(position_or_range, Position, AlphanumericRange)
+          @position, @range = select_type(character_spec, Position, AlNumRange)
         end
 
         # ------------------------------------------------------------

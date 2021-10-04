@@ -143,7 +143,7 @@ module BerkeleyLibrary
         #
         # NOTE: generated tests only handle the body of the string, not the
         #       leading \, so we give the full rule a separate name
-        rule(:_comparison_string) { str('\\').ignore >> comparison_string.as(:value) }
+        rule(:_comparison_string) { str('\\').ignore >> comparison_string.as(:comparison_string) }
 
         # operator          = "=" / "!=" / "~" / "!~" / "!" / "?"
         #                     ; equal / unequal / includes / not includes / not exists / exists

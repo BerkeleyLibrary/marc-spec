@@ -42,7 +42,7 @@ module BerkeleyLibrary
           it 'returns an AlphanumericRange' do
             parse_tree = { from: '11', to: '17' }
             result = xform.apply(parse_tree)
-            expect(result).to be_a(AlphanumericRange)
+            expect(result).to be_a(AlNumRange)
             expect(result.from).to eq(11)
             expect(result.to).to eq(17)
           end
@@ -66,13 +66,13 @@ module BerkeleyLibrary
           describe 'fieldTag w/characterSpec' do
             it 'returns a FixedField' do
               expecteds = {
-                '856/3-12' => FixedField.new(
+                '856/3-12' => FixedFieldValue.new(
                   Tag.new('856'),
-                  position_or_range: AlphanumericRange.new(3, 12)
+                  AlNumRange.new(3, 12)
                 ),
-                '856[3]/3-12' => FixedField.new(
+                '856[3]/3-12' => FixedFieldValue.new(
                   Tag.new('856', index: Position.new(3)),
-                  position_or_range: AlphanumericRange.new(3, 12)
+                  AlNumRange.new(3, 12)
                 )
               }
 
@@ -86,19 +86,23 @@ module BerkeleyLibrary
                 expecteds = {
                   '856$u' => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: 'u')
+                    Subfield.new(code: 'u')
                   ),
                   '856[3]$u' => VarFieldValue.new(
                     Tag.new('856', index: Position.new(3)),
-                    subfield: Subfield.new(code: 'u')
+                    Subfield.new(code: 'u')
                   ),
                   '856$u[3]' => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: 'u', index: Position.new(3))
+                    Subfield.new(code: 'u', index: Position.new(3))
                   ),
                   '856$u[3]/1-2' => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: 'u', index: Position.new(3), character_spec: AlphanumericRange.new(1, 2))
+                    Subfield.new(code: 'u', index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                  ),
+                  '856$u/1-2' => VarFieldValue.new(
+                    Tag.new('856'),
+                    Subfield.new(code: 'u', character_spec: AlNumRange.new(1, 2))
                   )
                 }
 
@@ -108,25 +112,29 @@ module BerkeleyLibrary
 
             context 'numeric subfield range' do
               it 'returns a VarField' do
-                code_range = AlphanumericRange.new(4, 5)
+                code_range = AlNumRange.new(4, 5)
                 range_str = '4-5'
 
                 expecteds = {
                   "856$#{range_str}" => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: code_range)
+                    Subfield.new(code: code_range)
                   ),
                   "856[3]$#{range_str}" => VarFieldValue.new(
                     Tag.new('856', index: Position.new(3)),
-                    subfield: Subfield.new(code: code_range)
+                    Subfield.new(code: code_range)
                   ),
                   "856$#{range_str}[3]" => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: code_range, index: Position.new(3))
+                    Subfield.new(code: code_range, index: Position.new(3))
                   ),
                   "856$#{range_str}[3]/1-2" => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: code_range, index: Position.new(3), character_spec: AlphanumericRange.new(1, 2))
+                    Subfield.new(code: code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                  ),
+                  "856$#{range_str}/1-2" => VarFieldValue.new(
+                    Tag.new('856'),
+                    Subfield.new(code: code_range, character_spec: AlNumRange.new(1, 2))
                   )
                 }
 
@@ -136,25 +144,29 @@ module BerkeleyLibrary
 
             context 'alphabetical subfield range' do
               it 'returns a VarField' do
-                code_range = AlphanumericRange.new('d', 'g')
+                code_range = AlNumRange.new('d', 'g')
                 range_str = 'd-g'
 
                 expecteds = {
                   "856$#{range_str}" => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: code_range)
+                    Subfield.new(code: code_range)
                   ),
                   "856[3]$#{range_str}" => VarFieldValue.new(
                     Tag.new('856', index: Position.new(3)),
-                    subfield: Subfield.new(code: code_range)
+                    Subfield.new(code: code_range)
                   ),
                   "856$#{range_str}[3]" => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: code_range, index: Position.new(3))
+                    Subfield.new(code: code_range, index: Position.new(3))
                   ),
                   "856$#{range_str}[3]/1-2" => VarFieldValue.new(
                     Tag.new('856'),
-                    subfield: Subfield.new(code: code_range, index: Position.new(3), character_spec: AlphanumericRange.new(1, 2))
+                    Subfield.new(code: code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                  ),
+                  "856$#{range_str}/1-2" => VarFieldValue.new(
+                    Tag.new('856'),
+                    Subfield.new(code: code_range, character_spec: AlNumRange.new(1, 2))
                   )
                 }
 
@@ -166,8 +178,8 @@ module BerkeleyLibrary
           describe 'fieldTag w/indicator' do
             it 'returns an Indicator' do
               expecteds = {
-                '856^1' => IndicatorValue.new(Tag.new('856'), ind: 1),
-                '856[3-#]^2' => IndicatorValue.new(Tag.new('856', index: AlphanumericRange.new(3, nil)), ind: 2)
+                '856^1' => IndicatorValue.new(Tag.new('856'), 1),
+                '856[3-#]^2' => IndicatorValue.new(Tag.new('856', index: AlNumRange.new(3, nil)), 2)
               }
               check_all(expecteds)
             end

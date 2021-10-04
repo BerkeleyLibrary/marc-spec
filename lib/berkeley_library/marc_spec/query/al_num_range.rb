@@ -3,7 +3,7 @@ require 'berkeley_library/marc_spec/query/part'
 module BerkeleyLibrary
   module MarcSpec
     module Query
-      class AlphanumericRange
+      class AlNumRange
         include Part
 
         # ------------------------------------------------------------
