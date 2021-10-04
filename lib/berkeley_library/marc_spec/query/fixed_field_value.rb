@@ -1,23 +1,21 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/query/predicate'
-require 'berkeley_library/marc_spec/query/tag'
+require 'berkeley_library/marc_spec/query/field_value'
 
 module BerkeleyLibrary
   module MarcSpec
     module Query
-      class FixedField
-        include Predicate
+      class FixedField < FieldValue
 
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :tag, :position, :range
+        attr_reader :position, :range
 
         # ------------------------------------------------------------
         # Initializer
 
         def initialize(tag, position_or_range:)
-          @tag = ensure_type(tag, Tag)
+          super(tag)
           @position, @range = select_type(position_or_range, Position, AlphanumericRange)
         end
 
@@ -26,7 +24,7 @@ module BerkeleyLibrary
 
         def to_s
           StringIO.new.tap do |out|
-            out << tag
+            out << super
             position_or_range = position || range
             out << "/#{position_or_range}" if position_or_range
           end.string
@@ -38,7 +36,7 @@ module BerkeleyLibrary
         protected
 
         def equality_attrs
-          %i[tag position range]
+          %i[position range] + super
         end
 
       end

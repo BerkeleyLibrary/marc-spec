@@ -3,27 +3,26 @@ require 'berkeley_library/marc_spec/query/predicate'
 module BerkeleyLibrary
   module MarcSpec
     module Query
-      class VarField
+      class FieldValue
         include Predicate
 
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :tag, :subfield
+        attr_reader :tag
 
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, subfield:)
+        def initialize(tag)
           @tag = ensure_type(tag, Tag)
-          @subfield = ensure_type(subfield, Subfield, allow_nil: true)
         end
 
         # ------------------------------------------------------------
         # Object overrides
 
         def to_s
-          [tag, subfield].join
+          tag.to_s
         end
 
         # ------------------------------------------------------------
@@ -32,11 +31,11 @@ module BerkeleyLibrary
         protected
 
         def to_s_inspect
-          [tag, subfield].map(&:inspect).join
+          tag.inspect
         end
 
         def equality_attrs
-          %i[tag subfield]
+          %i[tag]
         end
       end
     end

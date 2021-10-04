@@ -74,11 +74,22 @@ module BerkeleyLibrary
         # subfieldSpec
 
         rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield)) do
-          VarField.new(Tag.new(tag, index: index), subfield: subfield)
+          VarFieldValue.new(Tag.new(tag, index: index), subfield: subfield)
         end
 
         rule(tag: simple(:tag), subfield: simple(:subfield)) do
-          VarField.new(Tag.new(tag), subfield: subfield)
+          VarFieldValue.new(Tag.new(tag), subfield: subfield)
+        end
+
+        # ----------------------------------------
+        # indicatorSpec
+
+        rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind)) do
+          IndicatorValue.new(Tag.new(tag, index: index), ind: ind)
+        end
+
+        rule(tag: simple(:tag), ind: simple(:ind)) do
+          IndicatorValue.new(Tag.new(tag), ind: ind)
         end
       end
     end

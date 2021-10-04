@@ -88,9 +88,9 @@ module BerkeleyLibrary
         # abrFieldSpec      = index [characterSpec] / characterSpec
         rule(:abr_field_spec) { (index >> character_spec.maybe) | character_spec }
 
-        # TODO: is this right? See https://github.com/MARCspec/MARCspec/issues/31
         # subfieldChar      = %x21-3F / %x5B-7B / %x7D-7E
         #                     ; ! " # $ % & ' ( ) * + , - . / 0-9 : ; < = > ? [ \ ] ^ _ \` a-z { } ~
+        # NOTE: Not just alphanumeric; see https://github.com/MARCspec/MARCspec/issues/31
         rule(:subfield_char) { match['\u0021-\u003f'] | match['\u005b-\u007b'] | match['\u007d-\u007e'] }
 
         # subfieldCode      = "$" subfieldChar
