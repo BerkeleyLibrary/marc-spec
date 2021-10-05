@@ -23,7 +23,7 @@ module BerkeleyLibrary
               query = xform.apply(parse_tree)
               expect(query).to be_a(Query) # just to be sure
               actual = query.referent
-              expect(actual).to eq(expected), "Expected referent: #{expected.inspect} for #{input_str.inspect}, got #{actual.inspect}; parse tree was: #{parse_tree}"
+              expect(actual).to eq(expected), -> { failure_msg_for(input_str, actual, expected, parse_tree) }
             end
           end
         end
@@ -35,7 +35,7 @@ module BerkeleyLibrary
               query = xform.apply(parse_tree)
               expect(query).to be_a(Query) # just to be sure
               actual = query.condition
-              expect(actual).to eq(expected), "Expected condition: #{expected.inspect} for #{input_str.inspect}, got #{actual.inspect}; parse tree was: #{parse_tree}"
+              expect(actual).to eq(expected), -> { failure_msg_for(input_str, actual, expected, parse_tree) }
             end
           end
         end
@@ -46,9 +46,20 @@ module BerkeleyLibrary
               parse_tree = parser.parse(input_str)
               actual = xform.apply(parse_tree)
               expect(actual).to be_a(Query) # just to be sure
-              expect(actual).to eq(expected), "Expected #{expected.inspect} for #{input_str.inspect}, got #{actual.inspect}; parse tree was: #{parse_tree}"
+              expect(actual).to eq(expected), -> { failure_msg_for(input_str, actual, expected, parse_tree) }
             end
           end
+        end
+
+        def failure_msg_for(input_str, actual, expected, parse_tree)
+          [
+            input_str.inspect,
+            "expected:  \t#{expected}",
+            "           \t#{expected.inspect}",
+            "actual:    \t#{actual}",
+            "           \t#{actual.inspect}",
+            "parse_tree:\t#{parse_tree}"
+          ].join("\n\t")
         end
 
         # ------------------------------------------------------------
@@ -95,7 +106,7 @@ module BerkeleyLibrary
                 expecteds = {
                   '856' => Tag.new('856'),
                   '.56' => Tag.new('.56'),
-                  '856[3]' => Tag.new('856', index: Position.new(3))
+                  '856[3]' => Tag.new('856', Position.new(3))
                 }
                 check_referents(expecteds)
               end
@@ -109,7 +120,7 @@ module BerkeleyLibrary
                     AlNumRange.new(3, 12)
                   ),
                   '856[3]/3-12' => FixedFieldValue.new(
-                    Tag.new('856', index: Position.new(3)),
+                    Tag.new('856', Position.new(3)),
                     AlNumRange.new(3, 12)
                   )
                 }
@@ -129,7 +140,7 @@ module BerkeleyLibrary
                       Subfield.new('u')
                     ),
                     '856[3]$u' => VarFieldValue.new(
-                      Tag.new('856', index: Position.new(3)),
+                      Tag.new('856', Position.new(3)),
                       Subfield.new('u')
                     ),
                     '856$u[3]' => VarFieldValue.new(
@@ -161,7 +172,7 @@ module BerkeleyLibrary
                       Subfield.new(code_range)
                     ),
                     "856[3]$#{range_str}" => VarFieldValue.new(
-                      Tag.new('856', index: Position.new(3)),
+                      Tag.new('856', Position.new(3)),
                       Subfield.new(code_range)
                     ),
                     "856$#{range_str}[3]" => VarFieldValue.new(
@@ -193,7 +204,7 @@ module BerkeleyLibrary
                       Subfield.new(code_range)
                     ),
                     "856[3]$#{range_str}" => VarFieldValue.new(
-                      Tag.new('856', index: Position.new(3)),
+                      Tag.new('856', Position.new(3)),
                       Subfield.new(code_range)
                     ),
                     "856$#{range_str}[3]" => VarFieldValue.new(
@@ -221,7 +232,7 @@ module BerkeleyLibrary
               it 'returns an Indicator' do
                 expecteds = {
                   '856^1' => IndicatorValue.new(Tag.new('856'), 1),
-                  '856[3-#]^2' => IndicatorValue.new(Tag.new('856', index: AlNumRange.new(3, nil)), 2)
+                  '856[3-#]^2' => IndicatorValue.new(Tag.new('856', AlNumRange.new(3, nil)), 2)
                 }
                 check_referents(expecteds)
               end
@@ -333,6 +344,150 @@ module BerkeleyLibrary
                 )
               }
               check_queries(expecteds)
+            end
+          end
+        end
+
+        # ------------------------------------------------------------
+        # Examples
+
+        # Examples from https://github.com/MARCspec/MARCspec/blob/v0.16beta/examples.md
+        describe 'examples' do
+          it 'handles "Reference to field data examples"' do
+            examples = {
+              'LDR' => Query.new(Tag.new('LDR')),
+              '00.' => Query.new(Tag.new('00.')),
+              '7..' => Query.new(Tag.new('7..')),
+              '100' => Query.new(Tag.new('100'))
+            }
+            check_queries(examples)
+          end
+
+          it 'handles "Reference to field data with repetitions examples"' do
+            examples = {
+              '300[0]' => Query.new(Tag.new('300', Position.new(0))),
+              '300[1]' => Query.new(Tag.new('300', Position.new(1))),
+              '300[0-2]' => Query.new(Tag.new('300', AlNumRange.new(0, 2))),
+              '300[1-#]' => Query.new(Tag.new('300', AlNumRange.new(1, nil))),
+              '300[#]' => Query.new(Tag.new('300', Position.new(nil))),
+              '300[#-1]' => Query.new(Tag.new('300', AlNumRange.new(nil, 1)))
+            }
+            check_queries(examples)
+          end
+
+          it 'handles "Reference to substring examples"' do
+            examples = {
+              'LDR/0-4' => Query.new(FixedFieldValue.new(Tag.new('LDR'), AlNumRange.new(0, 4))),
+              'LDR/6' => Query.new(FixedFieldValue.new(Tag.new('LDR'), Position.new(6))),
+              '007/0' => Query.new(FixedFieldValue.new(Tag.new('007'), Position.new(0))),
+              '007/1-#' => Query.new(FixedFieldValue.new(Tag.new('007'), AlNumRange.new(1, nil))),
+              '007/#' => Query.new(FixedFieldValue.new(Tag.new('007'), Position.new(nil))),
+              '245$a/#-1' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a', character_spec: AlNumRange.new(nil, 1))))
+            }
+            check_queries(examples)
+          end
+
+          xit 'handles "Reference to data content examples"' do
+            examples = {
+              '245$a' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a'))),
+              '245$a$b$c' => nil,
+              '245$a-c' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new(AlNumRange.new('a', 'c')))),
+              '300$_$$' => nil
+            }
+            check_queries(examples)
+          end
+
+          it 'handles "Reference to data content with repetitions examples"' do
+            examples = {
+              '300[0]$a' => Query.new(VarFieldValue.new(Tag.new('300', Position.new(0)), Subfield.new('a'))),
+              '300$a[0]' => Query.new(VarFieldValue.new(Tag.new('300'), Subfield.new('a', index: Position.new(0)))),
+              '300$a[#]' => Query.new(VarFieldValue.new(Tag.new('300'), Subfield.new('a', index: Position.new(nil)))),
+              '300$a[#-1]' => Query.new(VarFieldValue.new(Tag.new('300'), Subfield.new('a', index: AlNumRange.new(nil, 1))))
+            }
+            check_queries(examples)
+          end
+
+          # TODO: are indicator conditions like this on tags supported?
+          xit 'handles "Reference to contextualized data with indicators examples"' do
+            examples = {
+              '245_1$a' => nil,
+              '245_1_$a' => nil,
+              '245_10$a' => nil,
+              '245__0$a' => nil,
+              '307[0-3]_8$a' => nil
+            }
+            check_queries(examples)
+          end
+
+          context '"Reference to contextualized data with subSpecs examples"' do
+            it 'handles "Checking dependencies via string comparison"' do
+              examples = {
+                '008/18{LDR/6=\\t}' => Query.new(
+                  FixedFieldValue.new(Tag.new('008'), Position.new(18)),
+                  Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(6)), right: ComparisonString.new('t'))
+                ),
+                '245$b{007/0=\\a|007/0=\\t}' => Query.new(
+                  VarFieldValue.new(Tag.new('245'), Subfield.new('b')),
+                  Condition.any_of(
+                    Condition.new('=', left: FixedFieldValue.new(Tag.new('007'), Position.new(0)), right: ComparisonString.new('a')),
+                    Condition.new('=', left: FixedFieldValue.new(Tag.new('007'), Position.new(0)), right: ComparisonString.new('t'))
+                  )
+                ),
+                '008/18{LDR/6=\\a}{LDR/7=\\a|LDR/7=\\c|LDR/7=\\d|LDR/7=\\m}' => Query.new(
+                  FixedFieldValue.new(Tag.new('008'), Position.new(18)),
+                  Condition.all_of(
+                    Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(6)), right: ComparisonString.new('a')),
+                    Condition.any_of(
+                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('a')),
+                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('c')),
+                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('d')),
+                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('m'))
+                    )
+                  )
+                )
+                # TODO: are indicator conditions like this on tags supported?
+                # '880$a{100_1$6~$6/3-5}{100_1$6~\880}' => nil,
+              }
+              check_queries(examples)
+            end
+
+            it 'handles "Checking existence of fields"' do
+              examples = {
+                '020$c{$a}' => Query.new(
+                  VarFieldValue.new(Tag.new('020'), Subfield.new('c')),
+                  Condition.new('?', right: Subfield.new('a'))
+                ),
+                '020$z{!$a}' => Query.new(
+                  VarFieldValue.new(Tag.new('020'), Subfield.new('z')),
+                  Condition.new('!', right: Subfield.new('a'))
+                )
+              }
+              check_queries(examples)
+            end
+
+            # TODO: figure out what's going on here
+            xit 'handles "Abbreviation of fieldSpec or subfieldSpec"' do
+              examples = {
+                '020 ##$a0394170660$qRandom House$c$4.95' => nil,
+                '020 ##$a0491001304' => nil,
+                '020$q{$c}' => nil,
+                '020[0-#]$q[0-#]{$c[0-#]}' => nil,
+                '020[0]$q[0]{?020[0]$c[0]} OR // true' => nil,
+                '020[1]$q[0]{?020[1]$c[0]} // false' => nil,
+                '020 ##$a0394170660$qRandom House$qpaperback$c$4.95' => nil,
+                '020 ##$a0394502884$qRandom House$qhardcover$c$12.50 ' => nil,
+                '020$c{$q=\paperback}' => nil,
+                '020[0-#]$c[0-#]{$q[0-#]=\paperback}' => nil,
+                '020[0]$c[0]{020[0]$q[0]=\paperback} OR // false' => nil,
+                '020[0]$c[0]{020[0]$q[1]=\paperback} OR // true' => nil,
+                '020[1]$c[0]{020[1]$q[0]=\paperback} OR // false' => nil,
+                '020[1]$c[0]{020[1]$q[1]=\paperback}    // false' => nil,
+                '800[0]{800[0]__1$a~\Poe}' => nil,
+                '800[0]{__1$a~\Poe}' => nil,
+                '245$a{/#=\/}' => nil,
+                '245$a{245$a/#=\/}' => nil
+              }
+              check_queries(examples)
             end
           end
         end

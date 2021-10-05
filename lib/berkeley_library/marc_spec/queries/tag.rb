@@ -14,11 +14,11 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, index: nil)
+        def initialize(tag, index = nil)
           raise ArgumentError, 'Tag cannot be nil' unless tag
 
           @tag_exact = tag.to_s unless (@tag_re = tag_re_from(tag))
-          @index = index
+          @index = of_any_type(index, Position, AlNumRange, allow_nil: true)
         end
 
         # ------------------------------------------------------------
@@ -43,7 +43,7 @@ module BerkeleyLibrary
         def to_s_inspect
           StringIO.new.tap do |out|
             out << (tag_re ? tag_re.inspect : tag_exact)
-            out << "[#{index}]" if index
+            out << "[#{index.inspect}]" if index
           end.string
         end
 

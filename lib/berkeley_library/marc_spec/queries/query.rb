@@ -34,7 +34,7 @@ module BerkeleyLibrary
         def to_s_inspect
           StringIO.new.tap do |out|
             out << referent.inspect
-            out << "{#{condition.inspect}}"
+            out << "{#{condition.inspect}}" if condition
           end.string
         end
 

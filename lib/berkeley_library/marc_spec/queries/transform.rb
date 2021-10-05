@@ -30,11 +30,11 @@ module BerkeleyLibrary
         end
 
         rule(any_condition: sequence(:conditions)) do
-          Condition.any_of(conditions)
+          Condition.any_of(*conditions)
         end
 
         rule(all_conditions: sequence(:conditions)) do
-          Condition.all_of(conditions)
+          Condition.all_of(*conditions)
         end
 
         # ----------------------------------------
@@ -45,7 +45,7 @@ module BerkeleyLibrary
         end
 
         rule(tag: simple(:tag), index: simple(:index)) do
-          Tag.new(tag, index: index)
+          Tag.new(tag, index)
         end
 
         # ----------------------------------------
@@ -56,7 +56,7 @@ module BerkeleyLibrary
         end
 
         rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec)) do
-          FixedFieldValue.new(Tag.new(tag, index: index), character_spec)
+          FixedFieldValue.new(Tag.new(tag, index), character_spec)
         end
 
         # ----------------------------------------
@@ -82,7 +82,7 @@ module BerkeleyLibrary
         # subfieldSpec
 
         rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield)) do
-          VarFieldValue.new(Tag.new(tag, index: index), subfield)
+          VarFieldValue.new(Tag.new(tag, index), subfield)
         end
 
         rule(tag: simple(:tag), subfield: simple(:subfield)) do
@@ -93,7 +93,7 @@ module BerkeleyLibrary
         # indicatorSpec
 
         rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind)) do
-          IndicatorValue.new(Tag.new(tag, index: index), ind)
+          IndicatorValue.new(Tag.new(tag, index), ind)
         end
 
         rule(tag: simple(:tag), ind: simple(:ind)) do

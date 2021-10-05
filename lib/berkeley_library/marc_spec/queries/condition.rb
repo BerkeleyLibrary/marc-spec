@@ -38,11 +38,13 @@ module BerkeleyLibrary
         # Static factory methods
 
         class << self
-          def any_of(conditions)
-            conditions.inject { |cc, c| cc.or(c) }
+          def any_of(*conditions)
+            conditions.inject do |cc, c|
+              cc.or(c)
+            end
           end
 
-          def all_of(conditions)
+          def all_of(*conditions)
             conditions.inject { |cc, c| cc.and(c) }
           end
         end
