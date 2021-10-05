@@ -6,7 +6,7 @@ module BerkeleyLibrary
       describe VarFieldValue do
         it 'accepts a tag and subfield' do
           tag = Tag.new('856')
-          sf = Subfield.new(code: 'u')
+          sf = Subfield.new('u')
           v = VarFieldValue.new(tag, sf)
           expect(v.tag).to eq(tag)
           expect(v.subfield).to eq(sf)
