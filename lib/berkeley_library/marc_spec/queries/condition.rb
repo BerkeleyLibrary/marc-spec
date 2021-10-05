@@ -35,6 +35,19 @@ module BerkeleyLibrary
         # rubocop:enable Style/KeywordParametersOrder
 
         # ------------------------------------------------------------
+        # Static factory methods
+
+        class << self
+          def any_of(conditions)
+            conditions.inject { |cc, c| cc.or(c) }
+          end
+
+          def all_of(conditions)
+            conditions.inject { |cc, c| cc.and(c) }
+          end
+        end
+
+        # ------------------------------------------------------------
         # Instance methods
 
         def unary?
@@ -43,6 +56,28 @@ module BerkeleyLibrary
 
         def binary?
           !unary?
+        end
+
+        def and(other_condition)
+          return self if other_condition == self || other_condition.nil?
+
+          Condition.new('&&', left: self, right: other_condition)
+        end
+
+        def or(other_condition)
+          return self if other_condition == self || other_condition.nil?
+
+          Condition.new('||', left: self, right: other_condition)
+        end
+
+        def implicit_left=(value)
+          if @left.nil?
+            @left = value if binary?
+          elsif @left.respond_to?(:implicit_left=)
+            @left.implicit_left = value
+          end
+
+          @right.implicit_left = value if @right.respond_to?(:implicit_left=)
         end
 
         # ------------------------------------------------------------

@@ -15,19 +15,24 @@ module BerkeleyLibrary
         # ----------------------------------------
         # subTermSet
 
-        rule(left: simple(:left), operator: simple(:operator), right: simple(:right), or_conditions: sequence(:or_conditions)) do
-          # TODO: use or_conditions
+        rule(left: simple(:left), operator: simple(:operator), right: simple(:right)) do
           Condition.new(operator, left: left, right: right)
         end
 
-        rule(operator: simple(:operator), right: simple(:right), or_conditions: sequence(:or_conditions)) do
-          # TODO: use or_conditions
+        rule(operator: simple(:operator), right: simple(:right)) do
           Condition.new(operator, right: right)
         end
 
-        rule(right: simple(:right), or_conditions: sequence(:or_conditions)) do
-          # TODO: use or_conditions
+        rule(right: simple(:right)) do
           Condition.new(right: right)
+        end
+
+        rule(any_condition: sequence(:conditions)) do
+          Condition.any_of(conditions)
+        end
+
+        rule(all_conditions: sequence(:conditions)) do
+          Condition.all_of(conditions)
         end
 
         # ----------------------------------------
@@ -102,10 +107,6 @@ module BerkeleyLibrary
 
         rule(referent: simple(:referent), condition: simple(:condition)) do
           Query.new(referent, condition)
-        end
-
-        rule(referent: simple(:referent), condition: sequence(:condition)) do
-          Query.new(referent, *condition)
         end
       end
     end

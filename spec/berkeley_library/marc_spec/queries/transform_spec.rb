@@ -258,12 +258,16 @@ module BerkeleyLibrary
 
             let(:tag856) { Tag.new('856') }
             let(:vf856u) { VarFieldValue.new(tag856, Subfield.new('u')) }
+            let(:vf856u_exist) { Condition.new('?', right: vf856u) }
 
-            context 'single subTerm' do
+            let(:vf956u_eq_vf856u) { Condition.new('=', left: vf956u, right: vf856u) }
+
+            # TODO: collapse to one set of expectations
+            context 'single subSpec' do
               it 'returns a Query for an implicit unary ?' do
                 expecteds = {
                   '956{956$u}' => Query.new(tag956, vf956u_exist),
-                  '956^1{956$u}' => Query.new(IndicatorValue.new(tag956, 1), vf956u_exist),
+                  '956^1{956$u}' => Query.new(IndicatorValue.new(tag956, 1), vf956u_exist)
                 }
                 check_queries(expecteds)
               end
@@ -271,25 +275,45 @@ module BerkeleyLibrary
               it 'returns a Query for an explicit unary ?' do
                 expecteds = {
                   '956{?956$u}' => Query.new(tag956, vf956u_exist),
-                  '956^1{?956$u}' => Query.new(IndicatorValue.new(tag956, 1), vf956u_exist),
+                  '956^1{?956$u}' => Query.new(IndicatorValue.new(tag956, 1), vf956u_exist)
                 }
                 check_queries(expecteds)
               end
 
               it 'returns a Query for a binary =' do
-                vf956u_eq_vf856u = Condition.new('=', left: vf956u, right: vf856u)
-
                 expecteds = {
-                  '956{956$u=856$u}' => Query.new(tag956, vf956u_eq_vf856u),
+                  '956{956$u=856$u}' => Query.new(tag956, vf956u_eq_vf856u)
                 }
                 check_queries(expecteds)
               end
 
               it 'returns a Query for a unary =' do
-                vf956u_eq_vf856u = Condition.new('=', left: vf956u, right: vf856u)
-
                 expecteds = {
-                  '956$u{=856$u}' => Query.new(vf956u, vf956u_eq_vf856u),
+                  '956$u{=856$u}' => Query.new(vf956u, vf956u_eq_vf856u)
+                }
+                check_queries(expecteds)
+              end
+            end
+
+            context 'repeated subSpecs' do
+              it 'returns a Query' do
+                expected_condition = vf956u_exist.and(vf956u_eq_vf856u)
+                expected_query = Query.new(vf956u, expected_condition)
+                expecteds = {
+                  '956$u{?956$u}{956$u=856$u}' => expected_query,
+                  '956$u{?956$u}{=856$u}' => expected_query
+                }
+                check_queries(expecteds)
+              end
+            end
+
+            context 'chained subTerms' do
+              it 'returns a Query' do
+                expected_condition = vf856u_exist.or(vf956u_eq_vf856u)
+                expected_query = Query.new(vf956u, expected_condition)
+                expecteds = {
+                  '956$u{?856$u|956$u=856$u}' => expected_query,
+                  '956$u{?856$u|=856$u}' => expected_query
                 }
                 check_queries(expecteds)
               end
