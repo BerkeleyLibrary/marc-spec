@@ -15,15 +15,18 @@ module BerkeleyLibrary
         # ----------------------------------------
         # subTermSet
 
-        rule(left: simple(:left), operator: simple(:operator), right: simple(:right)) do
+        rule(left: simple(:left), operator: simple(:operator), right: simple(:right), or_conditions: sequence(:or_conditions)) do
+          # TODO: use or_conditions
           Condition.new(operator, left: left, right: right)
         end
 
-        rule(operator: simple(:operator), right: simple(:right)) do
+        rule(operator: simple(:operator), right: simple(:right), or_conditions: sequence(:or_conditions)) do
+          # TODO: use or_conditions
           Condition.new(operator, right: right)
         end
 
-        rule(right: simple(:right)) do
+        rule(right: simple(:right), or_conditions: sequence(:or_conditions)) do
+          # TODO: use or_conditions
           Condition.new(right: right)
         end
 

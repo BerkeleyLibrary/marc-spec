@@ -162,7 +162,9 @@ module BerkeleyLibrary
         #       single one a separate name
         #
         # subSpec           = "{" subTermSet *( "|" subTermSet ) "}"
-        rule(:_sub_spec) { str('{') >> (sub_term_set >> str('|')).repeat >> sub_term_set >> str('}') }
+        rule(:_sub_spec) do
+          str('{') >> (sub_term_set >> ((str('|') >> sub_term_set).repeat).as(:or_conditions)) >> str('}')
+        end
 
         # Repeated to satisfy generated tests
         rule(:sub_spec) { _sub_spec.repeat(1) }
