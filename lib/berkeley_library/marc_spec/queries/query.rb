@@ -9,11 +9,11 @@ module BerkeleyLibrary
         attr_reader :referent
         attr_reader :condition
 
-        def initialize(referent, condition)
+        def initialize(referent, *conditions)
           raise ArgumentError, 'referent cannot be nil' unless referent
 
           @referent = referent
-          @conditions = condition
+          @condition = normalize_conditions(conditions)
         end
 
         # ------------------------------------------------------------
@@ -41,6 +41,28 @@ module BerkeleyLibrary
         def equality_attrs
           %i[referent condition]
         end
+
+        # ------------------------------------------------------------
+        # Private
+
+        def normalize_conditions(conditions)
+          compacted = conditions.compact
+          return if compacted.empty?
+
+          normalized = compacted.map { |c| normalize_condition(c) }
+          as_tree(normalized)
+        end
+
+        def normalize_condition(condition)
+          condition.unary? ? condition : Condition.new(condition.operator, left: referent, right: condition.right)
+        end
+
+        def as_tree(conditions)
+          return conditions[0] if conditions.size == 1
+
+          Condition.new('&&', left: conditions[0], right: as_tree(conditions[1..]))
+        end
+
       end
     end
   end
