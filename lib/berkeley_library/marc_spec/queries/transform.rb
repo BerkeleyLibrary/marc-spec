@@ -12,6 +12,8 @@ module BerkeleyLibrary
 
         rule(from: simple(:from), to: simple(:to)) { AlNumRange.new(from, to) }
 
+        rule(comparison_string: simple(:string)) { ComparisonString.new(string) }
+
         # ----------------------------------------
         # subTermSet
 

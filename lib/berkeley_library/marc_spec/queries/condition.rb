@@ -99,6 +99,8 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Private methods
 
+        private
+
         def valid_operator(op_val)
           op_val.to_s.tap do |op|
             raise ArgumentError, "Not a valid operator: #{op_val.inspect}" unless ALL_OPERATORS.include?(op)

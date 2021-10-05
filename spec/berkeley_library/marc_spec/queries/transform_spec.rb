@@ -319,6 +319,22 @@ module BerkeleyLibrary
               end
             end
           end
+
+          describe 'comparisonString' do
+            it 'returns a Query' do
+              expecteds = {
+                '008/18{LDR/6=\t}' => Query.new(
+                  FixedFieldValue.new(Tag.new('008'), Position.new(18)),
+                  Condition.new(
+                    '=',
+                    left: FixedFieldValue.new(Tag.new('LDR'), Position.new(6)),
+                    right: ComparisonString.new('t')
+                  )
+                )
+              }
+              check_queries(expecteds)
+            end
+          end
         end
       end
     end
