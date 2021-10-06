@@ -16,6 +16,14 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
+        # Instance methods
+
+        def select_from(seq)
+          # we don't use `.last` b/c seq might be a string
+          seq[position.nil? ? -1 : position]
+        end
+
+        # ------------------------------------------------------------
         # Object overrides
 
         def to_s

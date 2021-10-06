@@ -10,6 +10,11 @@ module BerkeleyLibrary
             expect(r.from).to eq('j')
             expect(r.to).to eq('q')
             expect(r.to_s).to eq('j-q')
+
+            %w[j m q].each { |i| expect(r).to include(i) }
+            %w[i r].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from('nequaquam vacuum')).to eq('nqqmm')
           end
 
           it 'handles Parslet::Slice arguments' do
@@ -20,6 +25,11 @@ module BerkeleyLibrary
             expect(r.from).to eq('j')
             expect(r.to).to eq('q')
             expect(r.to_s).to eq('j-q')
+
+            %w[j m q].each { |i| expect(r).to include(i) }
+            %w[i r].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from('nequaquam vacuum')).to eq('nqqmm')
           end
         end
 
@@ -29,6 +39,11 @@ module BerkeleyLibrary
             expect(r.from).to eq(3)
             expect(r.to).to eq(5)
             expect(r.to_s).to eq('3-5')
+
+            [3, 4, 5].each { |i| expect(r).to include(i) }
+            [2, 6].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from([3, 1, 4, 1, 5, 9, 2, 6, 5])).to eq([1, 5, 9])
           end
 
           it 'handles string arguments' do
@@ -36,6 +51,11 @@ module BerkeleyLibrary
             expect(r.from).to eq(3)
             expect(r.to).to eq(5)
             expect(r.to_s).to eq('3-5')
+
+            [3, 4, 5].each { |i| expect(r).to include(i) }
+            [2, 6].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from([3, 1, 4, 1, 5, 9, 2, 6, 5])).to eq([1, 5, 9])
           end
         end
 
@@ -45,6 +65,11 @@ module BerkeleyLibrary
             expect(r.from).to be_nil
             expect(r.to).to eq(5)
             expect(r.to_s).to eq('#-5')
+
+            [-5, -4, -3].each { |i| expect(r).to include(i) }
+            [1, 2, -6, -7].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from([3, 1, 4, 1, 5, 9, 2, 6, 5])).to eq([1, 5, 9, 2, 6, 5])
           end
 
           it 'handles string arguments' do
@@ -52,22 +77,37 @@ module BerkeleyLibrary
             expect(r.from).to be_nil
             expect(r.to).to eq(5)
             expect(r.to_s).to eq('#-5')
+
+            [-5, -4, -3].each { |i| expect(r).to include(i) }
+            [1, 2, -6, -7].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from([3, 1, 4, 1, 5, 9, 2, 6, 5])).to eq([1, 5, 9, 2, 6, 5])
           end
         end
 
         describe 'right open, numeric' do
           it 'handles int arguments' do
-            r = AlNumRange.new(3, nil)
-            expect(r.from).to eq(3)
+            r = AlNumRange.new(4, nil)
+            expect(r.from).to eq(4)
             expect(r.to).to be_nil
-            expect(r.to_s).to eq('3-#')
+            expect(r.to_s).to eq('4-#')
+
+            [4, 5].each { |i| expect(r).to include(i) }
+            [1, 2].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from([3, 1, 4, 1, 5, 9, 2, 6, 5])).to eq([5, 9, 2, 6, 5])
           end
 
           it 'handles string arguments' do
-            r = AlNumRange.new('3', '#')
-            expect(r.from).to eq(3)
+            r = AlNumRange.new('4', '#')
+            expect(r.from).to eq(4)
             expect(r.to).to be_nil
-            expect(r.to_s).to eq('3-#')
+            expect(r.to_s).to eq('4-#')
+
+            [4, 5].each { |i| expect(r).to include(i) }
+            [1, 2].each { |i| expect(r).not_to include(i) }
+
+            expect(r.select_from([3, 1, 4, 1, 5, 9, 2, 6, 5])).to eq([5, 9, 2, 6, 5])
           end
         end
       end
