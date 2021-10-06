@@ -16,9 +16,22 @@ module BerkeleyLibrary
         # Initializer
 
         def initialize(code, index: nil, character_spec: nil)
-          @code = code
+          @code = parse_code(code)
           @index = index
           @character_spec = character_spec
+        end
+
+        # ------------------------------------------------------------
+        # Referent
+
+        def apply(data_field)
+          subfields = all_subfields(data_field)
+          subfields = index.select_from(subfields) if index
+          # TODO: split character_spec into its own object taking
+          #       Subfield as a context — cf. Tag/FixedField separation
+          return subfields unless character_spec
+
+          subfields.map { |sf| character_spec.select_from(sf.value) }
         end
 
         # ------------------------------------------------------------
@@ -50,6 +63,22 @@ module BerkeleyLibrary
         def equality_attrs
           %i[code index character_spec]
         end
+
+        # ------------------------------------------------------------
+        # Private methods
+
+        private
+
+        def all_subfields(data_field)
+          data_field.subfields.select { |sf| code.include?(sf.code) }
+        end
+
+        def parse_code(code)
+          raise ArgumentError, 'Code cannot be nil' if code.nil?
+
+          code.is_a?(AlNumRange) ? code : code.to_s
+        end
+
       end
     end
   end
