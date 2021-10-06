@@ -351,9 +351,9 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Examples
 
-        # Examples from https://github.com/MARCspec/MARCspec/blob/v0.16beta/examples.md
+        # Examples from http://marcspec.github.io/MARCspec/marc-spec.html#general-form
         describe 'examples' do
-          it 'handles "Reference to field data examples"' do
+          it '9.2 Reference to field data' do
             examples = {
               'LDR' => Query.new(Tag.new('LDR')),
               '00.' => Query.new(Tag.new('00.')),
@@ -363,19 +363,7 @@ module BerkeleyLibrary
             check_queries(examples)
           end
 
-          it 'handles "Reference to field data with repetitions examples"' do
-            examples = {
-              '300[0]' => Query.new(Tag.new('300', Position.new(0))),
-              '300[1]' => Query.new(Tag.new('300', Position.new(1))),
-              '300[0-2]' => Query.new(Tag.new('300', AlNumRange.new(0, 2))),
-              '300[1-#]' => Query.new(Tag.new('300', AlNumRange.new(1, nil))),
-              '300[#]' => Query.new(Tag.new('300', Position.new(nil))),
-              '300[#-1]' => Query.new(Tag.new('300', AlNumRange.new(nil, 1)))
-            }
-            check_queries(examples)
-          end
-
-          it 'handles "Reference to substring examples"' do
+          it '9.3 Reference to substring"' do
             examples = {
               'LDR/0-4' => Query.new(FixedFieldValue.new(Tag.new('LDR'), AlNumRange.new(0, 4))),
               'LDR/6' => Query.new(FixedFieldValue.new(Tag.new('LDR'), Position.new(6))),
@@ -387,7 +375,7 @@ module BerkeleyLibrary
             check_queries(examples)
           end
 
-          xit 'handles "Reference to data content examples"' do
+          xit '9.4 Reference to data content' do
             examples = {
               '245$a' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a'))),
               '245$a$b$c' => nil,
@@ -397,95 +385,124 @@ module BerkeleyLibrary
             check_queries(examples)
           end
 
-          it 'handles "Reference to data content with repetitions examples"' do
+          it '9.5 Reference to occurrence' do
             examples = {
-              '300[0]$a' => Query.new(VarFieldValue.new(Tag.new('300', Position.new(0)), Subfield.new('a'))),
-              '300$a[0]' => Query.new(VarFieldValue.new(Tag.new('300'), Subfield.new('a', index: Position.new(0)))),
-              '300$a[#]' => Query.new(VarFieldValue.new(Tag.new('300'), Subfield.new('a', index: Position.new(nil)))),
-              '300$a[#-1]' => Query.new(VarFieldValue.new(Tag.new('300'), Subfield.new('a', index: AlNumRange.new(nil, 1))))
+              '300[0]' => Query.new(Tag.new('300', Position.new(0))),
+              '300[1]' => Query.new(Tag.new('300', Position.new(1))),
+              '300[0-2]' => Query.new(Tag.new('300', AlNumRange.new(0, 2))),
+              '300[1-#]' => Query.new(Tag.new('300', AlNumRange.new(1, nil))),
+              '300[#]' => Query.new(Tag.new('300', Position.new(nil))),
+              '300[#-1]' => Query.new(Tag.new('300', AlNumRange.new(nil, 1)))
             }
             check_queries(examples)
           end
 
-          # TODO: are indicator conditions like this on tags supported?
-          xit 'handles "Reference to contextualized data with indicators examples"' do
+          it '9.6 Reference to indicator values' do
             examples = {
-              '245_1$a' => nil,
-              '245_1_$a' => nil,
-              '245_10$a' => nil,
-              '245__0$a' => nil,
-              '307[0-3]_8$a' => nil
+              '880^1' => Query.new(IndicatorValue.new(Tag.new('880'), 1)),
+              '880[1]^2' => Query.new(IndicatorValue.new(Tag.new('880', Position.new(1)), 1)),
             }
             check_queries(examples)
           end
 
-          context '"Reference to contextualized data with subSpecs examples"' do
-            it 'handles "Checking dependencies via string comparison"' do
+          context '9.7 SubSpecs' do
+            it '9.7.1 General' do
+              vf020c_if_vf020a = Query.new(
+                VarFieldValue.new(Tag.new('020'), Subfield.new('c')),
+                Condition.new(
+                  '?',
+                  right: VarFieldValue.new(Tag.new('020'), Subfield.new('a'))
+                ),
+              )
+
+              vf020z_unless_vf020a = Query.new(
+                VarFieldValue.new(Tag.new('020'), Subfield.new('z')),
+                Condition.new(
+                  '!',
+                  right: VarFieldValue.new(Tag.new('020'), Subfield.new('a'))
+                ),
+              )
+
+              ldr7 = FixedFieldValue.new(Tag.new('LDR'), Position.new(7))
+              ldr6 = FixedFieldValue.new(Tag.new('LDR'), Position.new(6))
+
+              ff007_0 = FixedFieldValue.new(Tag.new('007'), Position.new(0))
+
+              cstr_t = ComparisonString.new('t')
+              cstr_a = ComparisonString.new('a')
+              cstr_c = ComparisonString.new('c')
+              cstr_d = ComparisonString.new('d')
+              cstr_m = ComparisonString.new('m')
+
               examples = {
+                '020$c{?020$a}' => vf020c_if_vf020a,
+                '020$c{020$c?020$a}' => vf020c_if_vf020a,
+                '020$z{!020$a}' => vf020z_unless_vf020a,
+                '020$z{020$z!020$a}' => vf020z_unless_vf020a,
                 '008/18{LDR/6=\\t}' => Query.new(
                   FixedFieldValue.new(Tag.new('008'), Position.new(18)),
-                  Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(6)), right: ComparisonString.new('t'))
+                  Condition.new('=', left: ldr6, right: cstr_t)
                 ),
                 '245$b{007/0=\\a|007/0=\\t}' => Query.new(
                   VarFieldValue.new(Tag.new('245'), Subfield.new('b')),
                   Condition.any_of(
-                    Condition.new('=', left: FixedFieldValue.new(Tag.new('007'), Position.new(0)), right: ComparisonString.new('a')),
-                    Condition.new('=', left: FixedFieldValue.new(Tag.new('007'), Position.new(0)), right: ComparisonString.new('t'))
+                    Condition.new('=', left: ff007_0, right: cstr_a),
+                    Condition.new('=', left: ff007_0, right: cstr_t)
                   )
                 ),
                 '008/18{LDR/6=\\a}{LDR/7=\\a|LDR/7=\\c|LDR/7=\\d|LDR/7=\\m}' => Query.new(
                   FixedFieldValue.new(Tag.new('008'), Position.new(18)),
                   Condition.all_of(
-                    Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(6)), right: ComparisonString.new('a')),
+                    Condition.new('=', left: ldr6, right: cstr_a),
                     Condition.any_of(
-                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('a')),
-                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('c')),
-                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('d')),
-                      Condition.new('=', left: FixedFieldValue.new(Tag.new('LDR'), Position.new(7)), right: ComparisonString.new('m'))
+                      Condition.new('=', left: ldr7, right: cstr_a),
+                      Condition.new('=', left: ldr7, right: cstr_c),
+                      Condition.new('=', left: ldr7, right: cstr_d),
+                      Condition.new('=', left: ldr7, right: cstr_m)
                     )
                   )
-                )
-                # TODO: are indicator conditions like this on tags supported?
-                # '880$a{100_1$6~$6/3-5}{100_1$6~\880}' => nil,
-              }
-              check_queries(examples)
-            end
-
-            it 'handles "Checking existence of fields"' do
-              examples = {
-                '020$c{$a}' => Query.new(
-                  VarFieldValue.new(Tag.new('020'), Subfield.new('c')),
-                  Condition.new('?', right: Subfield.new('a'))
                 ),
-                '020$z{!$a}' => Query.new(
-                  VarFieldValue.new(Tag.new('020'), Subfield.new('z')),
-                  Condition.new('!', right: Subfield.new('a'))
+                '880$a{100$6~$6/3-5}{100$6~\880}' => Query.new(
+                  VarFieldValue.new(Tag.new('880'), Subfield.new('a')),
+                  Condition.all_of(
+                    Condition.new(
+                      '~',
+                      left: VarFieldValue.new(Tag.new('100'), Subfield.new('6')),
+                      # TODO: should we reify the semantics here?
+                      # right: VarFieldValue.new(Tag.new('100'), Subfield.new('6', character_spec: AlNumRange.new(3, 5)))
+                      right: Subfield.new('6', character_spec: AlNumRange.new(3, 5))
+                    ),
+                    Condition.new(
+                      '~',
+                      left: VarFieldValue.new(Tag.new('100'), Subfield.new('6')),
+                      right: ComparisonString.new('880')
+                    ),
+                  )
                 )
               }
               check_queries(examples)
             end
 
-            # TODO: figure out what's going on here
-            xit 'handles "Abbreviation of fieldSpec or subfieldSpec"' do
+            it '9.7.2 Abbreviations' do
+              tag_007_1 = Tag.new('007', Position.new(1))
+              ff007_1_3 = FixedFieldValue.new(tag_007_1, Position.new(3))
               examples = {
-                '020 ##$a0394170660$qRandom House$c$4.95' => nil,
-                '020 ##$a0491001304' => nil,
-                '020$q{$c}' => nil,
-                '020[0-#]$q[0-#]{$c[0-#]}' => nil,
-                '020[0]$q[0]{?020[0]$c[0]} OR // true' => nil,
-                '020[1]$q[0]{?020[1]$c[0]} // false' => nil,
-                '020 ##$a0394170660$qRandom House$qpaperback$c$4.95' => nil,
-                '020 ##$a0394502884$qRandom House$qhardcover$c$12.50 ' => nil,
-                '020$c{$q=\paperback}' => nil,
-                '020[0-#]$c[0-#]{$q[0-#]=\paperback}' => nil,
-                '020[0]$c[0]{020[0]$q[0]=\paperback} OR // false' => nil,
-                '020[0]$c[0]{020[0]$q[1]=\paperback} OR // true' => nil,
-                '020[1]$c[0]{020[1]$q[0]=\paperback} OR // false' => nil,
-                '020[1]$c[0]{020[1]$q[1]=\paperback}    // false' => nil,
-                '800[0]{800[0]__1$a~\Poe}' => nil,
-                '800[0]{__1$a~\Poe}' => nil,
-                '245$a{/#=\/}' => nil,
-                '245$a{245$a/#=\/}' => nil
+                '007[1]/3{/0=\\v}' => Query.new(
+                  ff007_1_3,
+                  Condition.new(
+                    '=',
+                    left: Position.new('0'),
+                    right: ComparisonString.new('v')
+                  )
+                ),
+                '007[1]/3{007[1]/0=\\v}' => Query.new(
+                  ff007_1_3,
+                  Condition.new(
+                    '=',
+                    left: FixedFieldValue.new(tag_007_1, Position.new(0)),
+                    right: ComparisonString.new('v')
+                  )
+                )
               }
               check_queries(examples)
             end

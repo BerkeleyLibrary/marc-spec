@@ -24,12 +24,12 @@ module BerkeleyLibrary
         # Initializer
 
         # rubocop:disable Style/KeywordParametersOrder
-        # TODO: verify left: nil semantics for unary operators
-        #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
-        #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
         def initialize(operator = '?', left: nil, right:)
           @operator = valid_operator(operator)
-          @left = left
+          # TODO: verify left semantics for unary operators
+          #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
+          #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
+          @left = left unless unary?
           @right = right
         end
         # rubocop:enable Style/KeywordParametersOrder
