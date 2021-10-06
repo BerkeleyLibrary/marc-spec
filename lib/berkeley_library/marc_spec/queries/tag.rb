@@ -67,11 +67,12 @@ module BerkeleyLibrary
         private
 
         def all_fields(marc_record)
-          [].tap do |ff|
-            next (ff << marc_record.leader) if tag_exact == LDR
-            next (marc_record.each_by_tag(tag_exact) { |field| ff << field }) if tag_exact
+          return [marc_record.leader] if tag_exact == LDR
+          return marc_record.fields(tag_exact) if tag_exact
 
-            next (marc_record.each { |field| ff << field if field.tag =~ tag_re })
+          [].tap do |ff|
+            ff << marc_record.leader if LDR =~ tag_re
+            marc_record.each { |field| ff << field if field.tag =~ tag_re }
           end
         end
 
