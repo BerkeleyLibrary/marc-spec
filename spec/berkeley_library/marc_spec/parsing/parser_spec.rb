@@ -10,7 +10,7 @@ module BerkeleyLibrary
         let(:tags) { %w[245 2.. 24. .45 ..5 ... LDR] }
         let(:positions) { %w[0 7 17 317] }
         let(:pos_ranges) { [%w[1 12], %w[1 #], %w[# 1], %w[24 56], %w[# #]] }
-        let(:codes) { %w[a b c 1 2 3] }
+        let(:codes) { %w[a b c 1 2 3 $ \\ { }] }
         let(:code_ranges) { [%w[a c], %w[1 3]] }
         let(:inds) { %w[1 2] }
 
@@ -330,21 +330,83 @@ module BerkeleyLibrary
           end
         end
 
-        xdescribe 'with multiple subfields' do
+        describe 'with multiple subfields' do
           it 'parses subfield code lists' do
             aggregate_failures do
               tags.each do |tag|
                 code_list = codes.map { |c| "$#{c}" }.join
                 val = "#{tag}#{code_list}"
                 expect(parser).to parse(val, reporter: r)
-                result = rule.parse(val)
-                expect(result[:tag]).to eq(tag)
-                expect(result[:codes]).to eq(codes)
+                result = parser.parse(val)
+
+                referent = result[:referent]
+                expect(referent[:tag]).to eq(tag)
+
+                subqueries = result[:subqueries]
+                expect(subqueries.size).to eq(codes.size)
+                subqueries.each_with_index do |subquery, i|
+                  referent = subquery[:referent]
+                  expect(referent[:code]).to eq(codes[i])
+                end
               end
             end
           end
 
-          it 'parses an index'
+          it 'handles indices' do
+            aggregate_failures do
+              tags.each do |tag|
+                pos_ranges.each do |from_index, to_index|
+                  code_list = codes.map { |c| "$#{c}" }.join
+                  val = "#{tag}[#{from_index}-#{to_index}]#{code_list}"
+                  expect(parser).to parse(val, reporter: r)
+                  result = parser.parse(val)
+
+                  referent = result[:referent]
+                  expect(referent[:tag]).to eq(tag)
+                  index = referent[:index]
+                  expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
+                  expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
+
+                  subqueries = result[:subqueries]
+                  expect(subqueries.size).to eq(codes.size)
+                  subqueries.each_with_index do |subquery, i|
+                    referent = subquery[:referent]
+                    expect(referent[:code]).to eq(codes[i])
+                  end
+                end
+              end
+            end
+          end
+
+          it 'parses subfield code lists with conditions' do
+            aggregate_failures do
+              tags.each do |tag|
+                pos_ranges.each do |from_index, to_index|
+                  code_list = codes.map.with_index { |c, i| "$#{c}{~\\ok#{i}}" }.join
+                  val = "#{tag}[#{from_index}-#{to_index}]#{code_list}"
+                  expect(parser).to parse(val, reporter: r)
+                  result = parser.parse(val)
+
+                  referent = result[:referent]
+                  expect(referent[:tag]).to eq(tag)
+                  index = referent[:index]
+                  expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
+                  expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
+
+                  subqueries = result[:subqueries]
+                  expect(subqueries.size).to eq(codes.size)
+                  subqueries.each_with_index do |subquery, i|
+                    referent = subquery[:referent]
+                    expect(referent[:code]).to eq(codes[i])
+                    condition = subquery[:condition]
+                    expect(condition[:operator]).to eq('~')
+                    right_operand = condition[:right]
+                    expect(right_operand[:comparison_string]).to eq("ok#{i}")
+                  end
+                end
+              end
+            end
+          end
         end
       end
     end

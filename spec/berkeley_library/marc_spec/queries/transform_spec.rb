@@ -375,12 +375,20 @@ module BerkeleyLibrary
             check_queries(examples)
           end
 
-          xit '9.4 Reference to data content' do
+          it '9.4 Reference to data content' do
             examples = {
               '245$a' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a'))),
-              '245$a$b$c' => nil,
+              '245$a$b$c' => Query.new(
+                Tag.new('245'),
+                nil,
+                %w[a b c].map { |code| Query.new(Subfield.new(code)) }
+              ),
               '245$a-c' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new(AlNumRange.new('a', 'c')))),
-              '300$_$$' => nil
+              '...$_$$' => Query.new(
+                Tag.new('...'),
+                nil,
+                %w[_ $].map { |code| Query.new(Subfield.new(code)) }
+              )
             }
             check_queries(examples)
           end
@@ -400,7 +408,7 @@ module BerkeleyLibrary
           it '9.6 Reference to indicator values' do
             examples = {
               '880^1' => Query.new(IndicatorValue.new(Tag.new('880'), 1)),
-              '880[1]^2' => Query.new(IndicatorValue.new(Tag.new('880', Position.new(1)), 1)),
+              '880[1]^2' => Query.new(IndicatorValue.new(Tag.new('880', Position.new(1)), 2))
             }
             check_queries(examples)
           end
@@ -412,7 +420,7 @@ module BerkeleyLibrary
                 Condition.new(
                   '?',
                   right: VarFieldValue.new(Tag.new('020'), Subfield.new('a'))
-                ),
+                )
               )
 
               vf020z_unless_vf020a = Query.new(
@@ -420,7 +428,7 @@ module BerkeleyLibrary
                 Condition.new(
                   '!',
                   right: VarFieldValue.new(Tag.new('020'), Subfield.new('a'))
-                ),
+                )
               )
 
               ldr7 = FixedFieldValue.new(Tag.new('LDR'), Position.new(7))
@@ -476,7 +484,7 @@ module BerkeleyLibrary
                       '~',
                       left: VarFieldValue.new(Tag.new('100'), Subfield.new('6')),
                       right: ComparisonString.new('880')
-                    ),
+                    )
                   )
                 )
               }

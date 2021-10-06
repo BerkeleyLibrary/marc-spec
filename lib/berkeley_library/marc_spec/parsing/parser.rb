@@ -165,9 +165,7 @@ module BerkeleyLibrary
         #       single one a separate name
         #
         # subSpec           = "{" subTermSet *( "|" subTermSet ) "}"
-        rule(:_sub_spec) do
-          str('{') >> (_chained_sub_term_sets | sub_term_set) >> str('}')
-        end
+        rule(:_sub_spec) { str('{') >> (_chained_sub_term_sets | sub_term_set) >> str('}') }
 
         # Extracted from SubSpec for clarity
         rule(:_repeated_sub_specs) { _sub_spec.repeat(2).as(:all_conditions) }
@@ -175,11 +173,20 @@ module BerkeleyLibrary
         # Repeated to satisfy generated tests
         rule(:sub_spec) { _repeated_sub_specs | _sub_spec }
 
-        # Extracted from MARCspec for clarity
-        # (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec))
+        # Rewritten from MARCspec for clarity
+        #  (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec))
+        #  -> (fieldTag [index] *(abrSubfieldSpec *subSpec))
+        rule(:_multiple_subfield_spec) {
+          (field_tag.as(:tag) >> index.maybe).as(:referent) >>
+            (abr_subfield_spec.as(:referent) >> sub_spec.as(:condition).maybe).repeat(2).as(:subqueries)
+        }
+
+        # Extracted from MARCspec for clarity:
+        #   (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec))
+        # Rewritten for ease of parsing:
+        #   (fieldTag [index] *(abrSubfieldSpec *subSpec))
         rule(:_varfield_marc_spec) {
-          (subfield_spec.as(:referent) >> sub_spec.as(:condition).maybe) >>
-            (abr_subfield_spec.as(:referent) >> sub_spec.as(:condition).maybe).repeat
+          _multiple_subfield_spec | (subfield_spec.as(:referent) >> sub_spec.as(:condition).maybe)
         }
 
         # Extracted from MARCspec for clarity

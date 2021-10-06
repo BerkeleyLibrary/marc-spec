@@ -8,12 +8,14 @@ module BerkeleyLibrary
 
         attr_reader :referent
         attr_reader :condition
+        attr_reader :subqueries
 
-        def initialize(referent, condition = nil)
+        def initialize(referent, condition = nil, subqueries = [])
           raise ArgumentError, 'referent cannot be nil' unless referent
 
           @referent = referent
           @condition = condition.tap { |c| c.implicit_left = referent if c }
+          @subqueries = ensure_type(subqueries, Array)
         end
 
         # ------------------------------------------------------------
@@ -23,6 +25,7 @@ module BerkeleyLibrary
           StringIO.new.tap do |out|
             out << referent
             out << "{#{condition}}" if condition
+            out << subqueries.join.to_s unless subqueries.empty?
           end.string
         end
 
@@ -35,11 +38,12 @@ module BerkeleyLibrary
           StringIO.new.tap do |out|
             out << referent.inspect
             out << "{#{condition.inspect}}" if condition
+            out << subqueries.map(&:inspect).to_s unless subqueries.empty?
           end.string
         end
 
         def equality_attrs
-          %i[referent condition]
+          %i[referent condition subqueries]
         end
 
       end

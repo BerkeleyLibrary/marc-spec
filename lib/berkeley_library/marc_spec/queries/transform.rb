@@ -14,6 +14,8 @@ module BerkeleyLibrary
 
         rule(comparison_string: simple(:string)) { ComparisonString.new(string) }
 
+        rule(character_spec: simple(:character_spec)) { character_spec }
+
         # ----------------------------------------
         # subTermSet
 
@@ -109,6 +111,10 @@ module BerkeleyLibrary
 
         rule(referent: simple(:referent), condition: simple(:condition)) do
           Query.new(referent, condition)
+        end
+
+        rule(referent: simple(:referent), subqueries: sequence(:subqueries)) do
+          Query.new(referent, nil, subqueries)
         end
       end
     end
