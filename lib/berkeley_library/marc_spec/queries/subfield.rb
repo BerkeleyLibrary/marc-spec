@@ -1,11 +1,11 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/queries/part'
+require 'berkeley_library/marc_spec/queries/referent'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class Subfield
-        include Part
+        include Referent
 
         # ------------------------------------------------------------
         # Attributes

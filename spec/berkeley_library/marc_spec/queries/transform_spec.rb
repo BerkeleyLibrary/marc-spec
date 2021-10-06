@@ -378,17 +378,9 @@ module BerkeleyLibrary
           it '9.4 Reference to data content' do
             examples = {
               '245$a' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a'))),
-              '245$a$b$c' => Query.new(
-                Tag.new('245'),
-                nil,
-                %w[a b c].map { |code| Query.new(Subfield.new(code)) }
-              ),
+              '245$a$b$c' => Query.new(Tag.new('245'), subqueries: %w[a b c].map { |code| Query.new(Subfield.new(code)) }),
               '245$a-c' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new(AlNumRange.new('a', 'c')))),
-              '...$_$$' => Query.new(
-                Tag.new('...'),
-                nil,
-                %w[_ $].map { |code| Query.new(Subfield.new(code)) }
-              )
+              '...$_$$' => Query.new(Tag.new('...'), subqueries: %w[_ $].map { |code| Query.new(Subfield.new(code)) })
             }
             check_queries(examples)
           end

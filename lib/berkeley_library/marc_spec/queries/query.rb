@@ -10,10 +10,10 @@ module BerkeleyLibrary
         attr_reader :condition
         attr_reader :subqueries
 
-        def initialize(referent, condition = nil, subqueries = [])
+        def initialize(referent, condition = nil, subqueries: [])
           raise ArgumentError, 'referent cannot be nil' unless referent
 
-          @referent = referent
+          @referent = ensure_type(referent, Referent)
           @condition = condition.tap { |c| c.implicit_left = referent if c }
           @subqueries = ensure_type(subqueries, Array)
         end
