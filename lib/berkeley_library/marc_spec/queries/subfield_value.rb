@@ -23,9 +23,11 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Referent
 
-        def apply(subfield)
-          value = subfield.value
-          character_spec ? character_spec.select_from(value) : value
+        def apply(data_field)
+          subfields = subfield.apply(data_field)
+          return subfields.map(&:value) unless character_spec
+
+          subfields.map { |sf| character_spec.select_from(sf.value) }
         end
 
         # ------------------------------------------------------------

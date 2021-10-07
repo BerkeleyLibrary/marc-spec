@@ -30,53 +30,63 @@ module BerkeleyLibrary
       describe :apply do
         attr_reader :marc_record
 
-        before(:each) do
-          @marc_record = MARC::XMLReader.new('spec/data/sandburg.xml').first
+        describe 'non-repeated subfields' do
+          before(:each) do
+            @marc_record = MARC::XMLReader.new('spec/data/sandburg.xml').first
+          end
+
+          it 'finds a subfield' do
+            df245 = marc_record['245']
+            result = Subfield.new('a').apply(df245)
+            expect(result).to be_an(Array)
+            expect(result.size).to eq(1)
+
+            sf245a = result.first
+            expect(sf245a).to be_a(MARC::Subfield)
+
+            expected = df245.subfields.find { |sf| sf.code == 'a' }
+            expect(sf245a).to eq(expected)
+          end
+
+          it 'finds a range of subfields' do
+            df260 = marc_record['260']
+            range = AlNumRange.new('b', 'c')
+            result = Subfield.new(range).apply(df260)
+            expect(result).to be_an(Array)
+            expect(result.size).to eq(2)
+
+            expected = df260.subfields.find { |sf| %w[b c].include?(sf.code) }
+            expect(result).to eq(expected)
+          end
+
         end
 
-        it 'finds a subfield' do
-          df245 = marc_record['245']
-          result = Subfield.new('a').apply(df245)
-          expect(result).to be_an(Array)
-          expect(result.size).to eq(1)
+        describe 'repeated subfields' do
+          attr_reader :df998
 
-          sf245a = result.first
-          expect(sf245a).to be_a(MARC::Subfield)
+          before(:each) do
+            @marc_record = MARC::XMLReader.new('spec/data/b23161018-sru.xml').first
+            @df998 = marc_record['998']
+          end
 
-          expected = df245.subfields.find { |sf| sf.code == 'a' }
-          expect(sf245a).to eq(expected)
-        end
+          it 'finds repeated subfields' do
+            result = Subfield.new('g').apply(df998)
+            expect(result.size).to eq(20)
 
-        it 'finds a range of subfields' do
-          df260 = marc_record['260']
-          range = AlNumRange.new('b', 'c')
-          result = Subfield.new(range).apply(df260)
-          expect(result).to be_an(Array)
-          expect(result.size).to eq(2)
+            expected = df998.subfields.select { |sf| sf.code == 'g' }
+            expect(result).to eq(expected)
+          end
 
-          expected = df260.subfields.find { |sf| %w[b c].include?(sf.code) }
-          expect(result).to eq(expected)
-        end
+          it 'finds repeated subfields by index' do
+            marc_record = MARC::XMLReader.new('spec/data/b23161018-sru.xml').first
+            df998 = marc_record['998']
+            result = Subfield.new('g', index: AlNumRange.new(3, 5)).apply(df998)
+            expect(result.size).to eq(3)
 
-        it 'finds repeated subfields' do
-          marc_record = MARC::XMLReader.new('spec/data/b23161018-sru.xml').first
-          df998 = marc_record['998']
-          result = Subfield.new('g').apply(df998)
-          expect(result.size).to eq(20)
-
-          expected = df998.subfields.select { |sf| sf.code == 'g' }
-          expect(result).to eq(expected)
-        end
-
-        it 'finds repeated subfields by index' do
-          marc_record = MARC::XMLReader.new('spec/data/b23161018-sru.xml').first
-          df998 = marc_record['998']
-          result = Subfield.new('g', index: AlNumRange.new(3, 5)).apply(df998)
-          expect(result.size).to eq(3)
-
-          all_sf998g = df998.subfields.select { |sf| sf.code == 'g' }
-          expected = all_sf998g[3..5]
-          expect(result).to eq(expected)
+            all_sf998g = df998.subfields.select { |sf| sf.code == 'g' }
+            expected = all_sf998g[3..5]
+            expect(result).to eq(expected)
+          end
         end
       end
     end
