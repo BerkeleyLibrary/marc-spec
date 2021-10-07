@@ -38,6 +38,10 @@ module BerkeleyLibrary
           raise ArgumentError, "Not a #{type}: #{v.inspect}"
         end
 
+        def position_or_range(v, allow_nil: false)
+          of_any_type(v, Position, AlNumRange, allow_nil: allow_nil)
+        end
+
         def select_type(v, left_type, right_type, allow_nil: false)
           return if allow_nil && v.nil?
           return v, nil if v.is_a?(left_type)

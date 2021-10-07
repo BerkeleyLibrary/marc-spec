@@ -3,6 +3,7 @@ require 'berkeley_library/marc_spec/queries/part'
 module BerkeleyLibrary
   module MarcSpec
     module Queries
+      # TODO: unify w/Position
       class AlNumRange
         include Part
 

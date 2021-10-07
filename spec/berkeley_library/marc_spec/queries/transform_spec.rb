@@ -149,11 +149,11 @@ module BerkeleyLibrary
                     ),
                     '856$u[3]/1-2' => VarFieldValue.new(
                       Tag.new('856'),
-                      Subfield.new('u', index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                      SubfieldValue.new(Subfield.new('u', index: Position.new(3)), AlNumRange.new(1, 2))
                     ),
                     '856$u/1-2' => VarFieldValue.new(
                       Tag.new('856'),
-                      Subfield.new('u', character_spec: AlNumRange.new(1, 2))
+                      SubfieldValue.new(Subfield.new('u'), AlNumRange.new(1, 2))
                     )
                   }
 
@@ -181,11 +181,11 @@ module BerkeleyLibrary
                     ),
                     "856$#{range_str}[3]/1-2" => VarFieldValue.new(
                       Tag.new('856'),
-                      Subfield.new(code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                      SubfieldValue.new(Subfield.new(code_range, index: Position.new(3)), AlNumRange.new(1, 2))
                     ),
                     "856$#{range_str}/1-2" => VarFieldValue.new(
                       Tag.new('856'),
-                      Subfield.new(code_range, character_spec: AlNumRange.new(1, 2))
+                      SubfieldValue.new(Subfield.new(code_range), AlNumRange.new(1, 2))
                     )
                   }
 
@@ -213,11 +213,11 @@ module BerkeleyLibrary
                     ),
                     "856$#{range_str}[3]/1-2" => VarFieldValue.new(
                       Tag.new('856'),
-                      Subfield.new(code_range, index: Position.new(3), character_spec: AlNumRange.new(1, 2))
+                      SubfieldValue.new(Subfield.new(code_range, index: Position.new(3)), AlNumRange.new(1, 2))
                     ),
                     "856$#{range_str}/1-2" => VarFieldValue.new(
                       Tag.new('856'),
-                      Subfield.new(code_range, character_spec: AlNumRange.new(1, 2))
+                      SubfieldValue.new(Subfield.new(code_range), AlNumRange.new(1, 2))
                     )
                   }
 
@@ -370,7 +370,14 @@ module BerkeleyLibrary
               '007/0' => Query.new(FixedFieldValue.new(Tag.new('007'), Position.new(0))),
               '007/1-#' => Query.new(FixedFieldValue.new(Tag.new('007'), AlNumRange.new(1, nil))),
               '007/#' => Query.new(FixedFieldValue.new(Tag.new('007'), Position.new(nil))),
-              '245$a/#-1' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a', character_spec: AlNumRange.new(nil, 1))))
+              '245$a/#-1' => Query.new(
+                VarFieldValue.new(
+                  Tag.new('245'),
+                  SubfieldValue.new(
+                    Subfield.new('a'), AlNumRange.new(nil, 1)
+                  )
+                )
+              )
             }
             check_queries(examples)
           end
@@ -469,8 +476,8 @@ module BerkeleyLibrary
                       '~',
                       left: VarFieldValue.new(Tag.new('100'), Subfield.new('6')),
                       # TODO: should we reify the semantics here?
-                      # right: VarFieldValue.new(Tag.new('100'), Subfield.new('6', character_spec: AlNumRange.new(3, 5)))
-                      right: Subfield.new('6', character_spec: AlNumRange.new(3, 5))
+                      # right: VarFieldValue.new(Tag.new('100'), SubfieldValue.new(Subfield.new('6'), AlNumRange.new(3, 5)))
+                      right: SubfieldValue.new(Subfield.new('6'), AlNumRange.new(3, 5))
                     ),
                     Condition.new(
                       '~',

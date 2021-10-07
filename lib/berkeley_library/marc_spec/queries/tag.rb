@@ -24,7 +24,7 @@ module BerkeleyLibrary
           raise ArgumentError, 'Tag cannot be nil' unless tag
 
           @tag_exact = tag.to_s unless (@tag_re = tag_re_from(tag))
-          @index = of_any_type(index, Position, AlNumRange, allow_nil: true)
+          @index = position_or_range(index, allow_nil: true)
         end
 
         # ------------------------------------------------------------

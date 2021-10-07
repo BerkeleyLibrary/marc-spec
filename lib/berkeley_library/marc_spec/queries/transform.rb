@@ -73,11 +73,11 @@ module BerkeleyLibrary
         end
 
         rule(code: simple(:code), character_spec: simple(:character_spec)) do
-          Subfield.new(code, character_spec: character_spec)
+          SubfieldValue.new(Subfield.new(code), character_spec)
         end
 
         rule(code: simple(:code), index: simple(:index), character_spec: simple(:character_spec)) do
-          Subfield.new(code, index: index, character_spec: character_spec)
+          SubfieldValue.new(Subfield.new(code, index: index), character_spec)
         end
 
         # ----------------------------------------

@@ -10,15 +10,14 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :code, :index, :character_spec
+        attr_reader :code, :index
 
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(code, index: nil, character_spec: nil)
+        def initialize(code, index: nil)
           @code = parse_code(code)
-          @index = index
-          @character_spec = character_spec
+          @index = position_or_range(index, allow_nil: true)
         end
 
         # ------------------------------------------------------------
@@ -26,12 +25,7 @@ module BerkeleyLibrary
 
         def apply(data_field)
           subfields = all_subfields(data_field)
-          subfields = index.select_from(subfields) if index
-          # TODO: split character_spec into its own object taking
-          #       Subfield as a context — cf. Tag/FixedField separation
-          return subfields unless character_spec
-
-          subfields.map { |sf| character_spec.select_from(sf.value) }
+          index ? index.select_from(subfields) : subfields
         end
 
         # ------------------------------------------------------------
@@ -42,7 +36,6 @@ module BerkeleyLibrary
             out << '$'
             out << code
             out << "[#{index}]" if index
-            out << "/#{character_spec}" if character_spec
           end.string
         end
 
@@ -56,12 +49,11 @@ module BerkeleyLibrary
             out << '$'
             out << code.inspect
             out << "[#{index.inspect}]" if index
-            out << "/#{character_spec.inspect}" if character_spec
           end.string
         end
 
         def equality_attrs
-          %i[code index character_spec]
+          %i[code index]
         end
 
         # ------------------------------------------------------------

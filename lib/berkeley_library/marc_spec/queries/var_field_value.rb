@@ -15,7 +15,7 @@ module BerkeleyLibrary
 
         def initialize(tag, subfield)
           super(tag)
-          @subfield = ensure_type(subfield, Subfield, allow_nil: true)
+          @subfield = of_any_type(subfield, Subfield, SubfieldValue, allow_nil: true)
         end
 
         # ------------------------------------------------------------
