@@ -21,7 +21,12 @@ module BerkeleyLibrary
           parse_tree = parser.parse(query_str)
           query = xform.apply(parse_tree)
           actual = query.apply(marc_record)
-          expect(actual).to eq(expected), failure_msg_for(query_str, query, actual, expected)
+          failure_msg = -> { failure_msg_for(query_str, query, actual, expected) }
+          if actual.class == expected.class
+            expect(actual).to eq(expected), failure_msg
+          else
+            RSpec::Expectations.fail_with(failure_msg.call)
+          end
         end
 
         def failure_msg_for(input_str, query, actual, expected)
@@ -68,8 +73,31 @@ module BerkeleyLibrary
             end
           end
 
+          context 'fields' do
+            it 'finds fields' do
+              examples = {
+                '035' => marc_record.fields('035'),
+                '040' => [marc_record['040']],
+                '0..' => marc_record.fields.select { |f| f.tag =~ /^0..$/ }
+              }
+              verify_all(examples)
+            end
+          end
+
+          context 'controlfield data' do
+            it 'extracts controlfield data' do
+              cf005 = marc_record['005']
+              cf005_value = cf005.value
+              examples = {
+                '005/#' => [cf005_value[-1]],
+                '005/1-#' => [cf005_value[1..]]
+              }
+              verify_all(examples)
+            end
+          end
+
           context 'subfields' do
-            it 'finds the expected result' do
+            it 'finds subfields' do
               df245 = marc_record['245']
               df245a = df245.subfields.find { |sf| sf.code == 'a' }
               df245ac = df245.subfields.select { |sf| %w[a c].include?(sf.code) }
@@ -84,7 +112,10 @@ module BerkeleyLibrary
                 '245$a' => [df245a],
                 '245$a$c' => df245ac,
                 '245$a-c' => df245ac,
-                '...$a$c' => all_sf_a_or_c
+                '...$a$c' => all_sf_a_or_c,
+                '245$a/#-6' => [df245a.value[-7..]],
+                # TODO: is this right?
+                '245$a$c/0-4' => df245ac.map { |sf| sf.value[0..4] }
               }
 
               verify_all(examples)
