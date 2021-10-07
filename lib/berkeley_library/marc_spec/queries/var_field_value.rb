@@ -15,7 +15,15 @@ module BerkeleyLibrary
 
         def initialize(tag, subfield)
           super(tag)
-          @subfield = of_any_type(subfield, Subfield, SubfieldValue, allow_nil: true)
+          @subfield = of_any_type(subfield, Subfield, SubfieldValue, allow_nil: false)
+        end
+
+        # ------------------------------------------------------------
+        # Referent
+
+        def apply(marc_record)
+          data_fields = tag.apply(marc_record)
+          data_fields.flat_map { |df| subfield.apply(df) }
         end
 
         # ------------------------------------------------------------

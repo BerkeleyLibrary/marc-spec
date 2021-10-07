@@ -9,7 +9,7 @@ module BerkeleyLibrary
         attr_reader :xform
 
         before(:each) do
-          @parser = BerkeleyLibrary::MarcSpec::Parsing::Parser.new
+          @parser = Parsing::Parser.new
           @xform = Transform.new
         end
 

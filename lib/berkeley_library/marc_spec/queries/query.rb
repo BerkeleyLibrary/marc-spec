@@ -1,14 +1,20 @@
+require 'berkeley_library/marc_spec/parsing/parser'
 require 'berkeley_library/marc_spec/queries/part'
+require 'berkeley_library/marc_spec/queries/transform'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class Query
-        include Part
+        include Referent
 
-        attr_reader :referent
-        attr_reader :condition
-        attr_reader :subqueries
+        # ------------------------------------------------------------
+        # Attributes
+
+        attr_reader :referent, :condition, :subqueries
+
+        # ------------------------------------------------------------
+        # Initializer
 
         def initialize(referent, condition = nil, subqueries: [])
           raise ArgumentError, 'referent cannot be nil' unless referent
@@ -16,6 +22,16 @@ module BerkeleyLibrary
           @referent = ensure_type(referent, Referent)
           @condition = condition.tap { |c| c.implicit_left = referent if c }
           @subqueries = ensure_type(subqueries, Array)
+        end
+
+        # ------------------------------------------------------------
+        # Class methods
+
+        class << self
+          def from_string(query_str)
+            parse_tree = Parsing::Parser.new.parse(query_str)
+            Transform.new.apply(parse_tree)
+          end
         end
 
         # ------------------------------------------------------------
@@ -27,6 +43,18 @@ module BerkeleyLibrary
             out << "{#{condition}}" if condition
             out << subqueries.join.to_s unless subqueries.empty?
           end.string
+        end
+
+        # ------------------------------------------------------------
+        # Referent
+
+        def apply(marc_record)
+          results = referent.apply(marc_record)
+          # TODO: conditions
+          return results unless subqueries.any?
+
+          # TODO: is this right?
+          results.flat_map { |r| subqueries.flat_map { |sf| sf.apply(r) } }
         end
 
         # ------------------------------------------------------------
