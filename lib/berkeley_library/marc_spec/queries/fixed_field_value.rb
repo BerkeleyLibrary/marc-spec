@@ -9,14 +9,14 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :position, :range
+        attr_reader :character_spec
 
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, character_spec)
-          super(tag)
-          @position, @range = select_type(character_spec, Position, AlNumRange)
+        def initialize(tag, character_spec = nil)
+          super(tag) # TODO: validate control vs. data?
+          @character_spec = position_or_range(character_spec, allow_nil: true)
         end
 
         # ------------------------------------------------------------
@@ -25,18 +25,48 @@ module BerkeleyLibrary
         def to_s
           StringIO.new.tap do |out|
             out << super
-            position_or_range = position || range
-            out << "/#{position_or_range}" if position_or_range
+            out << "/#{character_spec}" if character_spec
           end.string
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Protected methods
 
         protected
 
+        # ------------------------------
+        # Referent
+
+        def do_apply(marc_record)
+          tag.apply(marc_record).filter_map { |r| value_from(r) }
+        end
+
+        def can_apply?(marc_obj)
+          marc_obj.is_a?(MARC::Record)
+        end
+
+        # ------------------------------
+        # Predicate
+
         def equality_attrs
           %i[position range] + super
+        end
+
+        # ------------------------------------------------------------
+        # Private methods
+
+        private
+
+        def value_from(tag_result)
+          value_str = string_value_from(tag_result)
+          return value_str unless character_spec
+
+          character_spec.select_from(value_str)
+        end
+
+        def string_value_from(tag_result)
+          return tag_result if tag_result.is_a?(String)
+          return tag_result.value if tag_result.respond_to?(:value)
         end
 
       end

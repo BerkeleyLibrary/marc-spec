@@ -23,11 +23,8 @@ module BerkeleyLibrary
         # Instance methods
 
         def select_from(seq)
-          return seq[index_range] unless alphabetic?
-          return select_from(seq.chars).join if seq.respond_to?(:chars)
-          raise ArgumentError, "Can't select from non-sequence #{seq.inspect}" unless seq.respond_to?(:select)
-
-          seq.select { |x| include?(x) }
+          raw_result = select_raw_from(seq)
+          seq.is_a?(String) ? wrap_string_result(raw_result) : raw_result
         end
 
         def include?(v)
@@ -67,6 +64,14 @@ module BerkeleyLibrary
         end
 
         private
+
+        def select_raw_from(seq)
+          return seq[index_range] unless alphabetic?
+          return select_raw_from(seq.chars).join if seq.respond_to?(:chars)
+          raise ArgumentError, "Can't select from non-sequence #{seq.inspect}" unless seq.respond_to?(:select)
+
+          seq.select { |x| include?(x) }
+        end
 
         def reverse_endpoint
           -(1 + to)

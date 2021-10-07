@@ -53,8 +53,9 @@ module BerkeleyLibrary
           # TODO: conditions
           return results unless subqueries.any?
 
-          # TODO: is this right?
-          results.flat_map { |r| subqueries.flat_map { |sf| sf.apply(r) } }
+          results.each_with_object([]) do |r, rr|
+            subqueries.each { |sq| append_result(sq.apply(r), rr) }
+          end
         end
 
         # ------------------------------------------------------------

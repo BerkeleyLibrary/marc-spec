@@ -26,9 +26,12 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Protected methods
 
         protected
+
+        # ------------------------------
+        # Predicate
 
         def to_s_inspect
           tag.inspect

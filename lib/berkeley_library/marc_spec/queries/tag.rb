@@ -28,11 +28,10 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Referent
+        # Public methods
 
-        def apply(marc_record)
-          all_fields = all_fields(marc_record)
-          index ? index.select_from(all_fields) : all_fields
+        def leader?
+          tag_exact == LDR
         end
 
         # ------------------------------------------------------------
@@ -46,13 +45,26 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Protected methods
 
         protected
 
-        def equality_attrs
-          %i[tag_str index]
+        # ------------------------------
+        # Referent
+
+        def do_apply(marc_record)
+          return [marc_record.leader] if leader?
+
+          all_fields = all_fields(marc_record)
+          index ? index.select_from(all_fields) : all_fields
         end
+
+        def can_apply?(marc_obj)
+          marc_obj.is_a?(MARC::Record)
+        end
+
+        # ------------------------------
+        # Predicate
 
         def to_s_inspect
           StringIO.new.tap do |out|
@@ -61,13 +73,17 @@ module BerkeleyLibrary
           end.string
         end
 
+        def equality_attrs
+          %i[tag_str index]
+        end
+
         # ------------------------------------------------------------
         # Private methods
 
         private
 
         def all_fields(marc_record)
-          return [marc_record.leader] if tag_exact == LDR
+          return [marc_record.leader] if leader?
           return marc_record.fields(tag_exact) if tag_exact
 
           [].tap do |ff|

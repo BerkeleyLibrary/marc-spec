@@ -31,11 +31,9 @@ module BerkeleyLibrary
         #   @return [String, nil] a single-element array, or nil if the index
         #     is out of bounds
         def select_from(seq)
-          # we use result[-1] instead of result.last b/c seq might be a string
-          result = seq[position.nil? ? -1 : position]
-          return result if seq.is_a?(String)
-
-          result.nil? ? [] : [result]
+          # we use raw_result[-1] instead of raw_result.last b/c seq might be a string
+          raw_result = seq[position.nil? ? -1 : position]
+          seq.is_a?(String) ? wrap_string_result(raw_result) : wrap_array_result(raw_result)
         end
 
         # ------------------------------------------------------------

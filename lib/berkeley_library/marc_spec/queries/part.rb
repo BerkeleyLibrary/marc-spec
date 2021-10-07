@@ -31,6 +31,24 @@ module BerkeleyLibrary
           to_s
         end
 
+        def append_result(result, results)
+          return if result.nil? || result.empty?
+
+          result.is_a?(Array) ? results.concat(result) : results << result
+        end
+
+        def wrap_string_result(result)
+          result unless result.nil? || result.empty?
+        end
+
+        def wrap_array_result(result)
+          return [] unless result
+
+          result.tap do |r|
+            raise ArgumentError, "Not an array: #{r.inspect}" unless r.is_a?(Array)
+          end
+        end
+
         def ensure_type(v, type, allow_nil: false)
           return if allow_nil && v.nil?
           return v if v.is_a?(type)
@@ -63,6 +81,7 @@ module BerkeleyLibrary
 
           Integer(v)
         end
+
       end
     end
   end

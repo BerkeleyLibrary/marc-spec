@@ -23,7 +23,11 @@ module BerkeleyLibrary
 
         def apply(marc_record)
           data_fields = tag.apply(marc_record)
-          data_fields.flat_map { |df| subfield.apply(df) }
+          data_fields.each_with_object([]) do |df, vv|
+            next unless (subfield_values = subfield.apply(df))
+
+            subfield_values.each { |v| vv << v if v }
+          end
         end
 
         # ------------------------------------------------------------

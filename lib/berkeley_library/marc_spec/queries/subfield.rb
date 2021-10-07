@@ -21,14 +21,6 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Referent
-
-        def apply(data_field)
-          subfields = all_subfields(data_field)
-          index ? index.select_from(subfields) : subfields
-        end
-
-        # ------------------------------------------------------------
         # Object overrides
 
         def to_s
@@ -40,9 +32,25 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Protected methods
 
         protected
+
+        # ------------------------------
+        # Referent
+
+        def do_apply(data_field)
+          subfields = all_subfields(data_field)
+          raw_result = index ? index.select_from(subfields) : subfields
+          wrap_array_result(raw_result)
+        end
+
+        def can_apply?(marc_obj)
+          marc_obj.respond_to?(:subfields)
+        end
+
+        # ------------------------------
+        # Predicate
 
         def to_s_inspect
           StringIO.new.tap do |out|
