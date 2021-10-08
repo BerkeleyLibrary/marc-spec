@@ -9,8 +9,7 @@ module BerkeleyLibrary
           pos = Position.new(3)
           v = FixedFieldValue.new(tag, pos)
           expect(v.tag).to eq(tag)
-          expect(v.position).to eq(pos)
-          expect(v.range).to be_nil
+          expect(v.character_spec).to eq(pos)
           expect(v.to_s).to eq('001/3')
         end
 
@@ -19,8 +18,7 @@ module BerkeleyLibrary
           range = AlNumRange.new(3, 5)
           v = FixedFieldValue.new(tag, range)
           expect(v.tag).to eq(tag)
-          expect(v.position).to be_nil
-          expect(v.range).to eq(range)
+          expect(v.character_spec).to eq(range)
           expect(v.to_s).to eq('001/3-5')
         end
 
@@ -32,11 +30,6 @@ module BerkeleyLibrary
         it 'rejects an invalid tag' do
           pos = Position.new(3)
           expect { FixedFieldValue.new('856', pos) }.to raise_error(ArgumentError)
-        end
-
-        it 'rejects a nil characterspec' do
-          tag = Tag.new('001')
-          expect { FixedFieldValue.new(tag, nil) }.to raise_error(ArgumentError)
         end
 
         it 'rejects an invalid characterspec' do
