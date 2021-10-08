@@ -21,12 +21,7 @@ module BerkeleyLibrary
           parse_tree = parser.parse(query_str)
           query = xform.apply(parse_tree)
           actual = query.apply(marc_record)
-          failure_msg = -> { failure_msg_for(query_str, query, actual, expected) }
-          if actual.class == expected.class
-            expect(actual).to eq(expected), failure_msg
-          else
-            RSpec::Expectations.fail_with(failure_msg.call)
-          end
+          expect(actual).to eq(expected), -> { failure_msg_for(query_str, query, actual, expected) }
         end
 
         def failure_msg_for(input_str, query, actual, expected)
@@ -100,6 +95,7 @@ module BerkeleyLibrary
             it 'finds subfields' do
               df245 = marc_record['245']
               df245a = df245.subfields.find { |sf| sf.code == 'a' }
+              df245c = df245.subfields.find { |sf| sf.code == 'c' }
               df245ac = df245.subfields.select { |sf| %w[a c].include?(sf.code) }
 
               all_sf_a_or_c = marc_record.fields.each_with_object([]) do |df, sff|
@@ -114,10 +110,34 @@ module BerkeleyLibrary
                 '245$a-c' => df245ac,
                 '...$a$c' => all_sf_a_or_c,
                 '245$a/#-6' => [df245a.value[-7..]],
-                # TODO: is this right?
-                '245$a$c/0-4' => df245ac.map { |sf| sf.value[0..4] }
+                '245$a$c/0-4' => [df245a, df245c.value[0..4]],
+                '245$a/0-4$c/0-4' => df245ac.map { |sf| sf.value[0..4] }
               }
 
+              verify_all(examples)
+            end
+          end
+
+          context 'subspecs' do
+            it 'can check for the existence of subfields' do
+              df245 = marc_record['245']
+              df245a = df245.subfields.find { |sf| sf.code == 'a' }
+
+              examples = {
+                '245$a{?245$c}' => [df245a], # left subterm is implicit, and unused
+                '245$a{245$a?245$c}' => [df245a], # left subterm is explicit, but unused
+                '245$a{!245$c}' => [],
+                '245$a{245$a!245$c}' => [],
+              }
+              verify_all(examples)
+            end
+
+            it 'can compare subfield values' do
+              df040 = marc_record['040']
+              examples = {
+                '040{$a=$c}' => [df040],
+                '040{040$a=040$c}' => [df040],
+              }
               verify_all(examples)
             end
           end

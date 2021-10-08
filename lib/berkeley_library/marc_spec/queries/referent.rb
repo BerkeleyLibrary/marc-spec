@@ -3,7 +3,7 @@ require 'berkeley_library/marc_spec/queries/part'
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      # Supermodule of possible query result objects
+      # Supermodule of query objects that can return a result
       module Referent
         include Part
 
@@ -16,6 +16,13 @@ module BerkeleyLibrary
         def can_apply?(_marc_obj)
           true
         end
+
+        # :nocov:
+        def do_apply(_marc_obj)
+          # default implementation does nothing
+        end
+        # :nocov:
+
       end
     end
   end
