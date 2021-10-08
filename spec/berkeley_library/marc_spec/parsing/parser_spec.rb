@@ -8,9 +8,9 @@ module BerkeleyLibrary
       describe Parser do
         let(:parser) { Parser.new }
         let(:tags) { %w[245 2.. 24. .45 ..5 ... LDR] }
-        let(:positions) { %w[0 7 17 317] }
-        let(:pos_ranges) { [%w[1 12], %w[1 #], %w[# 1], %w[24 56], %w[# #]] }
-        let(:codes) { %w[a b c 1 2 3 $ \\ { }] }
+        let(:positions) { %w[0 3 5] }
+        let(:pos_ranges) { [%w[1 3], %w[1 #], %w[# 1], %w[2 4], %w[# #]] }
+        let(:codes) { %w[b 2 $ \\ { }] }
         let(:code_ranges) { [%w[a c], %w[1 3]] }
         let(:inds) { %w[1 2] }
 
