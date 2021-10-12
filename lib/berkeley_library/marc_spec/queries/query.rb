@@ -1,5 +1,5 @@
 require 'berkeley_library/marc_spec/parsing/parser'
-require 'berkeley_library/marc_spec/queries/part'
+require 'berkeley_library/marc_spec/queries/referent'
 require 'berkeley_library/marc_spec/queries/transform'
 
 module BerkeleyLibrary
@@ -16,12 +16,11 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(referent, condition = nil, subqueries: [])
-          raise ArgumentError, 'referent cannot be nil' unless referent
-
+        def initialize(referent, *args)
           @referent = ensure_type(referent, Referent)
+
+          condition, @subqueries = parse_args(args)
           @condition = condition.tap { |c| c.implicit_left = referent if c }
-          @subqueries = ensure_type(subqueries, Array)
         end
 
         # ------------------------------------------------------------
@@ -73,6 +72,26 @@ module BerkeleyLibrary
 
         def equality_attrs
           %i[referent condition subqueries]
+        end
+
+        private
+
+        def parse_args(args)
+          conditions, queries, referents = group_args_by_type(args)
+
+          condition = conditions.inject { |cond, c| cond.and(c) }
+          subqueries = queries.tap { |sqs| referents.each { |r| sqs << Query.new(r) } }
+
+          [condition, subqueries]
+        end
+
+        def group_args_by_type(args)
+          args_by_type = args.each_with_object({}) do |arg, by_type|
+            arg_type = [Condition, Query, Referent].find { |t| arg.is_a?(t) }
+            (by_type[arg_type] ||= []) << arg
+          end
+
+          [Condition, Query, Referent].map { |t| args_by_type[t] || [] }
         end
 
       end

@@ -53,7 +53,7 @@ module BerkeleyLibrary
         # Referent
 
         def do_apply(marc_record)
-          return LeaderResult.new(marc_record.leader) if leader?
+          return [marc_record.leader] if leader?
 
           all_fields = all_fields(marc_record)
           index ? index.select_from(all_fields) : all_fields

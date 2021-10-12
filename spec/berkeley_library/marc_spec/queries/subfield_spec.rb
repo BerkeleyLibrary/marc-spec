@@ -55,7 +55,7 @@ module BerkeleyLibrary
             expect(result).to be_an(Array)
             expect(result.size).to eq(2)
 
-            expected = df260.subfields.find { |sf| %w[b c].include?(sf.code) }
+            expected = df260.subfields.select { |sf| %w[b c].include?(sf.code) }
             expect(result).to eq(expected)
           end
 

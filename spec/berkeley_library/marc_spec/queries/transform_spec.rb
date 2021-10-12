@@ -353,12 +353,10 @@ module BerkeleyLibrary
                 # see https://github.com/MARCspec/MARCspec/issues/30
                 '880$a{?$f}$b$c$e{$f=\\q}' => Query.new(
                   Tag.new('880'),
-                  subqueries: [
-                    Query.new(Subfield.new('a'), Condition.new('?', right: Subfield.new('f'))),
-                    Query.new(Subfield.new('b')),
-                    Query.new(Subfield.new('c')),
-                    Query.new(Subfield.new('e'), Condition.new('=', left: Subfield.new('f'), right: ComparisonString.new('q'))),
-                  ]
+                  Query.new(Subfield.new('a'), Condition.new('?', right: Subfield.new('f'))),
+                  Query.new(Subfield.new('b')),
+                  Query.new(Subfield.new('c')),
+                  Query.new(Subfield.new('e'), Condition.new('=', left: Subfield.new('f'), right: ComparisonString.new('q'))),
                 )
               }
               check_queries(expecteds)
@@ -401,11 +399,13 @@ module BerkeleyLibrary
           end
 
           it '9.4 Reference to data content' do
+            sqs_abc = (%w[a b c].map { |code| Query.new(Subfield.new(code)) })
+            sqs_dollar_underscore = %w[_ $].map { |code| Query.new(Subfield.new(code)) }
             examples = {
               '245$a' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new('a'))),
-              '245$a$b$c' => Query.new(Tag.new('245'), subqueries: %w[a b c].map { |code| Query.new(Subfield.new(code)) }),
+              '245$a$b$c' => Query.new(Tag.new('245'), *sqs_abc),
               '245$a-c' => Query.new(VarFieldValue.new(Tag.new('245'), Subfield.new(AlNumRange.new('a', 'c')))),
-              '...$_$$' => Query.new(Tag.new('...'), subqueries: %w[_ $].map { |code| Query.new(Subfield.new(code)) })
+              '...$_$$' => Query.new(Tag.new('...'), *sqs_dollar_underscore)
             }
             check_queries(examples)
           end

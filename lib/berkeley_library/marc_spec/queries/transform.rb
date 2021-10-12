@@ -114,7 +114,7 @@ module BerkeleyLibrary
         end
 
         rule(referent: simple(:referent), subqueries: sequence(:subqueries)) do
-          Query.new(referent, subqueries: subqueries)
+          Query.new(referent, *subqueries)
         end
       end
     end
