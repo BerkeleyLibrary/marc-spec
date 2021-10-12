@@ -42,7 +42,7 @@ module BerkeleyLibrary
         def do_apply(data_field)
           subfields = all_subfields(data_field)
           raw_result = index ? index.select_from(subfields) : subfields
-          wrap_array_result(raw_result)
+          Array(raw_result)
         end
 
         def can_apply?(marc_obj)

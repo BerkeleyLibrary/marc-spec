@@ -41,12 +41,12 @@ module BerkeleyLibrary
           result unless result.nil? || result.empty?
         end
 
+        # NOTE: We can't use `Array()` because we don't want to indiscriminately call `to_a`
         def wrap_array_result(result)
           return [] unless result
+          return result if result.is_a?(Array)
 
-          result.tap do |r|
-            raise ArgumentError, "Not an array: #{r.inspect}" unless r.is_a?(Array)
-          end
+          [result]
         end
 
         def ensure_type(v, type, allow_nil: false)
