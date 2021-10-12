@@ -16,9 +16,9 @@ module BerkeleyLibrary
           it 'accepts a wildcard' do
             tag = Tag.new('.56')
             expect(tag.tag_exact).to be_nil
-            expect(tag.tag_re).to eq(/.56/)
+            expect(tag.tag_re).to eq(/^.56$/)
             expect(tag.to_s).to eq('.56')
-            expect(tag.inspect).to match %r{Tag@[0-9]+</.56/>}
+            expect(tag.inspect).to match %r{Tag@[0-9]+</\^.56\$/>}
           end
 
           it 'accepts a regexp' do

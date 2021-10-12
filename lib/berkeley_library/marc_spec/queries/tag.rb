@@ -99,7 +99,7 @@ module BerkeleyLibrary
         end
 
         def tag_str
-          @tag_str ||= tag_exact || tag_re.source
+          @tag_str ||= tag_exact || tag_re.source.gsub(/^\^(.*)\$$/, '\\1')
         end
       end
     end
