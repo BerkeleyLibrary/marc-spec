@@ -127,7 +127,7 @@ module BerkeleyLibrary
                 '245$a{?245$c}' => [df245a], # left subterm is implicit, and unused
                 '245$a{245$a?245$c}' => [df245a], # left subterm is explicit, but unused
                 '245$a{!245$c}' => [],
-                '245$a{245$a!245$c}' => [],
+                '245$a{245$a!245$c}' => []
               }
               verify_all(examples)
             end
@@ -136,7 +136,7 @@ module BerkeleyLibrary
               df040 = marc_record['040']
               examples = {
                 '040{$a=$c}' => [df040],
-                '040{040$a=040$c}' => [df040],
+                '040{040$a=040$c}' => [df040]
               }
               verify_all(examples)
             end
