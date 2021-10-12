@@ -49,7 +49,7 @@ module BerkeleyLibrary
         # Predicate
 
         def equality_attrs
-          %i[position range] + super
+          %i[character_spec] + super
         end
 
         # ------------------------------------------------------------
