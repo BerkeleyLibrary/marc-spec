@@ -346,6 +346,24 @@ module BerkeleyLibrary
               check_queries(expecteds)
             end
           end
+
+          describe 'subfieldSpec' do
+            it 'handles complex combinations of subfields and subspecs' do
+              expecteds = {
+                # see https://github.com/MARCspec/MARCspec/issues/30
+                '880$a{?$f}$b$c$e{$f=\\q}' => Query.new(
+                  Tag.new('880'),
+                  subqueries: [
+                    Query.new(Subfield.new('a'), Condition.new('?', right: Subfield.new('f'))),
+                    Query.new(Subfield.new('b')),
+                    Query.new(Subfield.new('c')),
+                    Query.new(Subfield.new('e'), Condition.new('=', left: Subfield.new('f'), right: ComparisonString.new('q'))),
+                  ]
+                )
+              }
+              check_queries(expecteds)
+            end
+          end
         end
 
         # ------------------------------------------------------------
