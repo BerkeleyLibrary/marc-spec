@@ -354,8 +354,8 @@ module BerkeleyLibrary
                 '880$a{?$f}$b$c$e{$f=\\q}' => Query.new(
                   Tag.new('880'),
                   Query.new(Subfield.new('a'), Condition.new('?', right: Subfield.new('f'))),
-                  Query.new(Subfield.new('b')),
-                  Query.new(Subfield.new('c')),
+                  Subfield.new('b'),
+                  Subfield.new('c'),
                   Query.new(Subfield.new('e'), Condition.new('=', left: Subfield.new('f'), right: ComparisonString.new('q'))),
                 )
               }

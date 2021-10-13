@@ -40,7 +40,7 @@ module BerkeleyLibrary
           StringIO.new.tap do |out|
             out << referent
             out << "{#{condition}}" if condition
-            out << subqueries.join.to_s unless subqueries.empty?
+            out << subqueries.join unless subqueries.empty?
           end.string
         end
 
@@ -66,7 +66,7 @@ module BerkeleyLibrary
           StringIO.new.tap do |out|
             out << referent.inspect
             out << "{#{condition.inspect}}" if condition
-            out << subqueries.map(&:inspect).to_s unless subqueries.empty?
+            out << subqueries.map(&:inspect).join unless subqueries.empty?
           end.string
         end
 
@@ -77,23 +77,19 @@ module BerkeleyLibrary
         private
 
         def parse_args(args)
-          conditions, queries, referents = group_args_by_type(args)
+          condition = nil
+          subqueries = []
 
-          condition = conditions.inject { |cond, c| cond.and(c) }
-          subqueries = queries.tap { |sqs| referents.each { |r| sqs << Query.new(r) } }
+          args.each do |arg|
+            if arg.is_a?(Condition)
+              condition = (condition ? condition.and(arg) : arg)
+            else
+              subqueries << (arg.is_a?(Query) ? arg : Query.new(arg))
+            end
+          end
 
           [condition, subqueries]
         end
-
-        def group_args_by_type(args)
-          args_by_type = args.each_with_object({}) do |arg, by_type|
-            arg_type = [Condition, Query, Referent].find { |t| arg.is_a?(t) }
-            (by_type[arg_type] ||= []) << arg
-          end
-
-          [Condition, Query, Referent].map { |t| args_by_type[t] || [] }
-        end
-
       end
     end
   end
