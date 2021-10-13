@@ -22,6 +22,10 @@ module BerkeleyLibrary
 
         alias :== eql?
 
+        def hash
+          equality_attrs.inject(31 + self.class.hash) { |e, r| 31 * r + e.hash }
+        end
+
         # ------------------------------------------------------------
         # Protected methods
 

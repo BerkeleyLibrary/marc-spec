@@ -32,6 +32,13 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
+        # Referent
+
+        def can_apply?(marc_obj)
+          marc_obj.respond_to?(:subfields)
+        end
+
+        # ------------------------------------------------------------
         # Protected methods
 
         protected
@@ -43,10 +50,6 @@ module BerkeleyLibrary
           subfields = all_subfields(data_field)
           raw_result = index ? index.select_from(subfields) : subfields
           Array(raw_result)
-        end
-
-        def can_apply?(marc_obj)
-          marc_obj.respond_to?(:subfields)
         end
 
         # ------------------------------

@@ -44,6 +44,10 @@ module BerkeleyLibrary
           end.string
         end
 
+        def can_apply?(marc_obj)
+          marc_obj.is_a?(MARC::Record)
+        end
+
         # ------------------------------------------------------------
         # Protected methods
 
@@ -57,10 +61,6 @@ module BerkeleyLibrary
 
           all_fields = all_fields(marc_record)
           index ? index.select_from(all_fields) : all_fields
-        end
-
-        def can_apply?(marc_obj)
-          marc_obj.is_a?(MARC::Record)
         end
 
         # ------------------------------

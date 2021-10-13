@@ -23,8 +23,6 @@ module BerkeleyLibrary
           #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
           @left = of_any_type(left, Referent, Condition, allow_nil: true) if binary?
           @right = of_any_type(right, Referent, Condition, ComparisonString)
-
-          Condition.observed_conditions << [left, operator.to_s, right]
         end
         # rubocop:enable Style/KeywordParametersOrder
 
@@ -32,14 +30,6 @@ module BerkeleyLibrary
         # Static factory methods
 
         class << self
-          # TODO: remove this
-          def observed_conditions
-            @known_comparisons ||= begin
-              require 'set'
-              Set.new
-            end
-          end
-
           def any_of(*conditions)
             conditions.inject do |cc, c|
               cc.or(c)
@@ -54,14 +44,6 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Instance methods
 
-        def binary?
-          operator.binary?
-        end
-
-        def met?(context)
-          operator.apply(left, right, context)
-        end
-
         def and(other_condition)
           return self if other_condition == self || other_condition.nil?
 
@@ -72,17 +54,6 @@ module BerkeleyLibrary
           return self if other_condition == self || other_condition.nil?
 
           Condition.new('||', left: self, right: other_condition)
-        end
-
-        # TODO: push this down to met? somehow
-        def implicit_left=(value)
-          if @left.nil?
-            @left = value if binary?
-          elsif @left.respond_to?(:implicit_left=)
-            @left.implicit_left = value
-          end
-
-          @right.implicit_left = value if @right.respond_to?(:implicit_left=)
         end
 
         # ------------------------------------------------------------

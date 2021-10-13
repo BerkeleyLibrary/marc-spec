@@ -6,17 +6,11 @@ module BerkeleyLibrary
       module PositionOrRange
         include Referent
 
-        # ------------------------------------------------------------
-        # Protected methods
-
-        protected
-
-        # ------------------------------
-        # Referent
-
         def can_apply?(marc_obj)
           [String, Array, MARC::ControlField, MARC::Subfield].any? { |t| marc_obj.is_a?(t) }
         end
+
+        protected
 
         def do_apply(marc_obj)
           value = marc_obj.respond_to?(:value) ? marc_obj.value : marc_obj

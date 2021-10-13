@@ -29,6 +29,13 @@ module BerkeleyLibrary
           end.string
         end
 
+        # ------------------------------
+        # Referent
+
+        def can_apply?(marc_obj)
+          marc_obj.is_a?(MARC::ControlField)
+        end
+
         # ------------------------------------------------------------
         # Protected methods
 
@@ -37,12 +44,11 @@ module BerkeleyLibrary
         # ------------------------------
         # Referent
 
-        def do_apply(marc_record)
-          tag.apply(marc_record).filter_map { |r| value_from(r) }
-        end
+        def do_apply(control_field)
+          value_str = string_value_from(control_field)
+          return value_str unless character_spec
 
-        def can_apply?(marc_obj)
-          marc_obj.is_a?(MARC::Record)
+          character_spec.select_from(value_str)
         end
 
         # ------------------------------
@@ -56,13 +62,6 @@ module BerkeleyLibrary
         # Private methods
 
         private
-
-        def value_from(tag_result)
-          value_str = string_value_from(tag_result)
-          return value_str unless character_spec
-
-          character_spec.select_from(value_str)
-        end
 
         def string_value_from(tag_result)
           return tag_result if tag_result.is_a?(String)

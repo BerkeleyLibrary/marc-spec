@@ -31,7 +31,7 @@ module BerkeleyLibrary
         protected
 
         # ------------------------------
-        # Predicate
+        # Part
 
         def to_s_inspect
           tag.inspect

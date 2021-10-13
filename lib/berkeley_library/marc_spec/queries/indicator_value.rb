@@ -31,9 +31,24 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Referent
+
+        def can_apply?(marc_obj)
+          [:indicator1, :indicator2].all? { |m| marc_obj.respond_to?(m) }
+        end
+
+        # ------------------------------------------------------------
+        # Protected methods
 
         protected
+
+        def do_apply(marc_obj)
+          if ind == 1
+            marc_obj.indicator1
+          elsif ind == 2
+            marc_obj.indicator2
+          end
+        end
 
         def to_s_inspect
           [super, ind].join('^')

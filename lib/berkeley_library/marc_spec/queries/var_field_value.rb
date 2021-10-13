@@ -21,13 +21,8 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Referent
 
-        def apply(marc_record)
-          data_fields = tag.apply(marc_record)
-          data_fields.each_with_object([]) do |df, vv|
-            next unless (subfield_values = subfield.apply(df))
-
-            subfield_values.each { |v| vv << v if v }
-          end
+        def can_apply?(marc_obj)
+          marc_obj.respond_to?(:subfields)
         end
 
         # ------------------------------------------------------------
@@ -38,9 +33,13 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Predicate
+        # Protected methods
 
         protected
+
+        def do_apply(data_field)
+          subfield.apply(data_field)
+        end
 
         def to_s_inspect
           [super, subfield.inspect].join
