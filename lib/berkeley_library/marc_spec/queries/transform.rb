@@ -51,17 +51,6 @@ module BerkeleyLibrary
         end
 
         # ----------------------------------------
-        # fieldSpec (fixed fields)
-
-        rule(tag: simple(:tag), character_spec: simple(:character_spec)) do
-          FixedFieldValue.new(Tag.new(tag), character_spec)
-        end
-
-        rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec)) do
-          FixedFieldValue.new(Tag.new(tag, index), character_spec)
-        end
-
-        # ----------------------------------------
         # abrSubfieldSpec
 
         rule(code: simple(:code)) do
@@ -80,41 +69,82 @@ module BerkeleyLibrary
           SubfieldValue.new(Subfield.new(code, index: index), character_spec)
         end
 
+        # TODO: parse selector explicitly?
+
+        # ----------------------------------------
+        # fieldSpec (fixed fields)
+
+        rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec), condition: simple(:condition)) do
+          Query.new(Tag.new(tag, index), FixedFieldValue.new(character_spec), condition)
+        end
+
+        rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec)) do
+          Query.new(Tag.new(tag, index), FixedFieldValue.new(character_spec))
+        end
+
+        rule(tag: simple(:tag), character_spec: simple(:character_spec), condition: simple(:condition)) do
+          Query.new(Tag.new(tag), FixedFieldValue.new(character_spec), condition)
+        end
+
+        rule(tag: simple(:tag), character_spec: simple(:character_spec)) do
+          Query.new(Tag.new(tag), FixedFieldValue.new(character_spec))
+        end
+
         # ----------------------------------------
         # subfieldSpec
 
+        rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield), condition: simple(:condition)) do
+          Query.new(Tag.new(tag, index), VarFieldValue.new(subfield), condition)
+        end
+
         rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield)) do
-          VarFieldValue.new(Tag.new(tag, index), subfield)
+          Query.new(Tag.new(tag, index), VarFieldValue.new(subfield))
+        end
+
+        rule(tag: simple(:tag), subfield: simple(:subfield), condition: simple(:condition)) do
+          Query.new(Tag.new(tag), VarFieldValue.new(subfield), condition)
         end
 
         rule(tag: simple(:tag), subfield: simple(:subfield)) do
-          VarFieldValue.new(Tag.new(tag), subfield)
+          Query.new(Tag.new(tag), VarFieldValue.new(subfield))
+        end
+
+        rule(tag: simple(:tag), index: simple(:index), condition: simple(:condition)) do
+          Query.new(Tag.new(tag, index), condition) # TODO: explicit subquery class?
+        end
+
+        rule(subfield: simple(:subfield), condition: simple(:condition)) do
+          Query.new(nil, condition)  # TODO: explicit subquery class?
         end
 
         # ----------------------------------------
         # indicatorSpec
 
+        rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind), condition: simple(:condition)) do
+          Query.new(Tag.new(tag, index), IndicatorValue.new(ind), condition)
+        end
+
         rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind)) do
-          IndicatorValue.new(Tag.new(tag, index), ind)
+          Query.new(Tag.new(tag, index), IndicatorValue.new(ind))
+        end
+
+        rule(tag: simple(:tag), ind: simple(:ind), condition: simple(:condition)) do
+          Query.new(Tag.new(tag), IndicatorValue.new(ind), condition)
         end
 
         rule(tag: simple(:tag), ind: simple(:ind)) do
-          IndicatorValue.new(Tag.new(tag), ind)
+          Query.new(Tag.new(tag), IndicatorValue.new(ind))
         end
 
         # ----------------------------------------
         # MARCSpec
 
-        rule(referent: simple(:referent)) do
-          Query.new(referent)
+        rule(tag: simple(:tag), condition: simple(:condition)) do
+          Query.new(Tag.new(tag), condition)
         end
 
-        rule(referent: simple(:referent), condition: simple(:condition)) do
-          Query.new(referent, condition)
-        end
-
-        rule(referent: simple(:referent), subqueries: sequence(:subqueries)) do
-          Query.new(referent, *subqueries)
+        rule(tag: simple(:tag), subqueries: sequence(:subqueries)) do
+          Query.new(Tag.new(tag), *subqueries)
         end
       end
     end

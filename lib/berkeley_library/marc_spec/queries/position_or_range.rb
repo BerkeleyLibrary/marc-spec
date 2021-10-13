@@ -1,10 +1,10 @@
-require 'berkeley_library/marc_spec/queries/referent'
+require 'berkeley_library/marc_spec/queries/applicable'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       module PositionOrRange
-        include Referent
+        include Applicable
 
         def can_apply?(marc_obj)
           [String, Array, MARC::ControlField, MARC::Subfield].any? { |t| marc_obj.is_a?(t) }

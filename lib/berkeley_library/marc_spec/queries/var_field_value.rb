@@ -1,9 +1,9 @@
-require 'berkeley_library/marc_spec/queries/field_value'
+require 'berkeley_library/marc_spec/queries/selector'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class VarFieldValue < FieldValue
+      class VarFieldValue < Selector
 
         # ------------------------------------------------------------
         # Attributes
@@ -13,13 +13,13 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, subfield)
-          super(tag)
+        def initialize(subfield)
+          # TODO: Separate VarFieldValue types?
           @subfield = of_any_type(subfield, Subfield, SubfieldValue, allow_nil: false)
         end
 
         # ------------------------------------------------------------
-        # Referent
+        # Applicable
 
         def can_apply?(marc_obj)
           marc_obj.respond_to?(:subfields)
@@ -29,7 +29,7 @@ module BerkeleyLibrary
         # Object overrides
 
         def to_s
-          [super, subfield].join
+          subfield.to_s
         end
 
         # ------------------------------------------------------------
@@ -42,11 +42,11 @@ module BerkeleyLibrary
         end
 
         def to_s_inspect
-          [super, subfield.inspect].join
+          subfield.inspect
         end
 
         def equality_attrs
-          [:subfield] + super
+          [:subfield]
         end
 
       end

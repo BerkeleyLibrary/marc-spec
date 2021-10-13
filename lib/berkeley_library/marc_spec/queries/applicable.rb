@@ -4,7 +4,7 @@ module BerkeleyLibrary
   module MarcSpec
     module Queries
       # Supermodule of query objects that can return a result
-      module Referent
+      module Applicable
         include Part
 
         def apply(marc_obj)

@@ -1,11 +1,11 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/queries/referent'
+require 'berkeley_library/marc_spec/queries/applicable'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class Subfield
-        include Referent
+        include Applicable
 
         # ------------------------------------------------------------
         # Attributes
@@ -32,7 +32,7 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Referent
+        # Applicable
 
         def can_apply?(marc_obj)
           marc_obj.respond_to?(:subfields)
@@ -44,7 +44,7 @@ module BerkeleyLibrary
         protected
 
         # ------------------------------
-        # Referent
+        # Applicable
 
         def do_apply(data_field)
           subfields = all_subfields(data_field)

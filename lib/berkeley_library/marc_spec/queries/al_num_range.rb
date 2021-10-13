@@ -65,6 +65,7 @@ module BerkeleyLibrary
         private
 
         def select_raw_from(seq)
+          return seq if from == 0 && to.nil?
           return seq[index_range] unless alphabetic?
           return select_raw_from(seq.chars).join if seq.respond_to?(:chars)
           raise ArgumentError, "Can't select from non-sequence #{seq.inspect}" unless seq.respond_to?(:select)

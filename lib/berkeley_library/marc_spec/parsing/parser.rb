@@ -106,10 +106,10 @@ module BerkeleyLibrary
         rule(:subfield_code_range) { str('$').ignore >> subfield_range }
 
         # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
-        rule(:abr_subfield_spec) { (subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe }
+        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe).as(:subfield) }
 
         # subfieldSpec      = fieldTag [index] abrSubfieldSpec
-        rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec.as(:subfield) }
+        rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec }
 
         # UNDOCUMENTED -- see spec/suite/valid/validIndicators.json, https://github.com/MARCspec/MARCspec-Test-Suite/issues/1
         rule(:indicators) { str('1') | str('2') }
@@ -177,8 +177,8 @@ module BerkeleyLibrary
         #  (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec))
         #  -> (fieldTag [index] *(abrSubfieldSpec *subSpec))
         rule(:_multiple_subfield_spec) {
-          (field_tag.as(:tag) >> index.maybe).as(:referent) >>
-            (abr_subfield_spec.as(:referent) >> sub_spec.as(:condition).maybe).repeat(2).as(:subqueries)
+          (field_tag.as(:tag) >> index.maybe) >>
+            (abr_subfield_spec >> sub_spec.as(:condition).maybe).repeat(2).as(:subqueries)
         }
 
         # Extracted from MARCspec for clarity:
@@ -186,16 +186,16 @@ module BerkeleyLibrary
         # Rewritten for ease of parsing:
         #   (fieldTag [index] *(abrSubfieldSpec *subSpec))
         rule(:_varfield_marc_spec) {
-          _multiple_subfield_spec | (subfield_spec.as(:referent) >> sub_spec.as(:condition).maybe)
+          _multiple_subfield_spec | (subfield_spec >> sub_spec.as(:condition).maybe)
         }
 
         # Extracted from MARCspec for clarity
         # indicatorSpec *subSpec
-        rule(:_indicator_marc_spec) { (indicator_spec.as(:referent) >> sub_spec.as(:condition).maybe) }
+        rule(:_indicator_marc_spec) { (indicator_spec >> sub_spec.as(:condition).maybe) }
 
         # Extracted from MARCspec for clarity
         # fieldSpec *subSpec
-        rule(:_fixedfield_marc_spec) { (field_spec.as(:referent) >> sub_spec.as(:condition).maybe) }
+        rule(:_fixedfield_marc_spec) { (field_spec >> sub_spec.as(:condition).maybe) }
 
         # MARCspec          = fieldSpec *subSpec / (subfieldSpec *subSpec *(abrSubfieldSpec *subSpec)) / indicatorSpec *subSpec
         rule(:marc_spec) { _varfield_marc_spec | _indicator_marc_spec | _fixedfield_marc_spec }

@@ -9,7 +9,7 @@ module BerkeleyLibrary
 
         def inspect
           class_name = self.class.name.sub(/^.*::/, '')
-          "#{class_name}@#{object_id}<#{to_s_inspect}>"
+          "#{class_name}<#{to_s_inspect}>"
         end
 
         def eql?(other)

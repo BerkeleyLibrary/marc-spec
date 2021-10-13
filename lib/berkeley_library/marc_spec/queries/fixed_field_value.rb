@@ -1,10 +1,10 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/queries/field_value'
+require 'berkeley_library/marc_spec/queries/selector'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class FixedFieldValue < FieldValue
+      class FixedFieldValue < Selector
 
         # ------------------------------------------------------------
         # Attributes
@@ -14,9 +14,8 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, character_spec = nil)
-          super(tag) # TODO: validate control vs. data?
-          @character_spec = position_or_range(character_spec, allow_nil: true)
+        def initialize(character_spec = AlNumRange.new(0, nil))
+          @character_spec = position_or_range(character_spec)
         end
 
         # ------------------------------------------------------------
@@ -24,16 +23,16 @@ module BerkeleyLibrary
 
         def to_s
           StringIO.new.tap do |out|
-            out << super
-            out << "/#{character_spec}" if character_spec
+            out << "/#{character_spec}"
           end.string
         end
 
         # ------------------------------
-        # Referent
+        # Applicable
 
         def can_apply?(marc_obj)
-          marc_obj.is_a?(MARC::ControlField)
+          # MARC leader is ControlField-like but is returned as string
+          marc_obj.is_a?(MARC::ControlField) || marc_obj.is_a?(String)
         end
 
         # ------------------------------------------------------------
@@ -42,7 +41,7 @@ module BerkeleyLibrary
         protected
 
         # ------------------------------
-        # Referent
+        # Applicable
 
         def do_apply(control_field)
           value_str = string_value_from(control_field)
@@ -55,7 +54,7 @@ module BerkeleyLibrary
         # Predicate
 
         def equality_attrs
-          %i[character_spec] + super
+          %i[character_spec]
         end
 
         # ------------------------------------------------------------

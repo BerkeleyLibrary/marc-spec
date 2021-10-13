@@ -1,9 +1,9 @@
-require 'berkeley_library/marc_spec/queries/field_value'
+require 'berkeley_library/marc_spec/queries/selector'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class IndicatorValue < FieldValue
+      class IndicatorValue < Selector
 
         # ------------------------------------------------------------
         # Constants
@@ -18,8 +18,7 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Initializer
 
-        def initialize(tag, ind)
-          super(tag)
+        def initialize(ind)
           @ind = valid_indicator(ind)
         end
 
@@ -27,11 +26,11 @@ module BerkeleyLibrary
         # Object overrides
 
         def to_s
-          [super, ind].join('^')
+          "^#{ind}"
         end
 
         # ------------------------------------------------------------
-        # Referent
+        # Applicable
 
         def can_apply?(marc_obj)
           [:indicator1, :indicator2].all? { |m| marc_obj.respond_to?(m) }
@@ -50,12 +49,8 @@ module BerkeleyLibrary
           end
         end
 
-        def to_s_inspect
-          [super, ind].join('^')
-        end
-
         def equality_attrs
-          super + %i[ind]
+          %i[ind]
         end
 
         private

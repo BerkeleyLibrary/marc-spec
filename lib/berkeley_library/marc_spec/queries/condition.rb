@@ -21,8 +21,11 @@ module BerkeleyLibrary
           # TODO: verify left semantics for unary operators
           #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
           #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
-          @left = of_any_type(left, Referent, Condition, allow_nil: true) if binary?
-          @right = of_any_type(right, Referent, Condition, ComparisonString)
+
+
+          # TODO: get a compatible interface on these things (or always use Query?)
+          @left = of_any_type(left, Applicable, Condition, Query, allow_nil: true) if binary?
+          @right = of_any_type(right, Applicable, Condition, Query, ComparisonString)
         end
         # rubocop:enable Style/KeywordParametersOrder
 
@@ -68,8 +71,18 @@ module BerkeleyLibrary
 
         protected
 
+        def to_s_inspect
+          [left.inspect, operator, right.inspect].join(' ')
+        end
+
         def equality_attrs
           %i[left operator right]
+        end
+
+        private
+
+        def binary?
+          self.operator.binary?
         end
 
       end

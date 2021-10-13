@@ -1,11 +1,11 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/queries/referent'
+require 'berkeley_library/marc_spec/queries/applicable'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class SubfieldValue
-        include Referent
+        include Applicable
 
         # ------------------------------------------------------------
         # Attributes
@@ -21,7 +21,7 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Referent
+        # Applicable
 
         def apply(data_field)
           subfields = subfield.apply(data_field)

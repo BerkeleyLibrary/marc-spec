@@ -1,11 +1,11 @@
 require 'marc'
-require 'berkeley_library/marc_spec/queries/referent'
+require 'berkeley_library/marc_spec/queries/applicable'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class Tag
-        include Referent
+        include Applicable
 
         # ------------------------------------------------------------
         # Constants
@@ -54,7 +54,7 @@ module BerkeleyLibrary
         protected
 
         # ------------------------------
-        # Referent
+        # Applicable
 
         def do_apply(marc_record)
           return [marc_record.leader] if leader?
