@@ -1,4 +1,5 @@
 require 'berkeley_library/marc_spec/queries/part'
+require 'berkeley_library/marc_spec/queries/operator'
 
 module BerkeleyLibrary
   module MarcSpec
@@ -7,31 +8,23 @@ module BerkeleyLibrary
         include Part
 
         # ------------------------------------------------------------
-        # Constants
-
-        # NOTE: && and || are not defined in the MARCspec standard but are
-        #       implementation details of repeated (AND) and chained (OR) subspecs
-        #       -- see https://marcspec.github.io/MARCspec/marc-spec.html#general
-        ALL_OPERATORS = %w[= != ~ !~ ! ? && ||].freeze
-        UNARY_OPERATORS = %w[! ?].freeze
-
-        # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :left, :operator, :operation, :right
+        attr_reader :left, :operator, :right
 
         # ------------------------------------------------------------
         # Initializer
 
         # rubocop:disable Style/KeywordParametersOrder
         def initialize(operator = '?', left: nil, right:)
-          @operation = Operators.operation_for(operator)
-          @operator = operator
+          @operator = Operator.from_str(operator)
           # TODO: verify left semantics for unary operators
           #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
           #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
-          @left = left unless unary?
-          @right = right
+          @left = of_any_type(left, Referent, Condition, allow_nil: true) if binary?
+          @right = of_any_type(right, Referent, Condition, ComparisonString)
+
+          Condition.observed_conditions << [left, operator.to_s, right]
         end
         # rubocop:enable Style/KeywordParametersOrder
 
@@ -39,6 +32,14 @@ module BerkeleyLibrary
         # Static factory methods
 
         class << self
+          # TODO: remove this
+          def observed_conditions
+            @known_comparisons ||= begin
+              require 'set'
+              Set.new
+            end
+          end
+
           def any_of(*conditions)
             conditions.inject do |cc, c|
               cc.or(c)
@@ -53,19 +54,12 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Instance methods
 
-        def unary?
-          UNARY_OPERATORS.include?(operator)
-        end
-
         def binary?
-          !unary?
+          operator.binary?
         end
 
-        # TODO: make this work
         def met?(context)
-          left_operand = @left && @left.apply(context)
-          right_operand = @right.apply(context)
-          operation.call(left_operand, right_operand)
+          operator.apply(left, right, context)
         end
 
         def and(other_condition)
@@ -80,6 +74,7 @@ module BerkeleyLibrary
           Condition.new('||', left: self, right: other_condition)
         end
 
+        # TODO: push this down to met? somehow
         def implicit_left=(value)
           if @left.nil?
             @left = value if binary?
@@ -104,17 +99,6 @@ module BerkeleyLibrary
 
         def equality_attrs
           %i[left operator right]
-        end
-
-        # ------------------------------------------------------------
-        # Private methods
-
-        private
-
-        def valid_operator(op_val)
-          op_val.to_s.tap do |op|
-            raise ArgumentError, "Not a valid operator: #{op_val.inspect}" unless ALL_OPERATORS.include?(op)
-          end
         end
 
       end

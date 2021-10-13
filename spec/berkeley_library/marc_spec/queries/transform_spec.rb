@@ -13,12 +13,41 @@ module BerkeleyLibrary
           @xform = Transform.new
         end
 
+        # TODO: remove this
+        attr_reader :all_input_strs
+
+        before(:all) do
+          @all_input_strs = []
+        end
+
+        after(:all) do
+          Condition.observed_conditions.each do |(l, o, r)|
+            lclass_str = l.class.to_s.gsub(/.*::([^:]+)/, '\\1')
+            rclass_str = r.class.to_s.gsub(/.*::([^:]+)/, '\\1')
+            puts [
+              lclass_str,
+              l.to_s,
+              (o == '=' ? "'=" : o),
+              rclass_str,
+              r.to_s
+            ].join("\t")
+          end
+
+          puts '------------------------------------------------------------'
+          puts 'input strings'
+          puts '------------------------------------------------------------'
+
+          puts all_input_strs.select { |s| s.include?('{') }.sort.uniq.join("\n")
+        end
+
         # ------------------------------------------------------------
         # Helper methods
 
         def check_referents(expecteds)
           aggregate_failures do
             expecteds.each do |input_str, expected|
+              all_input_strs << input_str
+
               parse_tree = parser.parse(input_str)
               query = xform.apply(parse_tree)
               expect(query).to be_a(Query) # just to be sure
@@ -31,6 +60,8 @@ module BerkeleyLibrary
         def check_conditions(expecteds)
           aggregate_failures do
             expecteds.each do |input_str, expected|
+              all_input_strs << input_str
+
               parse_tree = parser.parse(input_str)
               query = xform.apply(parse_tree)
               expect(query).to be_a(Query) # just to be sure
@@ -43,6 +74,8 @@ module BerkeleyLibrary
         def check_queries(expecteds)
           aggregate_failures do
             expecteds.each do |input_str, expected|
+              all_input_strs << input_str
+
               parse_tree = parser.parse(input_str)
               actual = xform.apply(parse_tree)
               expect(actual).to be_a(Query) # just to be sure
@@ -90,7 +123,7 @@ module BerkeleyLibrary
             result = xform.apply(parse_tree)
             expect(result).to be_a(Condition)
             expect(result.left).to be_nil
-            expect(result.operator).to eq('?')
+            expect(result.operator).to eq(Operator::EXIST)
             expect(result.right).to eq(Tag.new('956'))
           end
         end
@@ -356,7 +389,7 @@ module BerkeleyLibrary
                   Query.new(Subfield.new('a'), Condition.new('?', right: Subfield.new('f'))),
                   Subfield.new('b'),
                   Subfield.new('c'),
-                  Query.new(Subfield.new('e'), Condition.new('=', left: Subfield.new('f'), right: ComparisonString.new('q'))),
+                  Query.new(Subfield.new('e'), Condition.new('=', left: Subfield.new('f'), right: ComparisonString.new('q')))
                 )
               }
               check_queries(expecteds)

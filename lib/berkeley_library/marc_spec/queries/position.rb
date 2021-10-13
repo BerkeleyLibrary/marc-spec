@@ -1,11 +1,10 @@
-require 'berkeley_library/marc_spec/queries/part'
+require 'berkeley_library/marc_spec/queries/position_or_range'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      # TODO: unify w/AlNumRange
       class Position
-        include Part
+        include PositionOrRange
 
         # ------------------------------------------------------------
         # Attributes
@@ -44,9 +43,12 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Part
+        # Protected methods
 
         protected
+
+        # ------------------------------
+        # Part
 
         def equality_attrs
           [:position]

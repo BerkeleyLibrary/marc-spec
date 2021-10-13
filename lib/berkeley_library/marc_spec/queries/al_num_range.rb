@@ -1,11 +1,10 @@
-require 'berkeley_library/marc_spec/queries/part'
+require 'berkeley_library/marc_spec/queries/position_or_range'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      # TODO: unify w/Position
       class AlNumRange
-        include Part
+        include PositionOrRange
 
         # ------------------------------------------------------------
         # Attributes
