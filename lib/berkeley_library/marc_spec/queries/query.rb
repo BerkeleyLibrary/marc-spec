@@ -47,12 +47,12 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Referent
 
-        def apply(marc_record)
-          results = referent.apply(marc_record)
-          # TODO: conditions
-          return results unless subqueries.any?
+        def apply(marc_obj)
+          context = referent.apply(marc_obj)
+          context.select! { |ctx| condition.met?(ctx) } if condition
+          return context unless subqueries.any?
 
-          results.each_with_object([]) do |r, rr|
+          context.each_with_object([]) do |r, rr|
             subqueries.each { |sq| append_result(sq.apply(r), rr) }
           end
         end

@@ -18,14 +18,15 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Attributes
 
-        attr_reader :left, :operator, :right
+        attr_reader :left, :operator, :operation, :right
 
         # ------------------------------------------------------------
         # Initializer
 
         # rubocop:disable Style/KeywordParametersOrder
         def initialize(operator = '?', left: nil, right:)
-          @operator = valid_operator(operator)
+          @operation = Operators.operation_for(operator)
+          @operator = operator
           # TODO: verify left semantics for unary operators
           #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
           #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
@@ -58,6 +59,13 @@ module BerkeleyLibrary
 
         def binary?
           !unary?
+        end
+
+        # TODO: make this work
+        def met?(context)
+          left_operand = @left && @left.apply(context)
+          right_operand = @right.apply(context)
+          operation.call(left_operand, right_operand)
         end
 
         def and(other_condition)
