@@ -337,6 +337,36 @@ module BerkeleyLibrary
               end
             end
           end
+
+        end
+
+        describe :comparison_string do
+          let(:rule) { parser._comparison_string }
+
+          it 'parses a comparison string' do
+            expecteds = {
+              '\\svalue' => '\\svalue',
+              '\\\\svalue' => '\\svalue',
+              '\\value' => 'value',
+              '\\value\\!' => 'value\\!',
+              '\\!value' => '!value',
+              '\\\\!value' => '\\!value',
+              '\\help\\sI\\sam\\strapped\\sin\\sa\\sunit\\stest\\!\\sso\\sam\\sI' =>
+                'help\\sI\\sam\\strapped\\sin\\sa\\sunit\\stest\\!\\sso\\sam\\sI',
+              '\\a\\{b\\}\\$1\\\\23\\=\\~\\|\\?' => 'a\\{b\\}\\$1\\\\23\\=\\~\\|\\?'
+            }
+            aggregate_failures do
+              expecteds.each do |val, expected|
+                expect(rule).to parse(val, reporter: r)
+                result = rule.parse(val)
+                expect(result).to be_a(Hash)
+                next unless result.is_a?(Hash)
+
+                cstr = result[:comparison_string]
+                expect(cstr).to eq(expected)
+              end
+            end
+          end
         end
 
         describe 'with multiple subfields' do
@@ -441,6 +471,26 @@ module BerkeleyLibrary
             expect(condition3[:left][:selector]).to eq({ subfield: { code: 'f' } })
             expect(condition3[:operator]).to eq('=')
             expect(condition3[:right]).to eq({ comparison_string: 'q' })
+          end
+        end
+
+        describe 'indicators with conditions' do
+          it 'handles plain tags' do
+            aggregate_failures do
+              tags.each do |tag|
+                inds.each do |ind|
+                  val = "#{tag}^#{ind}{=\\a}"
+                  expect(parser).to parse(val)
+                  result = parser.parse(val)
+                  expect(result[:tag]).to eq(tag)
+                  selector = result[:selector]
+                  expect(selector[:ind]).to eq(ind)
+                  condition = result[:condition]
+                  expect(condition[:operator]).to eq('=')
+                  expect(condition[:right][:comparison_string]).to eq('a')
+                end
+              end
+            end
           end
         end
       end

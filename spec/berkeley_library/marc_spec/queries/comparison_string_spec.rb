@@ -8,11 +8,13 @@ module BerkeleyLibrary
           it 'decodes escapes' do
             expecteds = {
               'value' => 'value',
-              'value\\!' => 'value!',
+              '!value' => '!value',
               '\\!value' => '!value',
+              '\\svalue' => ' value',
+              'value\\!' => 'value!',
+              'a\\{b\\}\\$1\\\\23\\=\\~\\|\\?' => 'a{b}$1\\\\23=~|?',
               'help\\sI\\sam\\strapped\\sin\\sa\\sunit\\stest\\!\\sso\\sam\\sI' =>
-                'help I am trapped in a unit test! so am I',
-              'a\\{b\\}\\$1\\\\23\\=\\~\\|\\?' => 'a{b}$1\\\\23=~|?'
+                'help I am trapped in a unit test! so am I'
             }
             aggregate_failures do
               expecteds.each do |str_raw, expected|

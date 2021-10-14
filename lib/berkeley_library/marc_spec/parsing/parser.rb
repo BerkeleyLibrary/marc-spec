@@ -128,7 +128,7 @@ module BerkeleyLibrary
         rule(:vchar_cs_special) { match['!$=?{|}~'] }
 
         # Extracted from comparisonString (escaped)
-        rule(:vchar_cs_esc) { str('\\').ignore >> vchar_cs_special }
+        rule(:vchar_cs_esc) { (str('\\') >> vchar_cs_special) }
 
         # Extracted from comparisonString to simplify generated tests,
         # which don't take leading \ into account
@@ -143,7 +143,7 @@ module BerkeleyLibrary
         #
         # NOTE: generated tests only handle the body of the string, not the
         #       leading \, so we give the full rule a separate name
-        rule(:_comparison_string) { str('\\').ignore >> comparison_string.as(:comparison_string) }
+        rule(:_comparison_string) { ((str('\\s') | str('\\').ignore) >> comparison_string).as(:comparison_string) }
 
         # operator          = "=" / "!=" / "~" / "!~" / "!" / "?"
         #                     ; equal / unequal / includes / not includes / not exists / exists
