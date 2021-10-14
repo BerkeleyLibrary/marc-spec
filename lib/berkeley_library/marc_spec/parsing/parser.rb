@@ -83,10 +83,10 @@ module BerkeleyLibrary
         rule(:index) { (str('[') >> position_or_range >> str(']')).as(:index) }
 
         # fieldSpec         = fieldTag [index] [characterSpec]
-        rule(:field_spec) { field_tag.as(:tag) >> index.maybe >> character_spec.maybe }
+        rule(:field_spec) { field_tag.as(:tag) >> index.maybe >> character_spec.as(:selector).maybe }
 
         # abrFieldSpec      = index [characterSpec] / characterSpec
-        rule(:abr_field_spec) { (index >> character_spec.maybe) | character_spec }
+        rule(:abr_field_spec) { (index >> character_spec.as(:selector).maybe) | character_spec.as(:selector) }
 
         # subfieldChar      = %x21-3F / %x5B-7B / %x7D-7E
         #                     ; ! " # $ % & ' ( ) * + , - . / 0-9 : ; < = > ? [ \ ] ^ _ \` a-z { } ~
@@ -106,7 +106,7 @@ module BerkeleyLibrary
         rule(:subfield_code_range) { str('$').ignore >> subfield_range }
 
         # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
-        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe).as(:subfield) }
+        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe).as(:subfield).as(:selector) }
 
         # subfieldSpec      = fieldTag [index] abrSubfieldSpec
         rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec }
@@ -115,7 +115,7 @@ module BerkeleyLibrary
         rule(:indicators) { str('1') | str('2') }
 
         # abrIndicatorSpec  = [index] "^" ("1" / "2")
-        rule(:abr_indicator_spec) { index.maybe >> str('^') >> indicators.as(:ind) }
+        rule(:abr_indicator_spec) { index.maybe >> str('^') >> indicators.as(:ind).as(:selector) }
 
         # indicatorSpec     = fieldTag abrIndicatorSpec
         rule(:indicator_spec) { field_tag.as(:tag) >> abr_indicator_spec }
@@ -150,7 +150,7 @@ module BerkeleyLibrary
         rule(:operator) { (str('=') | str('!=') | str('~') | str('!~') | str('!') | str('?')) }
 
         # abbreviation      = abrFieldSpec / abrSubfieldSpec / abrIndicatorSpec
-        rule(:abbreviation) { abr_subfield_spec | abr_indicator_spec | abr_field_spec }
+        rule(:abbreviation) { (abr_subfield_spec | abr_indicator_spec | abr_field_spec) }
 
         # subTerm           = fieldSpec / subfieldSpec / indicatorSpec / comparisonString / abbreviation
         rule(:sub_term) { subfield_spec | indicator_spec | field_spec | _comparison_string | abbreviation }

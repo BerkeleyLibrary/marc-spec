@@ -119,7 +119,8 @@ module BerkeleyLibrary
                     expect(rule).to parse(val, reporter: r)
                     result = rule.parse(val)
                     expect(result[:tag]).to eq(tag)
-                    character_spec = result[:character_spec]
+                    selector = result[:selector]
+                    character_spec = selector[:character_spec]
                     expect(character_spec[:pos]).to eq(pos)
                   end
                 end
@@ -134,7 +135,8 @@ module BerkeleyLibrary
                     expect(rule).to parse(val, reporter: r)
                     result = rule.parse(val)
                     expect(result[:tag]).to eq(tag)
-                    character_spec = result[:character_spec]
+                    selector = result[:selector]
+                    character_spec = selector[:character_spec]
                     expect(character_spec[:from]).to eq(from == '#' ? nil : from)
                     expect(character_spec[:to]).to eq(to == '#' ? nil : to)
                   end
@@ -202,7 +204,8 @@ module BerkeleyLibrary
                   expect(rule).to parse(val, reporter: r)
                   result = rule.parse(val)
                   expect(result[:tag]).to eq(tag)
-                  expect(result[:subfield]).to eq({ code: code })
+                  selector = result[:selector]
+                  expect(selector[:subfield]).to eq({ code: code })
                 end
               end
             end
@@ -217,7 +220,8 @@ module BerkeleyLibrary
                   result = rule.parse(val)
                   expect(result[:tag]).to eq(tag)
 
-                  subfield = result[:subfield]
+                  selector = result[:selector]
+                  subfield = selector[:subfield]
                   expect(subfield).not_to be_nil
 
                   code_range = subfield[:code]
@@ -241,7 +245,8 @@ module BerkeleyLibrary
                     index = result[:index]
                     expect(index[:pos]).to eq(pos_index)
 
-                    subfield = result[:subfield]
+                    selector = result[:selector]
+                    subfield = selector[:subfield]
                     expect(subfield).not_to be_nil
                     expect(subfield[:code]).to eq(code)
                   end
@@ -264,7 +269,8 @@ module BerkeleyLibrary
                     expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
                     expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
 
-                    subfield = result[:subfield]
+                    selector = result[:selector]
+                    subfield = selector[:subfield]
                     expect(subfield).not_to be_nil
 
                     code_range = subfield[:code]
@@ -288,7 +294,8 @@ module BerkeleyLibrary
                   expect(rule).to parse(val)
                   result = rule.parse(val)
                   expect(result[:tag]).to eq(tag)
-                  expect(result[:ind]).to eq(ind)
+                  selector = result[:selector]
+                  expect(selector[:ind]).to eq(ind)
                 end
               end
             end
@@ -302,7 +309,8 @@ module BerkeleyLibrary
                     val = "#{tag}[#{pos_index}]^#{ind}"
                     result = rule.parse(val)
                     expect(result[:tag]).to eq(tag)
-                    expect(result[:ind]).to eq(ind)
+                    selector = result[:selector]
+                    expect(selector[:ind]).to eq(ind)
                     index = result[:index]
                     expect(index[:pos]).to eq(pos_index)
                   end
@@ -319,7 +327,8 @@ module BerkeleyLibrary
                     val = "#{tag}[#{from_index}-#{to_index}]^#{ind}"
                     result = rule.parse(val)
                     expect(result[:tag]).to eq(tag)
-                    expect(result[:ind]).to eq(ind)
+                    selector = result[:selector]
+                    expect(selector[:ind]).to eq(ind)
                     index = result[:index]
                     expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
                     expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
@@ -339,14 +348,14 @@ module BerkeleyLibrary
                 expect(parser).to parse(val, reporter: r)
                 result = parser.parse(val)
 
-                referent = result[:referent]
-                expect(referent[:tag]).to eq(tag)
+                expect(result[:tag]).to eq(tag)
 
                 subqueries = result[:subqueries]
                 expect(subqueries.size).to eq(codes.size)
                 subqueries.each_with_index do |subquery, i|
-                  referent = subquery[:referent]
-                  expect(referent[:code]).to eq(codes[i])
+                  selector = subquery[:selector]
+                  subfield = selector[:subfield]
+                  expect(subfield[:code]).to eq(codes[i])
                 end
               end
             end
@@ -361,17 +370,17 @@ module BerkeleyLibrary
                   expect(parser).to parse(val, reporter: r)
                   result = parser.parse(val)
 
-                  referent = result[:referent]
-                  expect(referent[:tag]).to eq(tag)
-                  index = referent[:index]
+                  expect(result[:tag]).to eq(tag)
+                  index = result[:index]
                   expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
                   expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
 
                   subqueries = result[:subqueries]
                   expect(subqueries.size).to eq(codes.size)
                   subqueries.each_with_index do |subquery, i|
-                    referent = subquery[:referent]
-                    expect(referent[:code]).to eq(codes[i])
+                    selector = subquery[:selector]
+                    subfield = selector[:subfield]
+                    expect(subfield[:code]).to eq(codes[i])
                   end
                 end
               end
@@ -387,17 +396,17 @@ module BerkeleyLibrary
                   expect(parser).to parse(val, reporter: r)
                   result = parser.parse(val)
 
-                  referent = result[:referent]
-                  expect(referent[:tag]).to eq(tag)
-                  index = referent[:index]
+                  expect(result[:tag]).to eq(tag)
+                  index = result[:index]
                   expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
                   expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
 
                   subqueries = result[:subqueries]
                   expect(subqueries.size).to eq(codes.size)
                   subqueries.each_with_index do |subquery, i|
-                    referent = subquery[:referent]
-                    expect(referent[:code]).to eq(codes[i])
+                    selector = subquery[:selector]
+                    subfield = selector[:subfield]
+                    expect(subfield[:code]).to eq(codes[i])
                     condition = subquery[:condition]
                     expect(condition[:operator]).to eq('~')
                     right_operand = condition[:right]
@@ -406,6 +415,32 @@ module BerkeleyLibrary
                 end
               end
             end
+          end
+
+          it 'handles complex combinations of subfields and subspecs' do
+            val = '880$a{?$f}$b$c$e{$f=\\q}'
+
+            expect(parser).to parse(val, reporter: r)
+            result = parser.parse(val)
+            expect(result[:tag]).to eq('880')
+
+            subqueries = result[:subqueries]
+            expect(subqueries.size).to eq(4)
+
+            expect(subqueries[0][:selector]).to eq({ subfield: { code: 'a' } })
+            condition0 = subqueries[0][:condition]
+            expect(condition0[:operator]).to eq('?')
+            expect(condition0[:right][:selector]).to eq({ subfield: { code: 'f' } })
+
+            expect(subqueries[1][:selector]).to eq({ subfield: { code: 'b' } })
+
+            expect(subqueries[2][:selector]).to eq({ subfield: { code: 'c' } })
+
+            expect(subqueries[3][:selector]).to eq({ subfield: { code: 'e' } })
+            condition3 = subqueries[3][:condition]
+            expect(condition3[:left][:selector]).to eq({ subfield: { code: 'f' } })
+            expect(condition3[:operator]).to eq('=')
+            expect(condition3[:right]).to eq({ comparison_string: 'q' })
           end
         end
       end
