@@ -77,16 +77,16 @@ module BerkeleyLibrary
         rule(:position_or_range) { range | position.as(:pos) }
 
         # characterSpec     = "/" positionOrRange
-        rule(:character_spec) { str('/') >> position_or_range.as(:character_spec) }
+        rule(:character_spec) { str('/') >> position_or_range }
 
         # index             = "[" positionOrRange "]"
         rule(:index) { (str('[') >> position_or_range >> str(']')).as(:index) }
 
         # fieldSpec         = fieldTag [index] [characterSpec]
-        rule(:field_spec) { field_tag.as(:tag) >> index.maybe >> character_spec.as(:selector).maybe }
+        rule(:field_spec) { field_tag.as(:tag) >> index.maybe >> character_spec.as(:ff_chars).as(:selector).maybe }
 
         # abrFieldSpec      = index [characterSpec] / characterSpec
-        rule(:abr_field_spec) { (index >> character_spec.as(:selector).maybe) | character_spec.as(:selector) }
+        rule(:abr_field_spec) { (index >> character_spec.as(:ff_chars).as(:selector).maybe) | character_spec.as(:ff_chars).as(:selector) }
 
         # subfieldChar      = %x21-3F / %x5B-7B / %x7D-7E
         #                     ; ! " # $ % & ' ( ) * + , - . / 0-9 : ; < = > ? [ \ ] ^ _ \` a-z { } ~
@@ -106,7 +106,7 @@ module BerkeleyLibrary
         rule(:subfield_code_range) { str('$').ignore >> subfield_range }
 
         # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
-        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe).as(:selector) }
+        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.as(:sf_chars).maybe).as(:selector) }
 
         # subfieldSpec      = fieldTag [index] abrSubfieldSpec
         rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec }

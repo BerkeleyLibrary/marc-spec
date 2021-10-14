@@ -8,8 +8,7 @@ module BerkeleyLibrary
         # Object overrides
 
         def inspect
-          class_name = self.class.name.sub(/^.*::/, '')
-          "#{class_name}<#{to_s_inspect}>"
+          "#{cn(self)}<#{to_s_inspect}>"
         end
 
         def eql?(other)
@@ -57,7 +56,7 @@ module BerkeleyLibrary
           return if allow_nil && v.nil?
           return v if v.is_a?(type)
 
-          raise ArgumentError, "Not a #{type}: #{v.inspect}"
+          raise ArgumentError, "Not a #{cn(type)}: #{v.inspect}"
         end
 
         def position_or_range(v, allow_nil: false)
@@ -69,7 +68,7 @@ module BerkeleyLibrary
           return v, nil if v.is_a?(left_type)
           return nil, v if v.is_a?(right_type)
 
-          raise ArgumentError, "Not #{left_type} or #{right_type}: #{v.inspect}"
+          raise ArgumentError, "Not #{cn(left_type)} or #{cn(right_type)}: #{v.inspect}"
         end
 
         def of_any_type(v, *types, allow_nil: false)
@@ -77,13 +76,21 @@ module BerkeleyLibrary
           return nil if allow_nil && v.nil?
 
           types.each { |t| return v if v.is_a?(t) }
-          raise ArgumentError, "Not any of #{types.join(', ')}: #{v.inspect}"
+          raise ArgumentError, "Not any of #{types.map { |t| cn(t) }.join(', ')}: #{v.inspect}"
         end
 
         def int_or_nil(v)
           return nil if v.nil? || v == '#'
 
           Integer(v)
+        end
+
+        private
+
+        def cn(t)
+          return cn(t.class) unless t.is_a?(Class) || t.is_a?(Module)
+
+          t.name.sub(/^.*::/, '')
         end
 
       end

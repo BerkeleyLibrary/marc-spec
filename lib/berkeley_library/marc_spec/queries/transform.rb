@@ -17,9 +17,6 @@ module BerkeleyLibrary
         # { comparison_string: }
         rule(comparison_string: simple(:string)) { ComparisonString.new(string) }
 
-        # { character_spec: }
-        rule(character_spec: simple(:character_spec)) { character_spec }
-
         # ----------------------------------------
         # subTermSet
 
@@ -74,33 +71,30 @@ module BerkeleyLibrary
           Subfield.new(code, index: index)
         end
 
-        # { code:, character_spec: }
-        rule(code: simple(:code), character_spec: simple(:character_spec)) do
-          SubfieldValue.new(Subfield.new(code), character_spec)
+        # { code:, sf_chars: }
+        rule(code: simple(:code), sf_chars: simple(:sf_chars)) do
+          SubfieldValue.new(Subfield.new(code), sf_chars)
         end
 
-        # { code:, character_spec:, index: }
-        rule(code: simple(:code), index: simple(:index), character_spec: simple(:character_spec)) do
-          SubfieldValue.new(Subfield.new(code, index: index), character_spec)
+        # { code:, index:, sf_chars: }
+        rule(code: simple(:code), index: simple(:index), sf_chars: simple(:sf_chars)) do
+          SubfieldValue.new(Subfield.new(code, index: index), sf_chars)
         end
 
         # ----------------------------------------
         # fieldSpec (fixed fields)
 
-        # NOTE: Handled by MARCSpec / characterSpec
-
-        # ----------------------------------------
-        # subfieldSpec
-
-        # NOTE: Handled by MARCSpec / abrSubfieldSpec
+        rule(ff_chars: simple(:ff_chars)) do
+          FixedFieldValue.new(ff_chars)
+        end
 
         # ----------------------------------------
         # indicatorSpec
 
         # { ind: }
-        rule(ind: simple(:ind)) {
+        rule(ind: simple(:ind)) do
           IndicatorValue.new(ind)
-        }
+        end
 
         # ----------------------------------------
         # subSpec

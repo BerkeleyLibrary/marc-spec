@@ -12,7 +12,7 @@ module BerkeleyLibrary
         end
 
         # :nocov:
-        def can_apply?(marc_obj)
+        def can_apply?(_marc_obj)
           false
         end
         # :nocov:

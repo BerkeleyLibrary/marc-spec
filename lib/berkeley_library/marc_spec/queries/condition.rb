@@ -22,10 +22,9 @@ module BerkeleyLibrary
           #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
           #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
 
-
-          # TODO: get a compatible interface on these things (or always use Query?)
-          @left = of_any_type(left, Applicable, Condition, Query, allow_nil: true) if binary?
-          @right = of_any_type(right, Applicable, Condition, Query, ComparisonString)
+          # TODO: superinterface?
+          @left = of_any_type(left, Tag, Condition, Query, allow_nil: true) if binary?
+          @right = of_any_type(right, Tag, Condition, Query, ComparisonString)
         end
         # rubocop:enable Style/KeywordParametersOrder
 
@@ -63,6 +62,8 @@ module BerkeleyLibrary
         # Object overrides
 
         def to_s
+          return ["(#{left})", operator, "(#{right})"].join if [Operator::AND, Operator::OR].include?(operator)
+
           [left, operator, right].join
         end
 
@@ -82,7 +83,7 @@ module BerkeleyLibrary
         private
 
         def binary?
-          self.operator.binary?
+          operator.binary?
         end
 
       end

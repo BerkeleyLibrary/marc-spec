@@ -34,7 +34,7 @@ module BerkeleyLibrary
         # Applicable
 
         def can_apply?(marc_obj)
-          [:indicator1, :indicator2].all? { |m| marc_obj.respond_to?(m) }
+          %i[indicator1 indicator2].all? { |m| marc_obj.respond_to?(m) }
         end
 
         # ------------------------------------------------------------
@@ -43,9 +43,10 @@ module BerkeleyLibrary
         protected
 
         def do_apply(marc_obj)
-          if ind == 1
+          case ind
+          when 1
             marc_obj.indicator1
-          elsif ind == 2
+          when 2
             marc_obj.indicator2
           end
         end

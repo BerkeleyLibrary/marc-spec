@@ -23,9 +23,7 @@ module BerkeleyLibrary
         # Object overrides
 
         def to_s
-          StringIO.new.tap do |out|
-            out << "/#{character_spec}"
-          end.string
+          "/#{character_spec}"
         end
 
         # ------------------------------
@@ -52,10 +50,14 @@ module BerkeleyLibrary
         end
 
         # ------------------------------
-        # Predicate
+        # Part
 
         def equality_attrs
           %i[character_spec]
+        end
+
+        def to_s_inspect
+          "/#{character_spec.inspect}"
         end
 
         # ------------------------------------------------------------

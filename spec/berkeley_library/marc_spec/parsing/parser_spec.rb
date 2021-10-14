@@ -474,7 +474,7 @@ module BerkeleyLibrary
             subqueries = result[:subqueries]
             expect(subqueries.size).to eq(4)
 
-            expect(subqueries[0][:selector]).to eq({ code: 'a' } )
+            expect(subqueries[0][:selector]).to eq({ code: 'a' })
             condition0 = subqueries[0][:condition]
             expect(condition0[:operator]).to eq('?')
             expect(condition0[:right][:selector]).to eq({ code: 'f' })

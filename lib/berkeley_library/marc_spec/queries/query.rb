@@ -18,13 +18,18 @@ module BerkeleyLibrary
         end
 
         def to_s
-          [tag, selector, condition, subqueries].compact.join
+          StringIO.new.tap do |out|
+            out << tag if tag
+            out << selector if selector
+            out << "{#{condition}}" if condition
+            out << subqueries.join unless subqueries.empty?
+          end.string
         end
 
         protected
 
         def equality_attrs
-          [:tag, :selector, :condition, :subqueries]
+          %i[tag selector condition subqueries]
         end
 
         def to_s_inspect
@@ -32,7 +37,7 @@ module BerkeleyLibrary
             out << tag.inspect if tag
             out << selector.inspect if selector
             out << "{#{condition.inspect}}" if condition
-            out << subqueries.map { |sq| sq.inspect }.join(', ') unless subqueries.empty?
+            out << subqueries.map(&:inspect).join(', ') unless subqueries.empty?
           end.string
         end
 
