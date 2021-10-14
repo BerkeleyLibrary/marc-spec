@@ -8,142 +8,187 @@ module BerkeleyLibrary
         # ----------------------------------------
         # Misc. atoms
 
-        # rule(pos: simple(:pos)) { Position.new(pos) }
-        #
-        # rule(from: simple(:from), to: simple(:to)) { AlNumRange.new(from, to) }
-        #
-        # rule(comparison_string: simple(:string)) { ComparisonString.new(string) }
-        #
-        # rule(character_spec: simple(:character_spec)) { character_spec }
+        # { pos: }
+        rule(pos: simple(:pos)) { Position.new(pos) }
+
+        # { from:, to: }
+        rule(from: simple(:from), to: simple(:to)) { AlNumRange.new(from, to) }
+
+        # { comparison_string: }
+        rule(comparison_string: simple(:string)) { ComparisonString.new(string) }
+
+        # { character_spec: }
+        rule(character_spec: simple(:character_spec)) { character_spec }
 
         # ----------------------------------------
         # subTermSet
 
-        # rule(left: simple(:left), operator: simple(:operator), right: simple(:right)) do
-        #   Condition.new(operator, left: left, right: right)
-        # end
-        #
-        # rule(operator: simple(:operator), right: simple(:right)) do
-        #   Condition.new(operator, right: right)
-        # end
-        #
-        # rule(right: simple(:right)) do
-        #   Condition.new(right: right)
-        # end
-        #
-        # rule(any_condition: sequence(:conditions)) do
-        #   Condition.any_of(*conditions)
-        # end
-        #
-        # rule(all_conditions: sequence(:conditions)) do
-        #   Condition.all_of(*conditions)
-        # end
+        # { left:, operator:, right: }
+        rule(left: simple(:left), operator: simple(:operator), right: simple(:right)) do
+          Condition.new(operator, left: left, right: right)
+        end
+
+        # { operator:, right: }
+        rule(operator: simple(:operator), right: simple(:right)) do
+          Condition.new(operator, right: right)
+        end
+
+        # { right: }
+        rule(right: simple(:right)) do
+          Condition.new(right: right)
+        end
+
+        # { any_condition: }
+        rule(any_condition: sequence(:conditions)) do
+          Condition.any_of(*conditions)
+        end
+
+        # { all_conditions: }
+        rule(all_conditions: sequence(:conditions)) do
+          Condition.all_of(*conditions)
+        end
 
         # ----------------------------------------
         # fieldSpec
 
-        # rule(tag: simple(:tag)) do
-        #   Tag.new(tag)
-        # end
-        #
-        # rule(tag: simple(:tag), index: simple(:index)) do
-        #   Tag.new(tag, index)
-        # end
+        # { tag: }
+        rule(tag: simple(:tag)) do
+          Tag.new(tag)
+        end
+
+        # { tag:, index: }
+        rule(tag: simple(:tag), index: simple(:index)) do
+          Tag.new(tag, index)
+        end
 
         # ----------------------------------------
         # abrSubfieldSpec
 
-        # rule(code: simple(:code)) do
-        #   Subfield.new(code)
-        # end
-        #
-        # rule(code: simple(:code), index: simple(:index)) do
-        #   Subfield.new(code, index: index)
-        # end
-        #
-        # rule(code: simple(:code), character_spec: simple(:character_spec)) do
-        #   SubfieldValue.new(Subfield.new(code), character_spec)
-        # end
-        #
-        # rule(code: simple(:code), index: simple(:index), character_spec: simple(:character_spec)) do
-        #   SubfieldValue.new(Subfield.new(code, index: index), character_spec)
-        # end
+        # { code: }
+        rule(code: simple(:code)) do
+          Subfield.new(code)
+        end
+
+        # { code:, index: }
+        rule(code: simple(:code), index: simple(:index)) do
+          Subfield.new(code, index: index)
+        end
+
+        # { code:, character_spec: }
+        rule(code: simple(:code), character_spec: simple(:character_spec)) do
+          SubfieldValue.new(Subfield.new(code), character_spec)
+        end
+
+        # { code:, character_spec:, index: }
+        rule(code: simple(:code), index: simple(:index), character_spec: simple(:character_spec)) do
+          SubfieldValue.new(Subfield.new(code, index: index), character_spec)
+        end
 
         # ----------------------------------------
         # fieldSpec (fixed fields)
 
-        # rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag, index), FixedFieldValue.new(character_spec), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), index: simple(:index), character_spec: simple(:character_spec)) do
-        #   Query.new(Tag.new(tag, index), FixedFieldValue.new(character_spec))
-        # end
-        #
-        # rule(tag: simple(:tag), character_spec: simple(:character_spec), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag), FixedFieldValue.new(character_spec), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), character_spec: simple(:character_spec)) do
-        #   Query.new(Tag.new(tag), FixedFieldValue.new(character_spec))
-        # end
+        # NOTE: Handled by MARCSpec / characterSpec
 
         # ----------------------------------------
         # subfieldSpec
 
-        # rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag, index), VarFieldValue.new(subfield), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), index: simple(:index), subfield: simple(:subfield)) do
-        #   Query.new(Tag.new(tag, index), VarFieldValue.new(subfield))
-        # end
-        #
-        # rule(tag: simple(:tag), subfield: simple(:subfield), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag), VarFieldValue.new(subfield), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), subfield: simple(:subfield)) do
-        #   Query.new(Tag.new(tag), VarFieldValue.new(subfield))
-        # end
-        #
-        # rule(tag: simple(:tag), index: simple(:index), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag, index), condition) # TODO: explicit subquery class?
-        # end
-        #
-        # rule(subfield: simple(:subfield), condition: simple(:condition)) do
-        #   Query.new(nil, condition)  # TODO: explicit subquery class?
-        # end
+        # NOTE: Handled by MARCSpec / abrSubfieldSpec
 
         # ----------------------------------------
         # indicatorSpec
 
-        # rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag, index), IndicatorValue.new(ind), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), index: simple(:index), ind: simple(:ind)) do
-        #   Query.new(Tag.new(tag, index), IndicatorValue.new(ind))
-        # end
-        #
-        # rule(tag: simple(:tag), ind: simple(:ind), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag), IndicatorValue.new(ind), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), ind: simple(:ind)) do
-        #   Query.new(Tag.new(tag), IndicatorValue.new(ind))
-        # end
+        # { ind: }
+        rule(ind: simple(:ind)) {
+          IndicatorValue.new(ind)
+        }
+
+        # ----------------------------------------
+        # subSpec
+
+        # TODO: separate Subquery type?
+
+        # { selector: }
+        rule(selector: simple(:selector)) do
+          Query.new(selector: selector)
+        end
+
+        # { selector:, subqueries: } # TODO: can this happen?
+        rule(selector: simple(:selector), subqueries: sequence(:subqueries)) do
+          Query.new(selector: selector, subqueries: subqueries)
+        end
+
+        # { condition: }
+        rule(condition: simple(:condition)) do
+          Query.new(condition: condition)
+        end
+
+        # { condition:, subqueries: } # TODO: can this happen?
+        rule(condition: simple(:condition), subqueries: sequence(:subqueries)) do
+          Query.new(condition: condition, subqueries: subqueries)
+        end
+
+        # { selector:, condition: }
+        rule(selector: simple(:selector), condition: simple(:condition)) do
+          Query.new(selector: selector, condition: condition)
+        end
+
+        # { selector:, condition:, subqueries: } # TODO: can this happen?
+        rule(selector: simple(:selector), condition: simple(:condition), subqueries: sequence(:subqueries)) do
+          Query.new(selector: selector, condition: condition, subqueries: subqueries)
+        end
 
         # ----------------------------------------
         # MARCSpec
 
-        # rule(tag: simple(:tag), condition: simple(:condition)) do
-        #   Query.new(Tag.new(tag), condition)
-        # end
-        #
-        # rule(tag: simple(:tag), subqueries: sequence(:subqueries)) do
-        #   Query.new(Tag.new(tag), *subqueries)
-        # end
+        # { tag:, selector: }
+        rule(tag: simple(:tag), selector: simple(:selector)) do
+          Query.new(tag: Tag.new(tag), selector: selector)
+        end
+
+        # { tag:, index:, selector: }
+        rule(tag: simple(:tag), index: simple(:index), selector: simple(:selector)) do
+          Query.new(tag: Tag.new(tag, index), selector: selector)
+        end
+
+        # { tag:, condition: }
+        rule(tag: simple(:tag), condition: simple(:condition)) do
+          Query.new(tag: Tag.new(tag), condition: condition)
+        end
+
+        # { tag:, index:, condition: }
+        rule(tag: simple(:tag), index: simple(:index), condition: simple(:condition)) do
+          Query.new(tag: Tag.new(tag, index), condition: condition)
+        end
+
+        # { tag:, subqueries: }
+        rule(tag: simple(:tag), subqueries: sequence(:subqueries)) do
+          Query.new(tag: Tag.new(tag), subqueries: subqueries)
+        end
+
+        # { tag:, index:, subqueries: }
+        rule(tag: simple(:tag), index: simple(:index), subqueries: sequence(:subqueries)) do
+          Query.new(tag: Tag.new(tag, index), subqueries: subqueries)
+        end
+
+        # { tag:, selector:, condition: }
+        rule(tag: simple(:tag), selector: simple(:selector), condition: simple(:condition)) do
+          Query.new(tag: Tag.new(tag), selector: selector, condition: condition)
+        end
+
+        # { tag:, index:, selector:, condition: }
+        rule(tag: simple(:tag), index: simple(:index), selector: simple(:selector), condition: simple(:condition)) do
+          Query.new(tag: Tag.new(tag, index), selector: selector, condition: condition)
+        end
+
+        # { tag:, selector:, condition:, subqueries:}
+        rule(tag: simple(:tag), selector: simple(:selector), condition: simple(:condition), subqueries: sequence(:subqueries)) do
+          Query.new(tag: Tag.new(tag), selector: selector, condition: condition, subqueries: subqueries)
+        end
+
+        # { tag:, index:, selector:, condition:, subqueries:}
+        rule(tag: simple(:tag), index: simple(:index), selector: simple(:selector), condition: simple(:condition), subqueries: sequence(:subqueries)) do
+          Query.new(tag: Tag.new(tag, index), selector: selector, condition: condition, subqueries: subqueries)
+        end
       end
     end
   end

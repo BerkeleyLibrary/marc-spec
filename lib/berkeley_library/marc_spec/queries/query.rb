@@ -10,9 +10,11 @@ module BerkeleyLibrary
 
         attr_reader :tag, :selector, :condition, :subqueries
 
-        def initialize(*args)
-          # TODO: explicit subquery class?
-          @tag, @selector, @condition, @subqueries = parse_args(args)
+        def initialize(tag: nil, selector: nil, condition: nil, subqueries: [])
+          @tag = ensure_type(tag, Tag, allow_nil: true)
+          @selector = ensure_type(selector, Selector, allow_nil: true)
+          @condition = ensure_type(condition, Condition, allow_nil: true)
+          @subqueries = subqueries.map { |sq| ensure_type(sq, Query) }
         end
 
         def to_s
@@ -34,36 +36,6 @@ module BerkeleyLibrary
           end.string
         end
 
-        private
-
-        def parse_args(args)
-          tag = nil
-          selector = nil
-          condition = nil
-          subqueries = []
-
-          args.each do |arg|
-            if arg.is_a?(Tag)
-              if tag.nil?
-                tag = arg
-              else
-                raise ArgumentError, "Too many tags: #{[tag, arg].map(&:inspect).join(', ')}"
-              end
-            elsif arg.is_a?(Query)
-              subqueries << arg
-            elsif arg.is_a?(Condition)
-              condition = (condition ? condition.and(arg) : arg)
-            elsif arg.is_a?(Selector)
-              if selector.nil?
-                selector = arg
-              else
-                raise ArgumentError, "Too many selectors: #{[selector, arg].map(&:inspect).join(', ')}"
-              end
-            end
-          end
-
-          [tag, selector, condition, subqueries]
-        end
       end
     end
   end

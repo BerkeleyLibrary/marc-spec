@@ -3,7 +3,8 @@ require 'berkeley_library/marc_spec/queries/selector'
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class IndicatorValue < Selector
+      class IndicatorValue
+        include Selector
 
         # ------------------------------------------------------------
         # Constants

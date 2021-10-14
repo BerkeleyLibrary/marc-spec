@@ -4,7 +4,8 @@ require 'berkeley_library/marc_spec/queries/selector'
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class FixedFieldValue < Selector
+      class FixedFieldValue
+        include Selector
 
         # ------------------------------------------------------------
         # Attributes

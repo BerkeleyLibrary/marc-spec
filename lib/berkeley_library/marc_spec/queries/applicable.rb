@@ -11,9 +11,11 @@ module BerkeleyLibrary
           do_apply(marc_obj) if can_apply?(marc_obj)
         end
 
-        def can_apply?(_marc_obj)
+        # :nocov:
+        def can_apply?(marc_obj)
           false
         end
+        # :nocov:
 
         protected
 

@@ -1,11 +1,11 @@
 require 'stringio'
-require 'berkeley_library/marc_spec/queries/applicable'
+require 'berkeley_library/marc_spec/queries/selector'
 
 module BerkeleyLibrary
   module MarcSpec
     module Queries
       class Subfield
-        include Applicable
+        include Selector
 
         # ------------------------------------------------------------
         # Attributes
