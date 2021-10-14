@@ -106,7 +106,7 @@ module BerkeleyLibrary
         rule(:subfield_code_range) { str('$').ignore >> subfield_range }
 
         # abrSubfieldSpec   = (subfieldCode / subfieldCodeRange) [index] [characterSpec]
-        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe).as(:subfield).as(:selector) }
+        rule(:abr_subfield_spec) { ((subfield_code_range | subfield_code).as(:code) >> index.maybe >> character_spec.maybe).as(:selector) }
 
         # subfieldSpec      = fieldTag [index] abrSubfieldSpec
         rule(:subfield_spec) { field_tag.as(:tag) >> index.maybe >> abr_subfield_spec }
@@ -156,7 +156,7 @@ module BerkeleyLibrary
         rule(:sub_term) { subfield_spec | indicator_spec | field_spec | _comparison_string | abbreviation }
 
         # subTermSet        = [ [subTerm] operator ] subTerm
-        rule(:sub_term_set) { (sub_term.maybe.as(:left) >> operator.as(:operator)).maybe >> sub_term.as(:right) }
+        rule(:sub_term_set) { (sub_term.as(:left).maybe >> operator.as(:operator)).maybe >> sub_term.as(:right) }
 
         # Extracted from subSpec for clarity
         rule(:_chained_sub_term_sets) { (sub_term_set >> (str('|') >> sub_term_set).repeat(1)).as(:any_condition) }

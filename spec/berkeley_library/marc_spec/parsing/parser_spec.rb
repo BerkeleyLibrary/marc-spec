@@ -16,6 +16,26 @@ module BerkeleyLibrary
 
         let(:r) { Parslet::ErrorReporter::Deepest.new }
 
+        # TODO: clean this up
+        # before(:all) do
+        #   @all_parses = {}
+        # end
+        #
+        # after(:all) do
+        #   parse_list = @all_parses.map do |val, parse_tree|
+        #     [val.inspect, parse_tree.inspect].join(' => ')
+        #   end
+        #   parse_list.sort!
+        #   parse_list.uniq!
+        #   puts "{\n#{parse_list.join(",\n")}\n}"
+        # end
+
+        def parse_with(rule, value)
+          rule.parse(value).tap do |result|
+            # @all_parses[value] = result
+          end
+        end
+
         describe :field_tag do
           let(:rule) { parser.field_tag }
 
@@ -23,7 +43,7 @@ module BerkeleyLibrary
             aggregate_failures do
               tags.each do |tag|
                 expect(rule).to parse(tag)
-                result = rule.parse(tag)
+                result = parse_with(rule, tag)
                 expect(result).to eq(tag)
               end
             end
@@ -49,7 +69,7 @@ module BerkeleyLibrary
             aggregate_failures do
               positions.each do |pos|
                 expect(rule).to parse(pos, reporter: r)
-                result = rule.parse(pos)
+                result = parse_with(rule, pos)
                 expect(result[:pos]).to eq(pos)
               end
             end
@@ -60,7 +80,7 @@ module BerkeleyLibrary
               pos_ranges.each do |from, to|
                 val = "#{from}-#{to}"
                 expect(rule).to parse(val, reporter: r)
-                result = rule.parse(val)
+                result = parse_with(rule, val)
                 expect(result[:from]).to eq(from == '#' ? nil : from)
                 expect(result[:to]).to eq(to == '#' ? nil : to)
               end
@@ -76,7 +96,7 @@ module BerkeleyLibrary
               positions.each do |pos|
                 val = "/#{pos}"
                 expect(rule).to parse(val, reporter: r)
-                result = rule.parse(val)
+                result = parse_with(rule, val)
                 character_spec = result[:character_spec]
                 expect(character_spec[:pos]).to eq(pos)
               end
@@ -88,7 +108,7 @@ module BerkeleyLibrary
               pos_ranges.each do |from, to|
                 val = "/#{from}-#{to}"
                 expect(rule).to parse(val, reporter: r)
-                result = rule.parse(val)
+                result = parse_with(rule, val)
                 character_spec = result[:character_spec]
                 expect(character_spec[:from]).to eq(from == '#' ? nil : from)
                 expect(character_spec[:to]).to eq(to == '#' ? nil : to)
@@ -104,7 +124,7 @@ module BerkeleyLibrary
             aggregate_failures do
               tags.each do |tag|
                 expect(rule).to parse(tag)
-                result = rule.parse(tag)
+                result = parse_with(rule, tag)
                 expect(result[:tag]).to eq(tag)
               end
             end
@@ -117,7 +137,7 @@ module BerkeleyLibrary
                   positions.each do |pos|
                     val = "#{tag}/#{pos}"
                     expect(rule).to parse(val, reporter: r)
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
                     selector = result[:selector]
                     character_spec = selector[:character_spec]
@@ -133,7 +153,7 @@ module BerkeleyLibrary
                   pos_ranges.each do |from, to|
                     val = "#{tag}/#{from}-#{to}"
                     expect(rule).to parse(val, reporter: r)
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
                     selector = result[:selector]
                     character_spec = selector[:character_spec]
@@ -152,7 +172,7 @@ module BerkeleyLibrary
                   positions.each do |pos_index|
                     val = "#{tag}[#{pos_index}]"
                     expect(rule).to parse(val, reporter: r)
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
                     index = result[:index]
                     expect(index[:pos]).to eq(pos_index)
@@ -167,7 +187,7 @@ module BerkeleyLibrary
                   pos_ranges.each do |from_index, to_index|
                     val = "#{tag}[#{from_index}-#{to_index}]"
                     expect(rule).to parse(val, reporter: r)
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
                     index = result[:index]
                     expect(index[:from]).to eq(from_index == '#' ? nil : from_index)
@@ -187,7 +207,7 @@ module BerkeleyLibrary
               codes.each do |code|
                 val = "$#{code}"
                 expect(rule).to parse(val, reporter: r)
-                expect(rule.parse(val)).to eq(code)
+                expect(parse_with(rule, val)).to eq(code)
               end
             end
           end
@@ -202,10 +222,10 @@ module BerkeleyLibrary
                 codes.each do |code|
                   val = "#{tag}$#{code}"
                   expect(rule).to parse(val, reporter: r)
-                  result = rule.parse(val)
+                  result = parse_with(rule, val)
                   expect(result[:tag]).to eq(tag)
                   selector = result[:selector]
-                  expect(selector[:subfield]).to eq({ code: code })
+                  expect(selector).to eq({ code: code })
                 end
               end
             end
@@ -217,14 +237,13 @@ module BerkeleyLibrary
                 code_ranges.each do |from, to|
                   val = "#{tag}$#{from}-#{to}"
                   expect(rule).to parse(val, reporter: r)
-                  result = rule.parse(val)
+                  result = parse_with(rule, val)
                   expect(result[:tag]).to eq(tag)
 
                   selector = result[:selector]
-                  subfield = selector[:subfield]
-                  expect(subfield).not_to be_nil
+                  expect(selector).not_to be_nil
 
-                  code_range = subfield[:code]
+                  code_range = selector[:code]
                   expect(code_range[:from]).to eq(from)
                   expect(code_range[:to]).to eq(to)
                 end
@@ -239,16 +258,15 @@ module BerkeleyLibrary
                   codes.each do |code|
                     val = "#{tag}[#{pos_index}]$#{code}"
                     expect(rule).to parse(val, reporter: r)
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
 
                     index = result[:index]
                     expect(index[:pos]).to eq(pos_index)
 
                     selector = result[:selector]
-                    subfield = selector[:subfield]
-                    expect(subfield).not_to be_nil
-                    expect(subfield[:code]).to eq(code)
+                    expect(selector).not_to be_nil
+                    expect(selector[:code]).to eq(code)
                   end
                 end
               end
@@ -262,7 +280,7 @@ module BerkeleyLibrary
                   code_ranges.each do |from, to|
                     val = "#{tag}[#{from_index}-#{to_index}]$#{from}-#{to}"
                     expect(rule).to parse(val, reporter: r)
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
 
                     index = result[:index]
@@ -270,10 +288,9 @@ module BerkeleyLibrary
                     expect(index[:to]).to eq(to_index == '#' ? nil : to_index)
 
                     selector = result[:selector]
-                    subfield = selector[:subfield]
-                    expect(subfield).not_to be_nil
+                    expect(selector).not_to be_nil
 
-                    code_range = subfield[:code]
+                    code_range = selector[:code]
                     expect(code_range[:from]).to eq(from)
                     expect(code_range[:to]).to eq(to)
                   end
@@ -292,7 +309,7 @@ module BerkeleyLibrary
                 inds.each do |ind|
                   val = "#{tag}^#{ind}"
                   expect(rule).to parse(val)
-                  result = rule.parse(val)
+                  result = parse_with(rule, val)
                   expect(result[:tag]).to eq(tag)
                   selector = result[:selector]
                   expect(selector[:ind]).to eq(ind)
@@ -307,7 +324,7 @@ module BerkeleyLibrary
                 positions.each do |pos_index|
                   inds.each do |ind|
                     val = "#{tag}[#{pos_index}]^#{ind}"
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
                     selector = result[:selector]
                     expect(selector[:ind]).to eq(ind)
@@ -325,7 +342,7 @@ module BerkeleyLibrary
                 pos_ranges.each do |from_index, to_index|
                   inds.each do |ind|
                     val = "#{tag}[#{from_index}-#{to_index}]^#{ind}"
-                    result = rule.parse(val)
+                    result = parse_with(rule, val)
                     expect(result[:tag]).to eq(tag)
                     selector = result[:selector]
                     expect(selector[:ind]).to eq(ind)
@@ -358,7 +375,7 @@ module BerkeleyLibrary
             aggregate_failures do
               expecteds.each do |val, expected|
                 expect(rule).to parse(val, reporter: r)
-                result = rule.parse(val)
+                result = parse_with(rule, val)
                 expect(result).to be_a(Hash)
                 next unless result.is_a?(Hash)
 
@@ -376,7 +393,7 @@ module BerkeleyLibrary
                 code_list = codes.map { |c| "$#{c}" }.join
                 val = "#{tag}#{code_list}"
                 expect(parser).to parse(val, reporter: r)
-                result = parser.parse(val)
+                result = parse_with(parser, val)
 
                 expect(result[:tag]).to eq(tag)
 
@@ -384,7 +401,7 @@ module BerkeleyLibrary
                 expect(subqueries.size).to eq(codes.size)
                 subqueries.each_with_index do |subquery, i|
                   selector = subquery[:selector]
-                  subfield = selector[:subfield]
+                  subfield = selector
                   expect(subfield[:code]).to eq(codes[i])
                 end
               end
@@ -398,7 +415,7 @@ module BerkeleyLibrary
                   code_list = codes.map { |c| "$#{c}" }.join
                   val = "#{tag}[#{from_index}-#{to_index}]#{code_list}"
                   expect(parser).to parse(val, reporter: r)
-                  result = parser.parse(val)
+                  result = parse_with(parser, val)
 
                   expect(result[:tag]).to eq(tag)
                   index = result[:index]
@@ -409,7 +426,7 @@ module BerkeleyLibrary
                   expect(subqueries.size).to eq(codes.size)
                   subqueries.each_with_index do |subquery, i|
                     selector = subquery[:selector]
-                    subfield = selector[:subfield]
+                    subfield = selector
                     expect(subfield[:code]).to eq(codes[i])
                   end
                 end
@@ -424,7 +441,7 @@ module BerkeleyLibrary
                   code_list = codes.map.with_index { |c, i| "$#{c}{~\\ok#{i}}" }.join
                   val = "#{tag}[#{from_index}-#{to_index}]#{code_list}"
                   expect(parser).to parse(val, reporter: r)
-                  result = parser.parse(val)
+                  result = parse_with(parser, val)
 
                   expect(result[:tag]).to eq(tag)
                   index = result[:index]
@@ -435,7 +452,7 @@ module BerkeleyLibrary
                   expect(subqueries.size).to eq(codes.size)
                   subqueries.each_with_index do |subquery, i|
                     selector = subquery[:selector]
-                    subfield = selector[:subfield]
+                    subfield = selector
                     expect(subfield[:code]).to eq(codes[i])
                     condition = subquery[:condition]
                     expect(condition[:operator]).to eq('~')
@@ -451,24 +468,24 @@ module BerkeleyLibrary
             val = '880$a{?$f}$b$c$e{$f=\\q}'
 
             expect(parser).to parse(val, reporter: r)
-            result = parser.parse(val)
+            result = parse_with(parser, val)
             expect(result[:tag]).to eq('880')
 
             subqueries = result[:subqueries]
             expect(subqueries.size).to eq(4)
 
-            expect(subqueries[0][:selector]).to eq({ subfield: { code: 'a' } })
+            expect(subqueries[0][:selector]).to eq({ code: 'a' } )
             condition0 = subqueries[0][:condition]
             expect(condition0[:operator]).to eq('?')
-            expect(condition0[:right][:selector]).to eq({ subfield: { code: 'f' } })
+            expect(condition0[:right][:selector]).to eq({ code: 'f' })
 
-            expect(subqueries[1][:selector]).to eq({ subfield: { code: 'b' } })
+            expect(subqueries[1][:selector]).to eq({ code: 'b' })
 
-            expect(subqueries[2][:selector]).to eq({ subfield: { code: 'c' } })
+            expect(subqueries[2][:selector]).to eq({ code: 'c' })
 
-            expect(subqueries[3][:selector]).to eq({ subfield: { code: 'e' } })
+            expect(subqueries[3][:selector]).to eq({ code: 'e' })
             condition3 = subqueries[3][:condition]
-            expect(condition3[:left][:selector]).to eq({ subfield: { code: 'f' } })
+            expect(condition3[:left][:selector]).to eq({ code: 'f' })
             expect(condition3[:operator]).to eq('=')
             expect(condition3[:right]).to eq({ comparison_string: 'q' })
           end
@@ -481,7 +498,7 @@ module BerkeleyLibrary
                 inds.each do |ind|
                   val = "#{tag}^#{ind}{=\\a}"
                   expect(parser).to parse(val)
-                  result = parser.parse(val)
+                  result = parse_with(parser, val)
                   expect(result[:tag]).to eq(tag)
                   selector = result[:selector]
                   expect(selector[:ind]).to eq(ind)
