@@ -165,8 +165,9 @@ Style/RedundantAssignment:
 Lint/DuplicateElsifCondition:
   Enabled: true
 
+# Indiscriminately calling `to_ary` and `to_a` isn't always a good idea
 Style/ArrayCoercion:
-  Enabled: true
+  Enabled: false
 
 Style/CaseLikeIf:
   Enabled: true

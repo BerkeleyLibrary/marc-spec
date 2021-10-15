@@ -10,7 +10,7 @@ module BerkeleyLibrary
       end
 
       def parse_query(query_string)
-        parse_tree = parser.parse(query_string)
+        parse_tree = parser.parse(query_string, reporter: reporter)
         xform.apply(parse_tree)
       end
 
@@ -22,6 +22,10 @@ module BerkeleyLibrary
 
       def xform
         @xform ||= Queries::Transform.new
+      end
+
+      def reporter
+        @reporter ||= Parslet::ErrorReporter::Contextual.new
       end
     end
   end

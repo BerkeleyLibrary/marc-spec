@@ -23,7 +23,7 @@ module BerkeleyLibrary
     def check_all(examples)
       aggregate_failures do
         examples.each do |query_str, expected|
-          expected = Array(expected) # simplify tests
+          expected = [expected] unless expected.is_a?(Array)
           actual = MarcSpec.find(query_str, marc_record)
           expect(actual).to eq(expected), -> { failure_msg_for(query_str, actual, expected) }
         end
@@ -48,13 +48,72 @@ module BerkeleyLibrary
         end
 
         it '9.3 Reference to substring' do
+          leader = marc_record.leader
+          _005 = marc_record['005']
           examples = {
-            'LDR/0-4' => marc_record.leader[0..4],
-            'LDR/6' => marc_record.leader[6],
-            '005/0' => marc_record['005'].value[0],
-            '005/1-#' => marc_record['005'].value[1..],
-            '005/#' => marc_record['005'].value[-1],
-            '005/#-1' => marc_record['005'].value[-2..]
+            'LDR/0-4' => leader[0..4],
+            'LDR/6' => leader[6],
+            '005/0' => _005.value[0],
+            '005/1-#' => _005.value[1..],
+            '005/#' => _005.value[-1],
+            '005/#-1' => _005.value[-2..]
+          }
+          check_all(examples)
+        end
+
+        it '9.4 Reference to data content' do
+          _260 = marc_record['260']
+          examples = {
+            '260$a' => _260.subfields.select { |sf| sf.code == 'a' },
+            '260$a$b$c' => _260.subfields.select { |sf| %w[a b c].include?(sf.code) },
+            '260$a-c' => _260.subfields.select { |sf| %w[a b c].include?(sf.code) },
+            '...$a$c' => marc_record.fields.each_with_object([]) do |f, sff|
+              next unless f.respond_to?(:subfields)
+
+              sff.concat(f.subfields.select { |sf| %w[a c].include?(sf.code) })
+            end
+          }
+          check_all(examples)
+        end
+
+        it '9.5 Reference to occurrence' do
+          _650s = marc_record.fields('650')
+          examples = {
+            '650' => _650s,
+            '650[0]' => _650s[0],
+            '650[1]' => _650s[1],
+            '650[0-2]' => _650s[0..2],
+            '650[1-#]' => _650s[1..],
+            '650[#-1]' => _650s[-2..],
+            '650[0]$a' => _650s[0].subfields.select { |sf| sf.code == 'a' }
+          }
+          check_all(examples)
+        end
+
+        it '9.6 Reference to indicator values' do
+          _650s = marc_record.fields('650')
+          examples = {
+            '650^1' => _650s.map(&:indicator1),
+            '650[1]^2' => _650s[1].indicator2
+          }
+          check_all(examples)
+        end
+      end
+    end
+
+    describe 'repeated subfields' do
+      before(:each) do
+        @marc_record = MARC::XMLReader.new('spec/data/b23161018-sru.xml').first
+      end
+
+      describe 'examples' do
+        it '9.5 Reference to occurrence' do
+          _998 = marc_record['998']
+          all_998a = _998.subfields.select { |sf| sf.code == 'a' }
+          examples = {
+            '998$a[0]' => all_998a.first,
+            '998$a[#]' => all_998a.last,
+            '998$a[#-1]' => all_998a[-2..]
           }
           check_all(examples)
         end
