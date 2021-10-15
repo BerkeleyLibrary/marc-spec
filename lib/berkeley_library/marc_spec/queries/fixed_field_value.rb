@@ -26,14 +26,6 @@ module BerkeleyLibrary
           "/#{character_spec}"
         end
 
-        # ------------------------------
-        # Applicable
-
-        def can_apply?(marc_obj)
-          # MARC leader is ControlField-like but is returned as string
-          marc_obj.is_a?(MARC::ControlField) || marc_obj.is_a?(String)
-        end
-
         # ------------------------------------------------------------
         # Protected methods
 
@@ -42,11 +34,14 @@ module BerkeleyLibrary
         # ------------------------------
         # Applicable
 
-        def do_apply(control_field)
-          value_str = string_value_from(control_field)
-          return value_str unless character_spec
+        def can_apply?(marc_obj)
+          # MARC leader is ControlField-like but is returned as string
+          marc_obj.is_a?(MARC::ControlField) || marc_obj.is_a?(String)
+        end
 
-          character_spec.select_from(value_str)
+        def do_apply(control_field)
+          field_value = field_value_for(control_field)
+          field_value ? [field_value] : []
         end
 
         # ------------------------------
@@ -64,6 +59,12 @@ module BerkeleyLibrary
         # Private methods
 
         private
+        def field_value_for(control_field)
+          value_str = string_value_from(control_field)
+          return value_str unless character_spec
+
+          character_spec.select_from(value_str)
+        end
 
         def string_value_from(tag_result)
           return tag_result if tag_result.is_a?(String)

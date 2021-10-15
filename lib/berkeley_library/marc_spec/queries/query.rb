@@ -1,6 +1,4 @@
-require 'berkeley_library/marc_spec/parsing/parser'
 require 'berkeley_library/marc_spec/queries/part'
-require 'berkeley_library/marc_spec/queries/transform'
 
 module BerkeleyLibrary
   module MarcSpec
@@ -10,6 +8,7 @@ module BerkeleyLibrary
 
         attr_reader :tag, :selector, :condition, :subqueries
 
+        # TODO: separate query (w/o subqueries) from wrapper w/subqueries?
         def initialize(tag: nil, selector: nil, condition: nil, subqueries: [])
           @tag = ensure_type(tag, Tag, allow_nil: true)
           @selector = ensure_type(selector, Selector, allow_nil: true)
@@ -26,6 +25,22 @@ module BerkeleyLibrary
           end.string
         end
 
+        def execute(executor, context_fields)
+          fields = tag ? executor.apply_tag(tag) : context_fields
+          return [] if fields.empty?
+
+          # TODO: don't support nested subqueries
+          field_results = results_for_fields(executor, fields)
+          return field_results if subqueries.empty?
+
+          fields.each_with_object([]) do |field, results|
+            subqueries.each do |subquery|
+              subquery_results = subquery.execute(executor, [field])
+              results.concat(subquery_results)
+            end
+          end
+        end
+
         protected
 
         def equality_attrs
@@ -39,6 +54,22 @@ module BerkeleyLibrary
             out << "{#{condition.inspect}}" if condition
             out << subqueries.map(&:inspect).join(', ') unless subqueries.empty?
           end.string
+        end
+
+        private
+
+        def results_for_fields(executor, fields)
+          fields.each_with_object([]) do |field, results|
+            field_results = results_for_field(executor, field)
+            results.concat(field_results)
+          end
+        end
+
+        def results_for_field(executor, field)
+          results = executor.apply_selector(selector, field)
+          return results unless condition
+
+          results.select { |result| executor.condition_met?(condition, result) }
         end
 
       end

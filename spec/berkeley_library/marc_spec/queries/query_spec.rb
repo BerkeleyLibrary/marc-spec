@@ -20,7 +20,9 @@ module BerkeleyLibrary
         def verify_result(query_str, expected)
           parse_tree = parser.parse(query_str)
           query = xform.apply(parse_tree)
-          actual = query.apply(marc_record)
+          executor = QueryExecutor.new(marc_record, query)
+          actual = executor.execute
+
           expect(actual).to eq(expected), -> { failure_msg_for(query_str, query, actual, expected) }
         end
 
@@ -35,19 +37,6 @@ module BerkeleyLibrary
             "actual:    \t#{actual_str}",
             "           \t#{actual.inspect}"
           ].join("\n\t")
-        end
-
-        describe :from_string do
-          it 'returns a query' do
-            query_str = '245$a' # TODO: test more cases?
-
-            query = Query.from_string(query_str)
-            expect(query).to be_a(Query)
-
-            parse_tree = parser.parse(query_str)
-            expected = xform.apply(parse_tree)
-            expect(query).to eq(expected)
-          end
         end
 
         describe 'non-repeated subfields' do

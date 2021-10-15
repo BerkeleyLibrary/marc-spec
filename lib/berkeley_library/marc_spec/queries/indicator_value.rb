@@ -31,24 +31,17 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Applicable
+        # Protected methods
+
+        protected
 
         def can_apply?(marc_obj)
           %i[indicator1 indicator2].all? { |m| marc_obj.respond_to?(m) }
         end
 
-        # ------------------------------------------------------------
-        # Protected methods
-
-        protected
-
         def do_apply(marc_obj)
-          case ind
-          when 1
-            marc_obj.indicator1
-          when 2
-            marc_obj.indicator2
-          end
+          ind_val = ind_val_for(marc_obj)
+          ind_val ? [ind_val] : []
         end
 
         def equality_attrs
@@ -56,6 +49,15 @@ module BerkeleyLibrary
         end
 
         private
+
+        def ind_val_for(data_field)
+          case ind
+          when 1
+            data_field.indicator1
+          when 2
+            data_field.indicator2
+          end
+        end
 
         def valid_indicator(ind_val)
           ind = int_or_nil(ind_val)

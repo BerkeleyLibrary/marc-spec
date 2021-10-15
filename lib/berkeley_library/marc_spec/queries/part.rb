@@ -22,7 +22,10 @@ module BerkeleyLibrary
         alias :== eql?
 
         def hash
-          equality_attrs.inject(31 + self.class.hash) { |e, r| 31 * r + e.hash }
+          @hash_val ||= begin
+            equality_vals = equality_attrs.map { |attr| send(attr) }
+            equality_vals.inject(31 + self.class.hash) { |r, v| 31 * r + v.hash }
+          end
         end
 
         # ------------------------------------------------------------

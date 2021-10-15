@@ -22,13 +22,6 @@ module BerkeleyLibrary
         end
 
         # ------------------------------------------------------------
-        # Applicable
-
-        def can_apply?(marc_obj)
-          subfield.can_apply?(marc_obj)
-        end
-
-        # ------------------------------------------------------------
         # Object overrides
 
         def to_s
@@ -42,6 +35,10 @@ module BerkeleyLibrary
         # Protected
 
         protected
+
+        def can_apply?(marc_obj)
+          subfield.can_apply?(marc_obj)
+        end
 
         def do_apply(data_field)
           subfields = subfield.apply(data_field)

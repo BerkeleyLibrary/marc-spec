@@ -8,16 +8,17 @@ module BerkeleyLibrary
         include Part
 
         def apply(marc_obj)
+          return [] unless can_apply?(marc_obj)
           do_apply(marc_obj) if can_apply?(marc_obj)
         end
+
+        protected
 
         # :nocov:
         def can_apply?(_marc_obj)
           false
         end
         # :nocov:
-
-        protected
 
         # :nocov:
         def do_apply(_marc_obj)

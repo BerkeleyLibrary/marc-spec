@@ -44,10 +44,6 @@ module BerkeleyLibrary
           end.string
         end
 
-        def can_apply?(marc_obj)
-          marc_obj.is_a?(MARC::Record)
-        end
-
         # ------------------------------------------------------------
         # Protected methods
 
@@ -55,6 +51,10 @@ module BerkeleyLibrary
 
         # ------------------------------
         # Applicable
+
+        def can_apply?(marc_obj)
+          marc_obj.is_a?(MARC::Record)
+        end
 
         def do_apply(marc_record)
           return [marc_record.leader] if leader?
