@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 module BerkeleyLibrary
+
   describe MarcSpec do
     attr_reader :marc_record
 
@@ -18,6 +19,15 @@ module BerkeleyLibrary
         "actual:    \t#{actual_str}",
         "           \t#{actual_inspect}"
       ].join("\n\t")
+    end
+
+    def subfield_codes(df)
+      df.subfields.map(&:code)
+    end
+
+    def subfields(df, code)
+      codes = Array(code)
+      df.subfields.select { |sf| codes.include?(sf.code) }
     end
 
     def check_all(examples)
@@ -64,13 +74,13 @@ module BerkeleyLibrary
         it '9.4 Reference to data content' do
           _260 = marc_record['260']
           examples = {
-            '260$a' => _260.subfields.select { |sf| sf.code == 'a' },
-            '260$a$b$c' => _260.subfields.select { |sf| %w[a b c].include?(sf.code) },
-            '260$a-c' => _260.subfields.select { |sf| %w[a b c].include?(sf.code) },
+            '260$a' => subfields(_260, 'a'),
+            '260$a$b$c' => subfields(_260, %w[a b c]),
+            '260$a-c' => subfields(_260, %w[a b c]),
             '...$a$c' => marc_record.fields.each_with_object([]) do |f, sff|
               next unless f.respond_to?(:subfields)
 
-              sff.concat(f.subfields.select { |sf| %w[a c].include?(sf.code) })
+              sff.concat(subfields(f, %w[a c]))
             end
           }
           check_all(examples)
@@ -85,7 +95,7 @@ module BerkeleyLibrary
             '650[0-2]' => _650s[0..2],
             '650[1-#]' => _650s[1..],
             '650[#-1]' => _650s[-2..],
-            '650[0]$a' => _650s[0].subfields.select { |sf| sf.code == 'a' }
+            '650[0]$a' => subfields(_650s[0], 'a')
           }
           check_all(examples)
         end
@@ -98,6 +108,20 @@ module BerkeleyLibrary
           }
           check_all(examples)
         end
+
+        context '9.7 SubSpecs' do
+          it '9.7.1 General' do
+            all_020c = subfields(marc_record['020'], 'c')
+            _650s = marc_record.fields('650')
+            _650s_with_x = _650s.select { |df| subfield_codes(df).include?('x') }
+            examples = {
+              '020$c{?020$a}' => all_020c,
+              '020$c{020$c?020$a}' => all_020c,
+              '650$a{?650$x}' => _650s_with_x.flat_map { |df| subfields(df, 'a') }
+            }
+            check_all(examples)
+          end
+        end
       end
     end
 
@@ -109,7 +133,7 @@ module BerkeleyLibrary
       describe 'examples' do
         it '9.5 Reference to occurrence' do
           _998 = marc_record['998']
-          all_998a = _998.subfields.select { |sf| sf.code == 'a' }
+          all_998a = subfields(_998, 'a')
           examples = {
             '998$a[0]' => all_998a.first,
             '998$a[#]' => all_998a.last,
