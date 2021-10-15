@@ -46,14 +46,14 @@ module BerkeleyLibrary
         # Instance methods
 
         def met?(context_field, context_result, executor)
-          puts self
+          # puts self
 
           right_val = operand_value(right, context_field, context_result, executor)
-          puts "\t#{right.inspect} -> #{right_val.inspect}"
+          # puts "\t#{right.inspect} -> #{right_val.inspect}"
           return unary_apply(right_val) unless binary?
 
           left_val = left ? operand_value(left, context_field, context_result, executor) : context_result
-          puts "\t#{left.inspect} -> #{left_val.inspect}"
+          # puts "\t#{left.inspect} -> #{left_val.inspect}"
           binary_apply(left_val, right_val)
         end
 
@@ -95,13 +95,13 @@ module BerkeleyLibrary
 
         def binary_apply(left_val, right_val)
           operator.apply(left_val, right_val).tap do |result|
-            puts "\t#{left_val} #{operator} #{right_val} => #{result}"
+            # puts "\t#{left_val} #{operator} #{right_val} => #{result}"
           end
         end
 
         def unary_apply(right_val)
           operator.apply(right_val).tap do |result|
-            puts "\t#{operator} #{right_val} => #{result}"
+            # puts "\t#{operator} #{right_val} => #{result}"
           end
         end
 

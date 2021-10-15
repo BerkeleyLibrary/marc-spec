@@ -23,10 +23,16 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Enabled: false
 
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
 Metrics/ModuleLength:
   Enabled: false
 
 Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
   Enabled: false
 
 ############################################################
