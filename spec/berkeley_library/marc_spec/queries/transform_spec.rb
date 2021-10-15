@@ -17,7 +17,7 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Helper methods
 
-        def check_all_c(expecteds)
+        def check_all(expecteds)
           aggregate_failures do
             expecteds.each do |input_str, expected|
               parse_tree = parser.parse(input_str)
@@ -84,18 +84,18 @@ module BerkeleyLibrary
                   '.56' => tag('.56'),
                   '856[3]' => tag('856', pos(3))
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
 
             describe 'fieldTag w/characterSpec' do
               it 'returns a FixedField' do
                 expecteds = {
-                  '856/3-12' => q(tag('856'), s: ffv(rng(3, 12))),
-                  '856[3]/3-12' => q(tag('856', pos(3)), s: ffv(rng(3, 12)))
+                  '856/3-12' => q(tag('856'), s: cspec(rng(3, 12))),
+                  '856[3]/3-12' => q(tag('856', pos(3)), s: cspec(rng(3, 12)))
                 }
 
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
           end
@@ -113,7 +113,7 @@ module BerkeleyLibrary
                     '856$u/1-2' => q(tag('856'), s: vfv(sfv(sf('u'), rng(1, 2))))
                   }
 
-                  check_all_c(expecteds)
+                  check_all(expecteds)
                 end
               end
 
@@ -129,7 +129,7 @@ module BerkeleyLibrary
                     "856$#{range_str}/1-2" => q(tag('856'), s: vfv(sfv(sf(rng(4, 5)), rng(1, 2))))
                   }
 
-                  check_all_c(expecteds)
+                  check_all(expecteds)
                 end
               end
 
@@ -145,7 +145,7 @@ module BerkeleyLibrary
                     "856$#{range_str}/1-2" => q(tag('856'), s: vfv(sfv(sf(rng('d', 'g')), rng(1, 2))))
                   }
 
-                  check_all_c(expecteds)
+                  check_all(expecteds)
                 end
               end
             end
@@ -158,7 +158,7 @@ module BerkeleyLibrary
                   '856^1' => q(tag('856'), s: indv(1)),
                   '856[3-#]^2' => q(tag('856', rng(3)), s: indv(2))
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
           end
@@ -176,7 +176,7 @@ module BerkeleyLibrary
                 expecteds = {
                   '...{?956}' => q(tag('...'), c: c(*args))
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
           end
@@ -220,7 +220,7 @@ module BerkeleyLibrary
                   '956{956$u}' => q(tag956, c: vf956u_exist),
                   '956^1{956$u}' => q(tag956, s: indv(1), c: vf956u_exist)
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
 
               it 'returns a Query for an explicit unary ?' do
@@ -228,21 +228,21 @@ module BerkeleyLibrary
                   '956{?956$u}' => q(tag956, c: vf956u_exist),
                   '956^1{?956$u}' => q(tag956, s: indv(1), c: vf956u_exist)
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
 
               it 'returns a Query for a binary =' do
                 expecteds = {
                   '956{956$u=856$u}' => q(tag956, c: vf956u_eq_vf856u)
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
 
               it 'returns a Query for a unary =' do
                 expecteds = {
                   '956$u{=856$u}' => q(tag956, s: vfv(sf('u')), c: implicit_eq_vf856u)
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
 
@@ -252,7 +252,7 @@ module BerkeleyLibrary
                   '956$u{?956$u}{956$u=856$u}' => q(tag956, s: vfv(sf('u')), c: vf956u_exist.and(vf956u_eq_vf856u)),
                   '956$u{?956$u}{=856$u}' => q(tag956, s: vfv(sf('u')), c: vf956u_exist.and(implicit_eq_vf856u))
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
 
@@ -262,7 +262,7 @@ module BerkeleyLibrary
                   '956$u{?856$u|956$u=856$u}' => q(tag956, s: vfv(sf('u')), c: vf856u_exist.or(vf956u_eq_vf856u)),
                   '956$u{?856$u|=856$u}' => q(tag956, s: vfv(sf('u')), c: vf856u_exist.or(implicit_eq_vf856u))
                 }
-                check_all_c(expecteds)
+                check_all(expecteds)
               end
             end
           end
@@ -270,13 +270,13 @@ module BerkeleyLibrary
           describe 'comparisonString' do
             it 'returns a Query' do
               expecteds = {
-                '008/18{LDR/6=\t}' => q(tag('008'), s: ffv(pos(18)), c: c(
-                  q(tag('LDR'), s: ffv(pos(6))),
+                '008/18{LDR/6=\t}' => q(tag('008'), s: cspec(pos(18)), c: c(
+                  q(tag('LDR'), s: cspec(pos(6))),
                   '=',
                   cstr('t')
                 ))
               }
-              check_all_c(expecteds)
+              check_all(expecteds)
             end
           end
 
@@ -308,7 +308,7 @@ module BerkeleyLibrary
                   ]
                 )
               }
-              check_all_c(expecteds)
+              check_all(expecteds)
             end
           end
         end
@@ -325,23 +325,23 @@ module BerkeleyLibrary
               '7..' => tag('7..'),
               '100' => tag('100')
             }
-            check_all_c(examples)
+            check_all(examples)
           end
 
           it '9.3 Reference to substring"' do
             examples = {
-              'LDR/0-4' => q(tag('LDR'), s: ffv(rng(0, 4))),
-              'LDR/6' => q(tag('LDR'), s: ffv(pos(6))),
-              '007/0' => q(tag('007'), s: ffv(pos(0))),
-              '007/1-#' => q(tag('007'), s: ffv(rng(1))),
-              '007/#' => q(tag('007'), s: ffv(pos(nil))),
+              'LDR/0-4' => q(tag('LDR'), s: cspec(rng(0, 4))),
+              'LDR/6' => q(tag('LDR'), s: cspec(pos(6))),
+              '007/0' => q(tag('007'), s: cspec(pos(0))),
+              '007/1-#' => q(tag('007'), s: cspec(rng(1))),
+              '007/#' => q(tag('007'), s: cspec(pos(nil))),
               '245$a/#-1' =>
                 q(tag('245'), s: vfv(sfv(
                                        sf('a'), rng(nil, 1)
                                      )))
 
             }
-            check_all_c(examples)
+            check_all(examples)
           end
 
           it '9.4 Reference to data content' do
@@ -353,7 +353,7 @@ module BerkeleyLibrary
               '245$a-c' => q(tag('245'), s: vfv(sf(rng('a', 'c')))),
               '...$_$$' => q(tag('...'), sq: sqs_dollar_underscore)
             }
-            check_all_c(examples)
+            check_all(examples)
           end
 
           it '9.5 Reference to occurrence' do
@@ -365,7 +365,7 @@ module BerkeleyLibrary
               '300[#]' => tag('300', pos(nil)),
               '300[#-1]' => tag('300', rng(nil, 1))
             }
-            check_all_c(examples)
+            check_all(examples)
           end
 
           it '9.6 Reference to indicator values' do
@@ -373,7 +373,7 @@ module BerkeleyLibrary
               '880^1' => q(tag('880'), s: indv(1)),
               '880[1]^2' => q(tag('880', pos(1)), s: indv(2))
             }
-            check_all_c(examples)
+            check_all(examples)
           end
 
           context '9.7 SubSpecs' do
@@ -390,17 +390,17 @@ module BerkeleyLibrary
                 c: c('!', q(tag('020'), s: vfv(sf('a'))))
               )
 
-              ldr7 = q(tag('LDR'), s: ffv(pos(7)))
-              ldr6 = q(tag('LDR'), s: ffv(pos(6)))
+              ldr7 = q(tag('LDR'), s: cspec(pos(7)))
+              ldr6 = q(tag('LDR'), s: cspec(pos(6)))
 
-              ff007_0 = q(tag('007'), s: ffv(pos(0)))
+              ff007_0 = q(tag('007'), s: cspec(pos(0)))
 
               examples = {
                 '020$c{?020$a}' => vf020c_if_vf020a,
                 '020$c{020$c?020$a}' => vf020c_if_vf020a,
                 '020$z{!020$a}' => vf020z_unless_vf020a,
                 '020$z{020$z!020$a}' => vf020z_unless_vf020a,
-                '008/18{LDR/6=\\t}' => q(tag('008'), s: ffv(pos(18)), c: c(ldr6, '=', cstr('t'))),
+                '008/18{LDR/6=\\t}' => q(tag('008'), s: cspec(pos(18)), c: c(ldr6, '=', cstr('t'))),
                 '245$b{007/0=\\a|007/0=\\t}' => q(
                   tag('245'),
                   s: vfv(sf('b')),
@@ -411,7 +411,7 @@ module BerkeleyLibrary
                 ),
                 '008/18{LDR/6=\\a}{LDR/7=\\a|LDR/7=\\c|LDR/7=\\d|LDR/7=\\m}' => q(
                   tag('008'),
-                  s: ffv(pos(18)),
+                  s: cspec(pos(18)),
                   c: all_c(
                     c(ldr6, '=', cstr('a')),
                     any_c(
@@ -442,15 +442,16 @@ module BerkeleyLibrary
                   )
                 )
               }
-              check_all_c(examples)
+              check_all(examples)
             end
 
             it '9.7.2 Abbreviations' do
               examples = {
-                '007[1]/3{/0=\\v}' => q(tag('007', pos(1)), s: ffv(pos(3)), c: c(q(s: ffv(pos('0'))), '=', cstr('v'))),
-                '007[1]/3{007[1]/0=\\v}' => q(tag('007', pos(1)), s: ffv(pos(3)), c: c(q(tag('007', pos(1)), s: ffv(pos(0))), '=', cstr('v')))
+                '007[1]/3{/0=\\v}' => q(tag('007', pos(1)), s: cspec(pos(3)), c: c(q(s: cspec(pos('0'))), '=', cstr('v'))),
+                '007[1]/3{007[1]/0=\\v}' => q(tag('007', pos(1)), s: cspec(pos(3)), c: c(q(tag('007', pos(1)), s: cspec(pos(0))), '=', cstr('v'))),
+                '245$a{/#=\/}' => q(tag('245'), s: sf('a'), c: c(q(s: cspec(pos('#'))), '=', cstr('/')))
               }
-              check_all_c(examples)
+              check_all(examples)
             end
           end
         end

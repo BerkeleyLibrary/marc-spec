@@ -4,7 +4,7 @@ require 'berkeley_library/marc_spec/queries/selector'
 module BerkeleyLibrary
   module MarcSpec
     module Queries
-      class FixedFieldValue
+      class CharacterSpec
         include Selector
 
         # ------------------------------------------------------------
@@ -26,6 +26,14 @@ module BerkeleyLibrary
           "/#{character_spec}"
         end
 
+        # ------------------------------
+        # Applicable
+
+        def can_apply?(marc_obj)
+          # MARC leader is ControlField-like but is returned as string
+          [String, MARC::ControlField, MARC::Subfield].any? { |t| marc_obj.is_a?(t) }
+        end
+
         # ------------------------------------------------------------
         # Protected methods
 
@@ -33,11 +41,6 @@ module BerkeleyLibrary
 
         # ------------------------------
         # Applicable
-
-        def can_apply?(marc_obj)
-          # MARC leader is ControlField-like but is returned as string
-          marc_obj.is_a?(MARC::ControlField) || marc_obj.is_a?(String)
-        end
 
         def do_apply(control_field)
           field_value = field_value_for(control_field)

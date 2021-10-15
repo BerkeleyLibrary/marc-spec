@@ -3,7 +3,7 @@ require 'berkeley_library/marc_spec/queries/position'
 require 'berkeley_library/marc_spec/queries/comparison_string'
 require 'berkeley_library/marc_spec/queries/condition'
 
-require 'berkeley_library/marc_spec/queries/fixed_field_value'
+require 'berkeley_library/marc_spec/queries/character_spec'
 require 'berkeley_library/marc_spec/queries/indicator_value'
 require 'berkeley_library/marc_spec/queries/operator'
 require 'berkeley_library/marc_spec/queries/query'
@@ -57,8 +57,9 @@ module BerkeleyLibrary
           end
         end
 
-        def ffv(chars)
-          FixedFieldValue.new(chars)
+        def cspec(chars)
+          # noinspection RubyArgCount
+          CharacterSpec.new(chars)
         end
 
         def indv(ind)
@@ -76,8 +77,9 @@ module BerkeleyLibrary
           Subfield.new(code, index: index)
         end
 
-        def sfv(sf, cspec = nil)
-          SubfieldValue.new(sf, cspec)
+        def sfv(sf, cspc = nil)
+          cspc = cspec(cspc) if cspc.is_a?(PositionOrRange)
+          SubfieldValue.new(sf, cspc)
         end
 
         def tag(t, index = nil)

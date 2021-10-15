@@ -101,6 +101,10 @@ module BerkeleyLibrary
           ![Operator::EXIST, Operator::NEXIST].include?(self)
         end
 
+        def logical?
+          [Operator::AND, Operator::OR].include?(self)
+        end
+
         # ------------------------------------------------------------
         # Object overrides
 
@@ -112,6 +116,12 @@ module BerkeleyLibrary
         def op_str
           # noinspection RubyMismatchedReturnType
           value
+        end
+
+        def to_expression(left, right)
+          return ["(#{left})", self, "(#{right})"].join if logical?
+
+          [left, self, right].join
         end
       end
     end

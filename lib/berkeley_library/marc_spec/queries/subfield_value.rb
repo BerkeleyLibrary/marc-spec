@@ -18,7 +18,7 @@ module BerkeleyLibrary
 
         def initialize(subfield, character_spec = nil)
           @subfield = ensure_type(subfield, Subfield)
-          @character_spec = ensure_type(character_spec, PositionOrRange, allow_nil: true)
+          @character_spec = ensure_type(character_spec, CharacterSpec, allow_nil: true)
         end
 
         # ------------------------------------------------------------
@@ -44,7 +44,7 @@ module BerkeleyLibrary
           subfields = subfield.apply(data_field)
           return subfields.map(&:value) unless character_spec
 
-          subfields.map { |sf| character_spec.select_from(sf.value) }
+          subfields.map { |sf| character_spec.apply(sf.value) }
         end
 
         def to_s_inspect

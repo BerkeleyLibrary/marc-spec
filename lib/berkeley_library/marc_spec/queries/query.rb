@@ -11,7 +11,8 @@ module BerkeleyLibrary
         # TODO: separate query (w/o subqueries) from wrapper w/subqueries?
         def initialize(tag: nil, selector: nil, condition: nil, subqueries: [])
           @tag = ensure_type(tag, Tag, allow_nil: true)
-          @selector = ensure_type(selector, Selector, allow_nil: true)
+          # TODO: do we need the Selector interface at all?
+          @selector = ensure_type(selector, Applicable, allow_nil: true)
           @condition = ensure_type(condition, Condition, allow_nil: true)
           @subqueries = subqueries.map { |sq| ensure_type(sq, Query) }
         end
@@ -25,12 +26,12 @@ module BerkeleyLibrary
           end.string
         end
 
-        def execute(executor, context_fields)
+        # TODO: don't support nested subqueries
+        def execute(executor, context_fields, context_result = nil)
           fields = tag ? executor.apply_tag(tag) : context_fields
           return [] if fields.empty?
 
-          # TODO: don't support nested subqueries
-          field_results = results_for_fields(executor, fields)
+          field_results = root_results(fields, executor, context_result)
           return field_results if subqueries.empty?
 
           fields.each_with_object([]) do |field, results|
@@ -59,6 +60,18 @@ module BerkeleyLibrary
         # rubocop:enable Metrics/AbcSize
 
         private
+
+        def root_results(fields, executor, context_result)
+          field_results = results_for_fields(executor, fields)
+          # TODO: something less ridiculous
+          return field_results unless field_results.empty? && select_from_context?(context_result)
+
+          selector.apply(context_result)
+        end
+
+        def select_from_context?(context_result)
+          tag.nil? && context_result && selector.can_apply?(context_result)
+        end
 
         def results_for_fields(executor, fields)
           fields.each_with_object([]) do |field, results|

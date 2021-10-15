@@ -17,6 +17,12 @@ module BerkeleyLibrary
         # { comparison_string: }
         rule(comparison_string: simple(:string)) { ComparisonString.new(string) }
 
+        # { character_spec: }
+        rule(character_spec: simple(:character_spec)) do
+          # noinspection RubyArgCount
+          CharacterSpec.new(character_spec)
+        end
+
         # ----------------------------------------
         # subTermSet
 
@@ -79,13 +85,6 @@ module BerkeleyLibrary
         # { code:, index:, sf_chars: }
         rule(code: simple(:code), index: simple(:index), sf_chars: simple(:sf_chars)) do
           SubfieldValue.new(Subfield.new(code, index: index), sf_chars)
-        end
-
-        # ----------------------------------------
-        # fieldSpec (fixed fields)
-
-        rule(ff_chars: simple(:ff_chars)) do
-          FixedFieldValue.new(ff_chars)
         end
 
         # ----------------------------------------

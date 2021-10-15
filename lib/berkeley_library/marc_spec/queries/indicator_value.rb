@@ -30,14 +30,20 @@ module BerkeleyLibrary
           "^#{ind}"
         end
 
+        # ------------------------------
+        # Applicable
+
+        def can_apply?(marc_obj)
+          %i[indicator1 indicator2].all? { |m| marc_obj.respond_to?(m) }
+        end
+
         # ------------------------------------------------------------
         # Protected methods
 
         protected
 
-        def can_apply?(marc_obj)
-          %i[indicator1 indicator2].all? { |m| marc_obj.respond_to?(m) }
-        end
+        # ------------------------------
+        # Applicable
 
         def do_apply(marc_obj)
           ind_val = ind_val_for(marc_obj)

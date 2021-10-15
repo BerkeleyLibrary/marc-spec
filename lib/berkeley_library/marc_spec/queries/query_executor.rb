@@ -34,7 +34,8 @@ module BerkeleyLibrary
         end
 
         def condition_met?(condition, context_field, context_result)
-          condition.met?(context_field, context_result, self)
+          cond_ctx = ConditionContext.new(context_field, context_result, self)
+          condition.met?(cond_ctx)
         end
 
         private

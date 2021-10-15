@@ -13,6 +13,15 @@ module BerkeleyLibrary
           @xform = Transform.new
         end
 
+        def subfield_codes(df)
+          df.subfields.map(&:code)
+        end
+
+        def subfields(df, code)
+          codes = Array(code)
+          df.subfields.select { |sf| codes.include?(sf.code) }
+        end
+
         def verify_all(examples)
           aggregate_failures { examples.each { |query_str, expected| verify_result(query_str, expected) } }
         end
@@ -83,14 +92,14 @@ module BerkeleyLibrary
           context 'subfields' do
             it 'finds subfields' do
               df245 = marc_record['245']
-              df245a = df245.subfields.find { |sf| sf.code == 'a' }
-              df245c = df245.subfields.find { |sf| sf.code == 'c' }
-              df245ac = df245.subfields.select { |sf| %w[a c].include?(sf.code) }
+              df245a = subfields(df245, 'a').first
+              df245c = subfields(df245, 'c').first
+              df245ac = subfields(df245, %w[a c])
 
               all_sf_a_or_c = marc_record.fields.each_with_object([]) do |df, sff|
                 next unless df.respond_to?(:subfields)
 
-                df.subfields.each { |sf| sff << sf if %w[a c].include?(sf.code) }
+                sff.concat(subfields(df, %w[a c]))
               end
 
               examples = {
@@ -112,11 +121,18 @@ module BerkeleyLibrary
               df245 = marc_record['245']
               df245a = df245.subfields.find { |sf| sf.code == 'a' }
 
+              _650s = marc_record.fields('650')
+              _650s_with_x = _650s.select { |df| subfield_codes(df).include?('x') }
+
               examples = {
                 '245$a{?245$c}' => [df245a], # left subterm is implicit, and unused
                 '245$a{245$a?245$c}' => [df245a], # left subterm is explicit, but unused
                 '245$a{!245$c}' => [],
-                '245$a{245$a!245$c}' => []
+                '245$a{245$a!245$c}' => [],
+                # 650 subfield a if that 650 also has a subfield x
+                '650$a{?$x}' => _650s_with_x.flat_map { |df| subfields(df, 'a') },
+                # all 650 subfields a if any 650 has a subfield x
+                '650$a{?650$x}' => _650s.flat_map { |df| subfields(df, 'a') }
               }
               verify_all(examples)
             end

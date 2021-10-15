@@ -1,3 +1,4 @@
+require 'berkeley_library/marc_spec/queries/condition_context'
 require 'berkeley_library/marc_spec/queries/part'
 require 'berkeley_library/marc_spec/queries/operator'
 
@@ -45,14 +46,14 @@ module BerkeleyLibrary
         # ------------------------------------------------------------
         # Instance methods
 
-        def met?(context_field, context_result, executor)
+        def met?(condition_context)
           # puts self
 
-          right_val = operand_value(right, context_field, context_result, executor)
+          right_val = condition_context.operand_value(right)
           # puts "\t#{right.inspect} -> #{right_val.inspect}"
           return unary_apply(right_val) unless binary?
 
-          left_val = left ? operand_value(left, context_field, context_result, executor) : context_result
+          left_val = condition_context.operand_value(left, implicit: true)
           # puts "\t#{left.inspect} -> #{left_val.inspect}"
           binary_apply(left_val, right_val)
         end
@@ -73,9 +74,7 @@ module BerkeleyLibrary
         # Object overrides
 
         def to_s
-          return ["(#{left})", operator, "(#{right})"].join if [Operator::AND, Operator::OR].include?(operator)
-
-          [left, operator, right].join
+          operator.to_expression(left, right)
         end
 
         # ------------------------------------------------------------
@@ -94,42 +93,15 @@ module BerkeleyLibrary
         private
 
         def binary_apply(left_val, right_val)
-          operator.apply(left_val, right_val).tap do |result|
-            # puts "\t#{left_val} #{operator} #{right_val} => #{result}"
+          operator.apply(left_val, right_val).tap do |_result|
+            # puts "\t#{left_val} #{operator} #{right_val} => #{_result}"
           end
         end
 
         def unary_apply(right_val)
-          operator.apply(right_val).tap do |result|
-            # puts "\t#{operator} #{right_val} => #{result}"
+          operator.apply(right_val).tap do |_result|
+            # puts "\t#{operator} #{right_val} => #{_result}"
           end
-        end
-
-        def operand_value(operand, context_field, context_result, executor)
-          raw_value = operand_value_raw(operand, context_field, context_result, executor)
-          as_string(raw_value)
-        end
-
-        def operand_value_raw(operand, context_field, context_result, executor)
-          return unless operand
-
-          case operand
-          when ComparisonString
-            operand.str_exact
-          when Condition
-            operand.met?(context_field, context_result, executor)
-          when Query
-            operand.execute(executor, [context_field])
-          end
-        end
-
-        def as_string(op_val)
-          return unless op_val
-          return op_val if op_val.is_a?(String)
-          return op_val.value if op_val.respond_to?(:value) && !op_val.is_a?(MARC::DataField)
-          return op_val.map { |v| as_string(v) } if op_val.is_a?(Array)
-
-          raise ArgumentError, "Unknown operand value type: #{op_val.inspect}"
         end
 
         def right_operand(right)

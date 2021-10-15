@@ -31,6 +31,13 @@ module BerkeleyLibrary
           end.string
         end
 
+        # ------------------------------
+        # Applicable
+
+        def can_apply?(marc_obj)
+          marc_obj.respond_to?(:subfields)
+        end
+
         # ------------------------------------------------------------
         # Protected methods
 
@@ -38,10 +45,6 @@ module BerkeleyLibrary
 
         # ------------------------------
         # Applicable
-
-        def can_apply?(marc_obj)
-          marc_obj.respond_to?(:subfields)
-        end
 
         def do_apply(data_field)
           subfields = all_subfields(data_field)

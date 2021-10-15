@@ -64,7 +64,7 @@ module BerkeleyLibrary
         end
 
         describe :position_or_range do
-          let(:rule) { ensure_type(nil, PositionOrRange, allow_nil: false) }
+          let(:rule) { parser.position_or_range }
 
           it 'parses positions' do
             aggregate_failures do
@@ -382,6 +382,33 @@ module BerkeleyLibrary
 
                 cstr = result[:comparison_string]
                 expect(cstr).to eq(expected)
+              end
+            end
+          end
+        end
+
+        describe :sub_spec do
+          let(:rule) { parser.sub_spec }
+
+          it 'parses a condition' do
+            expecteds = {
+              '{/#=\\/}' => {
+                left: {
+                  selector: {
+                    substring: { pos: '#' }
+                  }
+                },
+                operator: '=',
+                right: {
+                  comparison_string: '/'
+                }
+              }
+            }
+            aggregate_failures do
+              expecteds.each do |val, expected|
+                expect(rule).to parse(val, reporter: r)
+                result = parse_with(rule, val)
+                expect(result).to eq(expected)
               end
             end
           end
