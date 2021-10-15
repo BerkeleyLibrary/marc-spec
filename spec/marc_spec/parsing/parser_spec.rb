@@ -395,7 +395,9 @@ module MarcSpec
             '{/#=\\/}' => {
               left: {
                 selector: {
-                  substring: { pos: '#' }
+                  character_spec: {
+                    pos: '#'
+                  }
                 }
               },
               operator: '=',

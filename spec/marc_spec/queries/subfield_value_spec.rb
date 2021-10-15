@@ -14,7 +14,8 @@ module MarcSpec
 
         it 'extracts substrings from values' do
           subfield = Subfield.new('g', index: AlNumRange.new(3, 5))
-          subfield_value = SubfieldValue.new(subfield, AlNumRange.new(0, 9))
+          # noinspection RubyArgCount
+          subfield_value = SubfieldValue.new(subfield, CharacterSpec.new(AlNumRange.new(0, 9)))
 
           result = subfield_value.apply(df998)
           expect(result.size).to eq(3)

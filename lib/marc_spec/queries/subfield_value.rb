@@ -43,7 +43,7 @@ module MarcSpec
         subfields = subfield.apply(data_field)
         return subfields.map(&:value) unless character_spec
 
-        subfields.map { |sf| character_spec.apply(sf.value) }
+        subfields.flat_map { |sf| character_spec.apply(sf.value) }
       end
 
       def to_s_inspect
