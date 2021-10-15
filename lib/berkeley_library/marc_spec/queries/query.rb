@@ -21,7 +21,7 @@ module BerkeleyLibrary
             out << tag if tag
             out << selector if selector
             out << "{#{condition}}" if condition
-            out << subqueries.join unless subqueries.empty?
+            out << subqueries.join
           end.string
         end
 
@@ -47,14 +47,16 @@ module BerkeleyLibrary
           %i[tag selector condition subqueries]
         end
 
+        # rubocop:disable Metrics/AbcSize
         def to_s_inspect
           StringIO.new.tap do |out|
             out << tag.inspect if tag
             out << selector.inspect if selector
             out << "{#{condition.inspect}}" if condition
-            out << subqueries.map(&:inspect).join(', ') unless subqueries.empty?
+            out << subqueries.map(&:inspect).join
           end.string
         end
+        # rubocop:enable Metrics/AbcSize
 
         private
 

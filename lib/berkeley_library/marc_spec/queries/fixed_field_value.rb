@@ -16,7 +16,7 @@ module BerkeleyLibrary
         # Initializer
 
         def initialize(character_spec = AlNumRange.new(0, nil))
-          @character_spec = position_or_range(character_spec)
+          @character_spec = ensure_type(character_spec, PositionOrRange, allow_nil: false)
         end
 
         # ------------------------------------------------------------
@@ -59,6 +59,7 @@ module BerkeleyLibrary
         # Private methods
 
         private
+
         def field_value_for(control_field)
           value_str = string_value_from(control_field)
           return value_str unless character_spec

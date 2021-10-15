@@ -17,7 +17,7 @@ module BerkeleyLibrary
 
         def initialize(code, index: nil)
           @code = parse_code(code)
-          @index = position_or_range(index, allow_nil: true)
+          @index = ensure_type(index, PositionOrRange, allow_nil: true)
         end
 
         # ------------------------------------------------------------

@@ -18,7 +18,7 @@ module BerkeleyLibrary
 
         def initialize(subfield, character_spec = nil)
           @subfield = ensure_type(subfield, Subfield)
-          @character_spec = position_or_range(character_spec, allow_nil: true)
+          @character_spec = ensure_type(character_spec, PositionOrRange, allow_nil: true)
         end
 
         # ------------------------------------------------------------

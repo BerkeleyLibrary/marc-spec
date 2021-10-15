@@ -5,6 +5,7 @@ require 'parslet/rig/rspec'
 module BerkeleyLibrary
   module MarcSpec
     module Parsing
+      include BerkeleyLibrary::MarcSpec::Queries::Part
       describe Parser do
         let(:parser) { Parser.new }
         let(:tags) { %w[245 2.. 24. .45 ..5 ... LDR] }
@@ -63,7 +64,7 @@ module BerkeleyLibrary
         end
 
         describe :position_or_range do
-          let(:rule) { parser.position_or_range }
+          let(:rule) { ensure_type(nil, PositionOrRange, allow_nil: false) }
 
           it 'parses positions' do
             aggregate_failures do

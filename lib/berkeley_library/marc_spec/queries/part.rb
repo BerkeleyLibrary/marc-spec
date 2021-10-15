@@ -62,24 +62,12 @@ module BerkeleyLibrary
           raise ArgumentError, "Not a #{cn(type)}: #{v.inspect}"
         end
 
-        def position_or_range(v, allow_nil: false)
-          of_any_type(v, Position, AlNumRange, allow_nil: allow_nil)
-        end
-
-        def select_type(v, left_type, right_type, allow_nil: false)
-          return if allow_nil && v.nil?
-          return v, nil if v.is_a?(left_type)
-          return nil, v if v.is_a?(right_type)
-
-          raise ArgumentError, "Not #{cn(left_type)} or #{cn(right_type)}: #{v.inspect}"
-        end
-
         def of_any_type(v, *types, allow_nil: false)
           raise ArgumentError, 'No types specified' if types.nil? || types.empty?
           return nil if allow_nil && v.nil?
 
           types.each { |t| return v if v.is_a?(t) }
-          raise ArgumentError, "Not any of #{types.map { |t| cn(t) }.join(', ')}: #{v.inspect}"
+          raise ArgumentError, "Not any of #{cns(types)}.join(', ')}: #{v.inspect}"
         end
 
         def int_or_nil(v)
@@ -96,6 +84,9 @@ module BerkeleyLibrary
           t.name.sub(/^.*::/, '')
         end
 
+        def cns(ts)
+          ts.map { |t| cn(t) }
+        end
       end
     end
   end

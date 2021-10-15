@@ -9,6 +9,7 @@ module BerkeleyLibrary
 
         def apply(marc_obj)
           return [] unless can_apply?(marc_obj)
+
           do_apply(marc_obj) if can_apply?(marc_obj)
         end
 

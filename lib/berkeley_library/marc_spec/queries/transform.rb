@@ -180,7 +180,13 @@ module BerkeleyLibrary
         end
 
         # { tag:, index:, selector:, condition:, subqueries:}
-        rule(tag: simple(:tag), index: simple(:index), selector: simple(:selector), condition: simple(:condition), subqueries: sequence(:subqueries)) do
+        rule(
+          tag: simple(:tag),
+          index: simple(:index),
+          selector: simple(:selector),
+          condition: simple(:condition),
+          subqueries: sequence(:subqueries)
+        ) do
           Query.new(tag: Tag.new(tag, index), selector: selector, condition: condition, subqueries: subqueries)
         end
       end
