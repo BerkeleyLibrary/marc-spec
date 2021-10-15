@@ -104,29 +104,9 @@ module MarcSpec
         Query.new(selector: selector)
       end
 
-      # { selector:, subqueries: } # TODO: can this happen?
-      rule(selector: simple(:selector), subqueries: sequence(:subqueries)) do
-        Query.new(selector: selector, subqueries: subqueries)
-      end
-
-      # { condition: }
-      rule(condition: simple(:condition)) do
-        Query.new(condition: condition)
-      end
-
-      # { condition:, subqueries: } # TODO: can this happen?
-      rule(condition: simple(:condition), subqueries: sequence(:subqueries)) do
-        Query.new(condition: condition, subqueries: subqueries)
-      end
-
       # { selector:, condition: }
       rule(selector: simple(:selector), condition: simple(:condition)) do
         Query.new(selector: selector, condition: condition)
-      end
-
-      # { selector:, condition:, subqueries: } # TODO: can this happen?
-      rule(selector: simple(:selector), condition: simple(:condition), subqueries: sequence(:subqueries)) do
-        Query.new(selector: selector, condition: condition, subqueries: subqueries)
       end
 
       # ----------------------------------------
@@ -157,11 +137,6 @@ module MarcSpec
         Query.new(tag: Tag.new(tag), subqueries: subqueries)
       end
 
-      # { tag:, index:, subqueries: }
-      rule(tag: simple(:tag), index: simple(:index), subqueries: sequence(:subqueries)) do
-        Query.new(tag: Tag.new(tag, index), subqueries: subqueries)
-      end
-
       # { tag:, selector:, condition: }
       rule(tag: simple(:tag), selector: simple(:selector), condition: simple(:condition)) do
         Query.new(tag: Tag.new(tag), selector: selector, condition: condition)
@@ -172,21 +147,6 @@ module MarcSpec
         Query.new(tag: Tag.new(tag, index), selector: selector, condition: condition)
       end
 
-      # { tag:, selector:, condition:, subqueries:}
-      rule(tag: simple(:tag), selector: simple(:selector), condition: simple(:condition), subqueries: sequence(:subqueries)) do
-        Query.new(tag: Tag.new(tag), selector: selector, condition: condition, subqueries: subqueries)
-      end
-
-      # { tag:, index:, selector:, condition:, subqueries:}
-      rule(
-        tag: simple(:tag),
-        index: simple(:index),
-        selector: simple(:selector),
-        condition: simple(:condition),
-        subqueries: sequence(:subqueries)
-      ) do
-        Query.new(tag: Tag.new(tag, index), selector: selector, condition: condition, subqueries: subqueries)
-      end
     end
   end
 end

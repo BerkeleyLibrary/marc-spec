@@ -168,6 +168,7 @@ describe MarcSpec do
               '020$c{$z}' => [],
               '020$c{020$z}' => [],
               '245$a{/#=\\/}' => all_245_a,
+              '245$a{/#!=\\;}' => all_245_a,
               '245$a{/#=\\;}' => [],
               '245$a{245$a/#=\\/}' => all_245_a,
               '245$a{245$a/#=\\;}' => []
@@ -179,6 +180,7 @@ describe MarcSpec do
             _650s = marc_record.fields('650')
             examples = {
               '650[0]{^2=\\0}' => _650s.first,
+              '650[0]{^2!=\\1}' => _650s.first,
               '650[0]{^1=\\0}' => [],
               '650[0]{$x~\\poetry}{^2=\\0}' => _650s.first,
               '650[0]{$x~\\prose}{^2=\\0}' => [],
@@ -205,6 +207,18 @@ describe MarcSpec do
                 '245$a{245$a/0-9=\\Mathematic}' => []
               }
               check_all(examples)
+            end
+          end
+
+          context '10.4 SubSpec validation' do
+            describe '~' do
+              it 'matches any left element against any right element' do
+                _020 = marc_record['020']
+                examples = {
+                  '020{001/0-3~...^1}' => _020
+                }
+                check_all(examples)
+              end
             end
           end
         end

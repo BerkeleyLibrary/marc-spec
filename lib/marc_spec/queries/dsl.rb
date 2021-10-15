@@ -45,14 +45,10 @@ module MarcSpec
 
       def c(*args)
         case args.size
-        when 1
-          Condition.new(right: args[0])
         when 2
           Condition.new(args[0], right: args[1])
         when 3
           Condition.new(args[1], left: args[0], right: args[2])
-        else
-          raise ArgumentError, "Too many arguments: #{args}"
         end
       end
 
@@ -63,13 +59,6 @@ module MarcSpec
 
       def indv(ind)
         IndicatorValue.new(ind)
-      end
-
-      # TODO: inline this
-      def subfield(code, index = nil)
-        return sf(code) unless index
-
-        sf(code, index)
       end
 
       def sf(code, index = nil)

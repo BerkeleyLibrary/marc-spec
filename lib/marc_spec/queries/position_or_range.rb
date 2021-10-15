@@ -2,20 +2,24 @@ require 'marc_spec/queries/applicable'
 
 module MarcSpec
   module Queries
+    # Marker interface for positions and ranges
+    # TODO: unify Position and AlNumRange?
     module PositionOrRange
-      include Applicable
+      include Part
 
       protected
 
-      def can_apply?(marc_obj)
-        [String, Array, MARC::ControlField, MARC::Subfield].any? { |t| marc_obj.is_a?(t) }
+      def wrap_string_result(result)
+        result unless result.nil? || result.empty?
       end
 
-      def do_apply(marc_obj)
-        value = marc_obj.respond_to?(:value) ? marc_obj.value : marc_obj
-        select_from(value)
-      end
+      # NOTE: We can't use `Array()` because we don't want to indiscriminately call `to_ary` / `to_a`
+      def wrap_array_result(result)
+        return [] unless result
+        return result if result.is_a?(Array)
 
+        [result]
+      end
     end
   end
 end

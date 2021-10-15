@@ -7,6 +7,7 @@ module MarcSpec
 
       attr_reader :tag, :selector, :condition, :subqueries
 
+      # TODO: separate factory methods for possible cases? (see transform.rb)
       # TODO: separate query (w/o subqueries) from wrapper w/subqueries?
       def initialize(tag: nil, selector: nil, condition: nil, subqueries: [])
         @tag = ensure_type(tag, Tag, allow_nil: true)

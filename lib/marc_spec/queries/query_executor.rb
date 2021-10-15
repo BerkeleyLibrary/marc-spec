@@ -42,8 +42,6 @@ module MarcSpec
       def as_query(root)
         return root if root.is_a?(Query)
         return Query.new(tag: root) if root.is_a?(Tag)
-
-        raise ArgumentError, "unknown type: #{root.inspect}"
       end
 
       attr_reader :cache

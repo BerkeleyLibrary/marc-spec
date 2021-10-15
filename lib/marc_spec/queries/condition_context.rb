@@ -41,8 +41,6 @@ module MarcSpec
         return op_val if op_val.is_a?(String)
         return op_val.value if op_val.respond_to?(:value) && !op_val.is_a?(MARC::DataField)
         return op_val.map { |v| as_string(v) } if op_val.is_a?(Array)
-
-        raise ArgumentError, "Unknown operand value type: #{op_val.inspect}"
       end
     end
   end

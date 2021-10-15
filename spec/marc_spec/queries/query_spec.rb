@@ -25,9 +25,13 @@ module MarcSpec
         aggregate_failures { examples.each { |query_str, expected| verify_result(query_str, expected) } }
       end
 
-      def verify_result(query_str, expected)
+      def query_from(query_str)
         parse_tree = parser.parse(query_str)
-        query = xform.apply(parse_tree)
+        xform.apply(parse_tree)
+      end
+
+      def verify_result(query_str, expected)
+        query = query_from(query_str)
         executor = QueryExecutor.new(marc_record, query)
         actual = executor.execute
 
@@ -45,6 +49,50 @@ module MarcSpec
           "actual:    \t#{actual_str}",
           "           \t#{actual.inspect}"
         ].join("\n\t")
+      end
+
+      describe :to_s do
+        it 'includes all elements' do
+          # noinspection RubyLiteralArrayInspection
+          [
+            '245$a',
+            '245$a/1-5',
+            '245^1',
+            '245$a$b',
+            '245^1{=\\0}',
+            '245$a{$b=\\t}$c$d'
+          ].each do |query_str|
+            query = query_from(query_str)
+            str = query.to_s
+            expect(str).not_to include('nil')
+            all_elements = ([query.tag, query.selector] + query.subqueries).compact
+            all_elements.each do |elem|
+              expect(str).to include(elem.to_s)
+            end
+          end
+        end
+      end
+
+      describe :to_s_inspect do
+        it 'includes all elements' do
+          # noinspection RubyLiteralArrayInspection
+          [
+            '245$a',
+            '245$a/1-5',
+            '245^1',
+            '245$a$b',
+            '245^1{=\\0}',
+            '245$a{$b=\\t}$c$d'
+          ].each do |query_str|
+            query = query_from(query_str)
+            inspect_str = query.inspect
+            expect(inspect_str).not_to include('nil')
+            all_elements = ([query.tag, query.selector] + query.subqueries).compact
+            all_elements.each do |elem|
+              expect(inspect_str).to include(elem.inspect)
+            end
+          end
+        end
       end
 
       describe 'non-repeated subfields' do
@@ -147,5 +195,6 @@ module MarcSpec
         end
       end
     end
+
   end
 end

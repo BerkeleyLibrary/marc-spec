@@ -82,7 +82,11 @@ module MarcSpec
       protected
 
       def to_s_inspect
-        [left.inspect, operator, right.inspect].join(' ')
+        StringIO.new.tap do |out|
+          out << left.inspect if left
+          out << operator
+          out << right.inspect
+        end.string
       end
 
       def equality_attrs
@@ -117,14 +121,11 @@ module MarcSpec
       def operand(operand)
         return operand if operand.is_a?(Condition) || operand.is_a?(Query)
         return Query.new(tag: operand) if operand.is_a?(Tag)
-
-        raise ArgumentError, "Unknown operand type: #{operand.inspect}"
       end
 
       def binary?
         operator.binary?
       end
-
     end
   end
 end
