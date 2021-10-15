@@ -284,7 +284,7 @@ module BerkeleyLibrary
             it 'handles complex combinations of subfields and subspecs' do
               expecteds = {
                 # see https://github.com/MARCspec/MARCspec/issues/30
-                '880$a{?$f}$b$c$e{$f=\\q}' => q(
+                '880$a{?$f}$b$c$e{880$f=\\q}' => q(
                   tag('880'),
                   sq: [
                     q(
@@ -295,7 +295,7 @@ module BerkeleyLibrary
                     q(s: sf('c')),
                     q(
                       s: sf('e'),
-                      c: c(q(s: sf('f')), '=', cstr('q'))
+                      c: c(q(tag('880'), s: sf('f')), '=', cstr('q'))
                     )
                   ]
                 )
