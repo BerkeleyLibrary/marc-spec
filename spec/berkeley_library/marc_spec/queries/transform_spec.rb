@@ -67,7 +67,7 @@ module BerkeleyLibrary
             expect(result).to be_a(Condition)
             expect(result.left).to be_nil
             expect(result.operator).to eq(Operator::EXIST)
-            expect(result.right).to eq(tag('956'))
+            expect(result.right).to eq(q(tag('956')))
           end
         end
 
@@ -283,16 +283,24 @@ module BerkeleyLibrary
           describe 'subfieldSpec' do
             it 'handles complex combinations of subfields and subspecs' do
               expecteds = {
-                # see https://github.com/MARCspec/MARCspec/issues/30
-                '880$a{?$f}$b$c$e{880$f=\\q}' => q(
+                # cf. https://github.com/MARCspec/MARCspec/issues/30
+                '880$a{?$f}$1$2$b{=\\x}$c{$d=\\12}$e{880$f=\\q}' => q(
                   tag('880'),
                   sq: [
                     q(
                       s: sf('a'),
                       c: c('?', q(s: sf('f')))
                     ),
-                    q(s: sf('b')),
-                    q(s: sf('c')),
+                    q(s: sf('1')),
+                    q(s: sf('2')),
+                    q(
+                      s: sf('b'),
+                      c: c('=', cstr('x'))
+                    ),
+                    q(
+                      s: sf('c'),
+                      c: c(q(s: sf('d')), '=', cstr('12'))
+                    ),
                     q(
                       s: sf('e'),
                       c: c(q(tag('880'), s: sf('f')), '=', cstr('q'))

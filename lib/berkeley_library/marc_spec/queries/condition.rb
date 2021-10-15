@@ -22,9 +22,8 @@ module BerkeleyLibrary
           #       see: https://marcspec.github.io/MARCspec/marc-spec.html#general
           #            https://marcspec.github.io/MARCspec/marc-spec.html#subspec-interpretation
 
-          # TODO: superinterface?
-          @left = of_any_type(left, Tag, Condition, Query, allow_nil: true) if binary?
-          @right = of_any_type(right, Tag, Condition, Query, ComparisonString)
+          @left = left_operand(left) if binary?
+          @right = right_operand(right)
         end
         # rubocop:enable Style/KeywordParametersOrder
 
@@ -45,6 +44,18 @@ module BerkeleyLibrary
 
         # ------------------------------------------------------------
         # Instance methods
+
+        def met?(context_field, context_result, executor)
+          puts self
+
+          right_val = operand_value(right, context_field, context_result, executor)
+          puts "\t#{right.inspect} -> #{right_val.inspect}"
+          return unary_apply(right_val) unless binary?
+
+          left_val = left ? operand_value(left, context_field, context_result, executor) : context_result
+          puts "\t#{left.inspect} -> #{left_val.inspect}"
+          binary_apply(left_val, right_val)
+        end
 
         def and(other_condition)
           return self if other_condition == self || other_condition.nil?
@@ -81,6 +92,63 @@ module BerkeleyLibrary
         end
 
         private
+
+        def binary_apply(left_val, right_val)
+          operator.apply(left_val, right_val).tap do |result|
+            puts "\t#{left_val} #{operator} #{right_val} => #{result}"
+          end
+        end
+
+        def unary_apply(right_val)
+          operator.apply(right_val).tap do |result|
+            puts "\t#{operator} #{right_val} => #{result}"
+          end
+        end
+
+        def operand_value(operand, context_field, context_result, executor)
+          raw_value = operand_value_raw(operand, context_field, context_result, executor)
+          as_string(raw_value)
+        end
+
+        def operand_value_raw(operand, context_field, context_result, executor)
+          return unless operand
+
+          case operand
+          when ComparisonString
+            operand.str_exact
+          when Condition
+            operand.met?(context_field, context_result, executor)
+          when Query
+            operand.execute(executor, [context_field])
+          end
+        end
+
+        def as_string(op_val)
+          return unless op_val
+          return op_val if op_val.is_a?(String)
+          return op_val.value if op_val.respond_to?(:value) && !op_val.is_a?(MARC::DataField)
+          return op_val.map { |v| as_string(v) } if op_val.is_a?(Array)
+
+          raise ArgumentError, "Unknown operand value type: #{op_val.inspect}"
+        end
+
+        def right_operand(right)
+          return right if right.is_a?(ComparisonString)
+
+          operand(right)
+        end
+
+        def left_operand(left)
+          operand(left) if left
+        end
+
+        # TODO: superinterface?
+        def operand(operand)
+          return operand if operand.is_a?(Condition) || operand.is_a?(Query)
+          return Query.new(tag: operand) if operand.is_a?(Tag)
+
+          raise ArgumentError, "Unknown operand type: #{operand.inspect}"
+        end
 
         def binary?
           operator.binary?

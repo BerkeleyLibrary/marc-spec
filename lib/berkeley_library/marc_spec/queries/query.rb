@@ -71,7 +71,7 @@ module BerkeleyLibrary
           results = executor.apply_selector(selector, field)
           return results unless condition
 
-          results.select { |result| executor.condition_met?(condition, result) }
+          results.select { |result| executor.condition_met?(condition, field, result) }
         end
 
       end

@@ -37,7 +37,7 @@ module BerkeleyLibrary
         protected
 
         def can_apply?(marc_obj)
-          subfield.can_apply?(marc_obj)
+          subfield.send(:can_apply?, marc_obj)
         end
 
         def do_apply(data_field)

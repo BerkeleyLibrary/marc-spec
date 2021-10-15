@@ -33,8 +33,8 @@ module BerkeleyLibrary
           cache[cache_key] ||= selector.apply(field)
         end
 
-        def condition_met?(condition, result)
-          condition.met?(result, self)
+        def condition_met?(condition, context_field, context_result)
+          condition.met?(context_field, context_result, self)
         end
 
         private
