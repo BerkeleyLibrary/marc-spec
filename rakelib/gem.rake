@@ -1,56 +1,54 @@
 require 'rubygems/gem_runner'
-require 'berkeley_library/marc_spec/module_info'
+require 'marc_spec/module_info'
 
-module BerkeleyLibrary
-  module MarcSpec
-    class << self
-      def project_root
-        @project_root ||= File.expand_path('..', __dir__)
+module MarcSpec
+  class << self
+    def project_root
+      @project_root ||= File.expand_path('..', __dir__)
+    end
+
+    def artifacts_dir
+      return project_root unless ENV['CI']
+
+      @artifacts_dir ||= File.join(project_root, 'artifacts')
+    end
+
+    def gemspec_file
+      @gemspec_file ||= begin
+        gemspec_files = Dir.glob(File.expand_path('*.gemspec', project_root))
+        raise ArgumentError, "Too many .gemspecs: #{gemspec_files.join(', ')}" if gemspec_files.size > 1
+        raise ArgumentError, 'No .gemspec file found' if gemspec_files.empty?
+
+        gemspec_files[0]
       end
+    end
 
-      def artifacts_dir
-        return project_root unless ENV['CI']
+    def gemspec_basename
+      File.basename(gemspec_file)
+    end
 
-        @artifacts_dir ||= File.join(project_root, 'artifacts')
+    def output_file
+      @output_file ||= begin
+        gem_name = File.basename(gemspec_file, '.*')
+        version = MarcSpec::ModuleInfo::VERSION
+        basename = "#{gem_name}-#{version}.gem"
+        File.join(artifacts_dir, basename)
       end
+    end
 
-      def gemspec_file
-        @gemspec_file ||= begin
-          gemspec_files = Dir.glob(File.expand_path('*.gemspec', project_root))
-          raise ArgumentError, "Too many .gemspecs: #{gemspec_files.join(', ')}" if gemspec_files.size > 1
-          raise ArgumentError, 'No .gemspec file found' if gemspec_files.empty?
+    def output_file_relative
+      return File.basename(output_file) unless ENV['CI']
 
-          gemspec_files[0]
-        end
-      end
-
-      def gemspec_basename
-        File.basename(gemspec_file)
-      end
-
-      def output_file
-        @output_file ||= begin
-          gem_name = File.basename(gemspec_file, '.*')
-          version = BerkeleyLibrary::MarcSpec::ModuleInfo::VERSION
-          basename = "#{gem_name}-#{version}.gem"
-          File.join(artifacts_dir, basename)
-        end
-      end
-
-      def output_file_relative
-        return File.basename(output_file) unless ENV['CI']
-
-        @output_file_relative ||= begin
-          artifacts_dir_relative = File.basename(artifacts_dir)
-          File.join(artifacts_dir_relative, File.basename(output_file))
-        end
+      @output_file_relative ||= begin
+        artifacts_dir_relative = File.basename(artifacts_dir)
+        File.join(artifacts_dir_relative, File.basename(output_file))
       end
     end
   end
 end
 
-desc "Build #{BerkeleyLibrary::MarcSpec.gemspec_basename} as #{BerkeleyLibrary::MarcSpec.output_file_relative}"
+desc "Build #{MarcSpec.gemspec_basename} as #{MarcSpec.output_file_relative}"
 task :gem do
-  args = ['build', BerkeleyLibrary::MarcSpec.gemspec_file, "--output=#{BerkeleyLibrary::MarcSpec.output_file}"]
+  args = ['build', MarcSpec.gemspec_file, "--output=#{MarcSpec.output_file}"]
   Gem::GemRunner.new.run(args)
 end
