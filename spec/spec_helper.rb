@@ -20,4 +20,4 @@ end
 # ------------------------------------------------------------
 # Code under test
 
-require 'marc_spec'
+require 'marc/spec'

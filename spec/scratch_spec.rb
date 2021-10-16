@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'parslet/rig/rspec'
 
 # Scratch spec for particular use cases
-module MarcSpec
+module MARC::Spec
   module Parsing
     describe Parser do
       let(:parser) { Parser.new }

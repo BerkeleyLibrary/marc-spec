@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe MarcSpec do
+describe MARC::Spec do
   attr_reader :marc_record
 
   def failure_msg_for(query_str, actual, expected)
-    query = MarcSpec.parse_query(query_str)
+    query = MARC::Spec.parse_query(query_str)
     expected_str = expected.respond_to?(:map) ? expected.map(&:to_s) : expected.to_s
     actual_str = actual.respond_to?(:map) ? actual.map(&:to_s) : actual.to_s
     expected_inspect = expected.respond_to?(:map) ? expected.map(&:inspect) : expected.inspect
@@ -32,7 +32,7 @@ describe MarcSpec do
     aggregate_failures do
       examples.each do |query_str, expected|
         expected = [expected] unless expected.is_a?(Array)
-        actual = MarcSpec.find(query_str, marc_record)
+        actual = MARC::Spec.find(query_str, marc_record)
         expect(actual).to eq(expected), -> { failure_msg_for(query_str, actual, expected) }
       end
     end

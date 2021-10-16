@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/marc_spec.iml" filepath="$PROJECT_DIR$/.idea/marc_spec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/marc-spec.iml" filepath="$PROJECT_DIR$/.idea/marc-spec.iml" />
     </modules>
   </component>
 </project>

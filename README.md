@@ -1,52 +1,52 @@
-[![Build Status](https://github.com/BerkeleyLibrary/marc_spec/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/BerkeleyLibrary/marc_spec/actions/workflows/build.yml)
-[![Gem Version](https://img.shields.io/gem/v/marc_spec.svg)](https://github.com/marc_spec/releases)
+[![Build Status](https://github.com/BerkeleyLibrary/marc-spec/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/BerkeleyLibrary/marc-spec/actions/workflows/build.yml)
+[![Gem Version](https://img.shields.io/gem/v/ruby-marc-spec.svg)](https://github.com/ruby-marc-spec/releases)
 
-# MarcSpec
+# MARC::Spec
 
 A implementation of the [MARCspec](http://marcspec.github.io/MARCspec/marc-spec.html) 
 query language for Ruby and [ruby-marc](https://github.com/ruby-marc/ruby-marc).
 
 ## Usage
 
-Add `marc_spec` to your Gemfile or gemspec, or just install it:
+Add `ruby-marc-spec` to your Gemfile or gemspec, or just install it:
 
 - Gemfile:
 
   ```ruby
-  gem 'marc_spec'
+  gem 'ruby-marc-spec'
   ```
 
 - gemspec
 
   ```ruby
-  spec.add_dependency 'marc_spec'
+  spec.add_dependency 'ruby-marc-spec'
   ```
 
 - from the command line:
 
   ```sh
-  gem install marc_spec
+  gem install ruby-marc-spec
   ```
 
 Then, in your code:
 
 ```ruby
-require 'marc_spec'
+require 'marc/spec'
 ```
 
-The entry point for `MarcSpec` is the `MarcSpec#find` method, which takes a string
+The entry point for `MARC::Spec` is the `MARC::Spec#find` method, which takes a string
 MARCspec query and a `MARC::Record` object.
 
 ```ruby
-MarcSpec.find('245$a', marc_record)
+MARC::Spec.find('245$a', marc_record)
 # => [#<MARC::Subfield:0x00007ffa1686e3f0 @code="a", @value="Arithmetic /">] 
 ```
 
-Note that for simplicity's sake `MarcSpec#find` always returns an array, even for 
+Note that for simplicity's sake `MARC::Spec#find` always returns an array, even for 
 queries that can only return a single-element result, e.g.
 
 ```ruby
-MarcSpec.find('LDR', marc_record)
+MARC::Spec.find('LDR', marc_record)
 # => ["01142cam  2200301 a 4500"]
 ```
 
@@ -62,7 +62,7 @@ marc_record = MARC::XMLReader.new('sandburg.xml').first
 ### Retrieving the leader
 
 ```ruby
-MarcSpec.find('LDR', marc_record)
+MARC::Spec.find('LDR', marc_record)
 # => ["01142cam  2200301 a 4500"]
 ```
 
@@ -71,7 +71,7 @@ MarcSpec.find('LDR', marc_record)
 Find all fields whose tag begins with `00`:
 
 ```ruby
-MarcSpec.find('00.', marc_record)
+MARC::Spec.find('00.', marc_record)
 # => [
 #  #<MARC::ControlField:0x00007ff9f706ac40 @tag="001", @value="   92005291 ">,
 #  #<MARC::ControlField:0x00007ff9f70686c0 @tag="003", @value="DLC">,
@@ -85,7 +85,7 @@ MarcSpec.find('00.', marc_record)
 Find the first six characters (characters 0 through 6) of the `008` field:
 
 ```ruby
-MarcSpec.find('008/0-5', marc_record)
+MARC::Spec.find('008/0-5', marc_record)
 # => ["920219"]
 ```
 
@@ -94,7 +94,7 @@ MarcSpec.find('008/0-5', marc_record)
 Find the first two `650` fields (fields 0 and 1):
 
 ```ruby
-MarcSpec.find('650[0-1]', marc_record)
+MARC::Spec.find('650[0-1]', marc_record)
 # => [#<MARC::DataField:0x00007ffa1799a5c0
 #   @indicator1=" ",
 #   @indicator2="0",
@@ -112,7 +112,7 @@ MarcSpec.find('650[0-1]', marc_record)
 Find subfield `a` of all 650 fields:
 
 ```ruby
-MarcSpec.find('650$a', marc_record)
+MARC::Spec.find('650$a', marc_record)
 #  => 
 # [#<MARC::Subfield:0x00007ffa17999878 @code="a", @value="Arithmetic">,
 #  #<MARC::Subfield:0x00007ffa179918d0 @code="a", @value="Children's poetry, American.">,
@@ -127,7 +127,7 @@ Find the first six characters (characters 0 through 5) of subfield `a`
 of the fifth (zero-indexed) `650` field:
 
 ```ruby
-MarcSpec.find('650[4]$a/0-5', marc_record)
+MARC::Spec.find('650[4]$a/0-5', marc_record)
 # => ["Visual"]
 ```
 
@@ -136,7 +136,7 @@ MarcSpec.find('650[4]$a/0-5', marc_record)
 Find all `650` fields having a value of `0` for the second indicator:
 
 ```ruby
-MarcSpec.find('650{^2=\0}', marc_record)
+MARC::Spec.find('650{^2=\0}', marc_record)
 # => 
 # [#<MARC::DataField:0x00007ffa1799a5c0
 #   @indicator1=" ",
@@ -153,7 +153,7 @@ MarcSpec.find('650{^2=\0}', marc_record)
 Find subfield `a` of each `650` field that also has a subfield `x`:
 
 ```ruby
-MarcSpec.find('650$a{$x}', marc_record)
+MARC::Spec.find('650$a{$x}', marc_record)
 # => [#<MARC::Subfield:0x00007ffa17999878 @code="a", @value="Arithmetic">, #<MARC::Subfield:0x00007ffa1798acb0 @code="a", @value="Arithmetic">] 
 ```
 
@@ -165,7 +165,7 @@ the string `San Diego` and there is at least one `050$b` containing as a substri
 7 through 10 of the `008` field:
 
 ```ruby
-MarcSpec.find('260$b/0-7{$a~\San\sDiego}{050$b~008/7-10}', marc_record)
+MARC::Spec.find('260$b/0-7{$a~\San\sDiego}{050$b~008/7-10}', marc_record)
 # => ["Harcourt"]
 ```
 
