@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/BerkeleyLibrary/marc-spec/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/BerkeleyLibrary/marc-spec/actions/workflows/build.yml)
-[![Gem Version](https://img.shields.io/gem/v/ruby-marc-spec.svg)](https://github.com/ruby-marc-spec/releases)
+[![Gem Version](https://img.shields.io/gem/v/ruby-marc-spec.svg)](https://rubygems.org/gems/ruby-marc-spec)
 
 # MARC::Spec
 
