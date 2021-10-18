@@ -41,6 +41,7 @@ module MARC
         private
 
         def as_query(root)
+          # TODO: unify these?
           return root if root.is_a?(Query)
           return Query.new(tag: root) if root.is_a?(Tag)
         end

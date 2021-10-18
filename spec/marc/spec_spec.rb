@@ -38,6 +38,12 @@ describe MARC::Spec do
     end
   end
 
+  describe :parse_query do
+    it 'raises ArgumentError for an invalid query' do
+      expect { MARC::Spec.parse_query('not a query') }.to raise_error(ArgumentError)
+    end
+  end
+
   describe 'non-repeated subfields' do
     before(:each) do
       @marc_record = MARC::XMLReader.new('spec/data/sandburg.xml').first
