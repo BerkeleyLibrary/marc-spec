@@ -18,6 +18,10 @@ module MARC
           @subqueries = subqueries.map { |sq| ensure_type(sq, Query) }
         end
 
+        def tag_str
+          tag.to_s if tag
+        end
+
         def to_s
           StringIO.new.tap do |out|
             out << tag if tag

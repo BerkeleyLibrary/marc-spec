@@ -25,13 +25,12 @@ module MARC::Spec
         aggregate_failures { examples.each { |query_str, expected| verify_result(query_str, expected) } }
       end
 
-      def query_from(query_str)
-        parse_tree = parser.parse(query_str)
-        xform.apply(parse_tree)
+      def parse_query(query_str)
+        MARC::Spec.parse_query(query_str)
       end
 
       def verify_result(query_str, expected)
-        query = query_from(query_str)
+        query = parse_query(query_str)
         executor = QueryExecutor.new(marc_record, query)
         actual = executor.execute
 
@@ -62,12 +61,29 @@ module MARC::Spec
             '245^1{=\\0}',
             '245$a{$b=\\t}$c$d'
           ].each do |query_str|
-            query = query_from(query_str)
+            query = parse_query(query_str)
             str = query.to_s
             expect(str).not_to include('nil')
             all_elements = ([query.tag, query.selector] + query.subqueries).compact
             all_elements.each do |elem|
               expect(str).to include(elem.to_s)
+            end
+          end
+        end
+      end
+
+      describe :tag_str do
+        it 'returns the tag' do
+          examples = {
+            '245$a{$b=\\t}$c$d' => '245',
+            '...$a$c' => '...',
+            '008/22{LDR/6=\b}' => '008',
+            '008[0]/3{/0=\a}' => '008[0]'
+          }
+          aggregate_failures do
+            examples.each do |query_str, expected|
+              query = parse_query(query_str)
+              expect(query.tag_str).to eq(expected)
             end
           end
         end
@@ -84,7 +100,7 @@ module MARC::Spec
             '245^1{=\\0}',
             '245$a{$b=\\t}$c$d'
           ].each do |query_str|
-            query = query_from(query_str)
+            query = parse_query(query_str)
             inspect_str = query.inspect
             expect(inspect_str).not_to include('nil')
             all_elements = ([query.tag, query.selector] + query.subqueries).compact
