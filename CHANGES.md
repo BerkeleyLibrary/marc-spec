@@ -1,3 +1,8 @@
+# 0.1.3 (2022-02-02)
+
+- Fix issue where applying subspecs against a subfield value as an implicit
+  left-hand subterm would produce `NoMethodError`.
+
 # 0.1.2 (2022-02-01)
 
 - Adds `MARC::Spec#exists?` to check if a MARC record has data matching a

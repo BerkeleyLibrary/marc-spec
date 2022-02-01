@@ -208,9 +208,20 @@ module MARC::Spec
             }
             verify_all(examples)
           end
+
+          it 'can check for substrings in subfield values' do
+            df260 = marc_record['260']
+            df260a = df260.subfields.find { |sf| sf.code == 'a' }
+            examples = {
+              '260{$a~\Diego}' => [df260],
+              '260$a{~\Diego}' => [df260a],
+              '260$a{~\Los\sAngeles}' => [],
+              '260{$a~\Los\sAngeles}' => []
+            }
+            verify_all(examples)
+          end
         end
       end
     end
-
   end
 end

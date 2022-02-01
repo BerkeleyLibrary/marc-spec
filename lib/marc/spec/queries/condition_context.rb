@@ -15,7 +15,7 @@ module MARC
         end
 
         def operand_value(operand, implicit: false)
-          return context_result if implicit && operand.nil?
+          return operand_value(context_result) if implicit && operand.nil?
 
           raw_value = operand_value_raw(operand)
           is_boolean = [true, false].include?(raw_value)
@@ -25,16 +25,11 @@ module MARC
         private
 
         def operand_value_raw(operand)
-          return unless operand
+          return operand.str_exact if operand.is_a?(ComparisonString)
+          return operand.met?(self) if operand.is_a?(Condition)
+          return operand.execute(executor, [context_field], context_result) if operand.is_a?(Query)
 
-          case operand
-          when ComparisonString
-            operand.str_exact
-          when Condition
-            operand.met?(self)
-          when Query
-            operand.execute(executor, [context_field], context_result)
-          end
+          operand
         end
 
         def as_string(op_val)

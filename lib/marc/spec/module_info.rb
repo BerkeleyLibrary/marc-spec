@@ -7,7 +7,7 @@ module MARC
       SUMMARY = 'MARCspec for Ruby'.freeze
       DESCRIPTION = 'An implementation of the MARCspec query language for Ruby and ruby-marc'.freeze
       LICENSE = 'MIT'.freeze
-      VERSION = '0.1.2'.freeze
+      VERSION = '0.1.3'.freeze
       HOMEPAGE = 'https://github.com/BerkeleyLibrary/marc-spec'.freeze
     end
   end
