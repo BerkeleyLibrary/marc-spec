@@ -27,6 +27,10 @@ module MARC
           root_query.execute(self, root_fields)
         end
 
+        def any_results?
+          root_query.any_results?(self, root_fields)
+        end
+
         def apply_tag(tag)
           cache[tag] ||= tag.apply(marc_record)
         end

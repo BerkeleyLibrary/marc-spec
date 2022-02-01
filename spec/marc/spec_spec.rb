@@ -34,6 +34,10 @@ describe MARC::Spec do
         expected = [expected] unless expected.is_a?(Array)
         actual = MARC::Spec.find(query_str, marc_record)
         expect(actual).to eq(expected), -> { failure_msg_for(query_str, actual, expected) }
+
+        should_exist = expected.any?
+        exists = MARC::Spec.exists?(query_str, marc_record)
+        expect(exists).to eq(should_exist), "Expected exists?(#{query_str.inspect}) to return #{should_exist}, was #{exists}"
       end
     end
   end

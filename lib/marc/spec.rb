@@ -9,6 +9,12 @@ module MARC
         execute_query(root, marc_record)
       end
 
+      def exists?(query_string, marc_record)
+        root = parse_query(query_string)
+        executor = executor_for(root, marc_record)
+        executor.any_results?
+      end
+
       def parse_query(query_string)
         parse_tree = parser.parse(query_string, reporter: reporter)
         xform_result = xform.apply(parse_tree)
@@ -19,7 +25,7 @@ module MARC
       end
 
       def execute_query(query, marc_record)
-        executor = Queries::QueryExecutor.new(marc_record, query)
+        executor = executor_for(query, marc_record)
         executor.execute
       end
 
@@ -35,6 +41,10 @@ module MARC
 
       def reporter
         @reporter ||= Parslet::ErrorReporter::Contextual.new
+      end
+
+      def executor_for(query, marc_record)
+        Queries::QueryExecutor.new(marc_record, query)
       end
     end
   end

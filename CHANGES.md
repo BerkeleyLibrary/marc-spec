@@ -1,3 +1,8 @@
+# 0.1.2 (next)
+
+- Adds `MARC::Spec#exists?` to check if a MARC record has data matching a
+  query, without actually retrieving the data.
+
 # 0.1.1 (2021-10-18)
 
 - `MARC::Spec` methods now raise an `ArgumentError` for invalid query strings

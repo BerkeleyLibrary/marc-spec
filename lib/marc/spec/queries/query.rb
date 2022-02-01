@@ -1,3 +1,4 @@
+require 'marc/spec/parsing/parser'
 require 'marc/spec/queries/part'
 
 module MARC
@@ -33,11 +34,9 @@ module MARC
 
         # TODO: don't support nested subqueries
         def execute(executor, context_fields, context_result = nil)
-          fields = tag ? executor.apply_tag(tag) : context_fields
+          fields = fields(executor, context_fields)
           return [] if fields.empty?
-
-          field_results = root_results(fields, executor, context_result)
-          return field_results if subqueries.empty?
+          return root_results(fields, executor, context_result) if subqueries.empty?
 
           fields.each_with_object([]) do |field, results|
             subqueries.each do |subquery|
@@ -45,6 +44,13 @@ module MARC
               results.concat(subquery_results)
             end
           end
+        end
+
+        def any_results?(executor, context_fields, context_result = nil)
+          fields = fields(executor, context_fields)
+          return false if fields.empty?
+
+          any_field_results?(executor, fields, context_result)
         end
 
         protected
@@ -65,6 +71,10 @@ module MARC
         # rubocop:enable Metrics/AbcSize
 
         private
+
+        def fields(executor, context_fields)
+          tag ? executor.apply_tag(tag) : context_fields
+        end
 
         def root_results(fields, executor, context_result)
           field_results = results_for_fields(executor, fields)
@@ -90,6 +100,18 @@ module MARC
           return results unless condition
 
           results.select { |result| executor.condition_met?(condition, field, result) }
+        end
+
+        def any_field_results?(executor, fields, context_result)
+          return any_root_results?(executor, fields, context_result) if subqueries.empty?
+
+          fields.any? do |field|
+            subqueries.any? { |sq| sq.any_results?(executor, [field]) }
+          end
+        end
+
+        def any_root_results?(executor, fields, context_result)
+          root_results(fields, executor, context_result).any?
         end
 
       end
