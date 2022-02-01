@@ -170,3 +170,21 @@ MARC::Spec.find('260$b/0-7{$a~\San\sDiego}{050$b~008/7-10}', marc_record)
 ```
 
 For further examples, see the MARCSpec [documentation](http://marcspec.github.io/MARCspec/marc-spec.html#marcspec-explained).
+
+## For developers
+
+### Generated tests
+
+The tests for this gem include a set generated from the [MARCSpec-Test-Suite](https://github.com/MARCspec/MARCspec-Test-Suite)
+project, which is provided as a [Git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+under `spec/suite`.
+
+The tests themselves are in [`spec/suite/generated`](spec/suite/generated). It's not necessary to fetch the submodule in order
+to run these tests, but it is necessary if you need to regenerate them. To fetch the submodule, from the project root, run:
+
+```sh
+git submodule init
+git submodule update
+```
+
+To regenerate the tests, run `rake spec:generate`.
