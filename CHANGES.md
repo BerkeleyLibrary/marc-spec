@@ -1,7 +1,9 @@
-# 0.1.2 (next)
+# 0.1.2 (2022-02-01)
 
 - Adds `MARC::Spec#exists?` to check if a MARC record has data matching a
-  query, without actually retrieving the data.
+  query, without actually retrieving the data. This is slightly more efficient
+  than using `MARC::Spec#find` with `any?`, as it will return early when it 
+  finds the first result.
 
 # 0.1.1 (2021-10-18)
 
