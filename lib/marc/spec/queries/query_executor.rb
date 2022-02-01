@@ -11,7 +11,7 @@ module MARC
 
         def initialize(marc_record, root, cache = {})
           @marc_record = ensure_type(marc_record, MARC::Record)
-          @root_query = as_query(root)
+          @root_query = root
           @cache = cache
 
           @root_tag = root_query.tag || Tag.new('...')
@@ -39,12 +39,6 @@ module MARC
         end
 
         private
-
-        def as_query(root)
-          # TODO: unify these?
-          return root if root.is_a?(Query)
-          return Query.new(tag: root) if root.is_a?(Tag)
-        end
 
         attr_reader :cache
       end
