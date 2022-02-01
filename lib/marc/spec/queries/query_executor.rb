@@ -7,15 +7,20 @@ module MARC
       class QueryExecutor
         include Part
 
-        attr_reader :marc_record, :root_query, :root_tag, :root_fields
+        attr_reader :marc_record, :root_query
 
-        def initialize(marc_record, root, cache = {})
+        def initialize(marc_record, root_query, cache = {})
           @marc_record = ensure_type(marc_record, MARC::Record)
-          @root_query = root
+          @root_query = root_query
           @cache = cache
+        end
 
-          @root_tag = root_query.tag || Tag.new('...')
-          @root_fields = apply_tag(root_tag)
+        def root_tag
+          @root_tag ||= root_query.tag || Tag.new('...')
+        end
+
+        def root_fields
+          @root_fields ||= apply_tag(root_tag)
         end
 
         def execute
