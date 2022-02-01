@@ -34,20 +34,14 @@ module MARC
 
         # TODO: don't support nested subqueries
         def execute(executor, context_fields, context_result = nil)
-          fields = fields(executor, context_fields)
+          fields = tag_or_context_fields(executor, context_fields)
           return [] if fields.empty?
-          return root_results(fields, executor, context_result) if subqueries.empty?
 
-          fields.each_with_object([]) do |field, results|
-            subqueries.each do |subquery|
-              subquery_results = subquery.execute(executor, [field])
-              results.concat(subquery_results)
-            end
-          end
+          field_results(executor, fields, context_result)
         end
 
         def any_results?(executor, context_fields, context_result = nil)
-          fields = fields(executor, context_fields)
+          fields = tag_or_context_fields(executor, context_fields)
           return false if fields.empty?
 
           any_field_results?(executor, fields, context_result)
@@ -72,8 +66,14 @@ module MARC
 
         private
 
-        def fields(executor, context_fields)
+        def tag_or_context_fields(executor, context_fields)
           tag ? executor.apply_tag(tag) : context_fields
+        end
+
+        def field_results(executor, fields, context_result)
+          return root_results(fields, executor, context_result) if subqueries.empty?
+
+          subquery_results(executor, fields)
         end
 
         def root_results(fields, executor, context_result)
@@ -82,6 +82,19 @@ module MARC
           return field_results unless field_results.empty? && select_from_context?(context_result)
 
           selector.apply(context_result)
+        end
+
+        def subquery_results(executor, fields)
+          # NOTE: we do this one field at a time so that results are grouped
+          #       by field, rather than by subfield code. Which isn't part of
+          #       the MARCSpec spec, but it seems more in the spirit of MARC
+          #       to preserve order wherever possible.
+          fields.each_with_object([]) do |field, results|
+            subqueries.each do |subquery|
+              subquery_results = subquery.execute(executor, [field])
+              results.concat(subquery_results)
+            end
+          end
         end
 
         def select_from_context?(context_result)
@@ -105,15 +118,18 @@ module MARC
         def any_field_results?(executor, fields, context_result)
           return any_root_results?(executor, fields, context_result) if subqueries.empty?
 
-          fields.any? do |field|
-            subqueries.any? { |sq| sq.any_results?(executor, [field]) }
-          end
+          any_subfield_results?(executor, fields)
         end
 
         def any_root_results?(executor, fields, context_result)
           root_results(fields, executor, context_result).any?
         end
 
+        def any_subfield_results?(executor, fields)
+          fields.any? do |field|
+            subqueries.any? { |sq| sq.any_results?(executor, [field]) }
+          end
+        end
       end
     end
   end
